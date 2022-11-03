@@ -49,7 +49,7 @@ protected:
 	CTransform*				m_pTransformCom = nullptr;
 
 	OBJ_DESC				m_tInfo;
-	PASS					m_ePass;
+	PASS					m_ePass = PASS_NONPICK;
 
 public:
 	virtual void Free() override;

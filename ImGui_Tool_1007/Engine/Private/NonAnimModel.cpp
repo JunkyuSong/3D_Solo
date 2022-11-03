@@ -6,6 +6,8 @@
 
 #include "PipeLine.h"
 
+#include "Component_Manager.h"
+
 
 CNonAnimModel::CNonAnimModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CModel(pDevice, pContext)
@@ -63,6 +65,16 @@ HRESULT CNonAnimModel::Initialize_Prototype(const char * pModelFilePath, const c
 	if (FAILED(Ready_Materials(pModelFilePath, &(m_tModel.AllMaterials))))
 		return E_FAIL;
 
+	//if (!strcmp(m_tModel.Name, "GreenHouse.fbx"))
+	//{
+	//	m_tModel.tMeshes[24].iIndex = 20;
+
+	//	//CNonAnimModel* _Temp = static_cast<CNonAnimModel*>(CComponent_Manager::Get_Instance()->Clone_Component(5, TEXT("Prototype_Component_Model_Stage_GreenHouse_floor"), nullptr));
+	//	//TMODEL fd = _Temp->Get_ForSave();
+	//	//m_tModel.AllMaterials.tMaterial[20]
+	//	//fd.AllMaterials.tMaterial[0].szPath;
+	//}
+
 	return S_OK;
 }
 
@@ -114,14 +126,40 @@ HRESULT CNonAnimModel::Ready_MeshContainers()
 	
 	m_tModel.tMeshes = new TCONTAINER[m_tModel.NumMeshes];
 
-	for (_uint i = 0; i < m_iNumMeshes; ++i)
-	{
-		CMeshContainer*		pMeshContainer = CMeshContainer::Create(m_pDevice, m_pContext, m_pAIScene->mMeshes[i], &(m_tModel.tMeshes[i]));
-		if (nullptr == pMeshContainer)
-			return E_FAIL;
+ 
+	//if (!strcmp(m_tModel.Name, "GreenHouse.fbx"))
+	//{
+	//	for (_uint i = 0; i < m_iNumMeshes; ++i)
+	//	{
+	//		if (!strcmp(m_pAIScene->mMeshes[i]->mName.data, "Greenhouse_Floor01_05.md"))
+	//		{
+	//			CNonAnimModel* _Temp = static_cast<CNonAnimModel*>(CComponent_Manager::Get_Instance()->Clone_Component(5, TEXT("Prototype_Component_Model_Stage_GreenHouse_floor"),nullptr));
+	//			TMODEL fd = _Temp->Get_ForSave();
+	//			memcpy(&(m_tModel.tMeshes[i]), &(fd.tMeshes[0]),sizeof(TCONTAINER));
+	//			continue;
+	//		}
+	//		CMeshContainer*		pMeshContainer = CMeshContainer::Create(m_pDevice, m_pContext, m_pAIScene->mMeshes[i], &(m_tModel.tMeshes[i]));
+	//		if (nullptr == pMeshContainer)
+	//			return E_FAIL;
 
-		m_Meshes.push_back(pMeshContainer);
+	//		m_Meshes.push_back(pMeshContainer);
+	//		
+	//	}
+	//	--m_iNumMeshes;
+	//}
+	//else
+	{
+		for (_uint i = 0; i < m_iNumMeshes; ++i)
+		{
+			CMeshContainer*		pMeshContainer = CMeshContainer::Create(m_pDevice, m_pContext, m_pAIScene->mMeshes[i], &(m_tModel.tMeshes[i]));
+			if (nullptr == pMeshContainer)
+				return E_FAIL;
+
+			m_Meshes.push_back(pMeshContainer);
+		}
 	}
+
+ 	
 
 	return S_OK;
 }

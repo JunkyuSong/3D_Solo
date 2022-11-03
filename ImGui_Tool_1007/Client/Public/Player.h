@@ -272,6 +272,7 @@ public:
 
 private:
 	void CutScene();
+	void Gate();
 	void MoveLevel();
 
 };

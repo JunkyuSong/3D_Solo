@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "Status.h"
 #include "CameraMgr.h"
+#include "Camera_CutScene_Enter.h"
 
 CMagician::CMagician(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
@@ -63,7 +64,7 @@ HRESULT CMagician::Initialize(void * pArg)
 
 	if (true == isMove)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672f, 2.402f, 50.622f, 1.f));
-	m_eCurState = Magician_Idle;
+	m_eCurState = Magician_Idle2;
 	return S_OK;
 }
 
@@ -240,6 +241,7 @@ void CMagician::CheckEndAnim()
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Boss_Enter:
+		Safe_Release(m_CutSceneCard);
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Cane_Att1:
@@ -482,6 +484,10 @@ void CMagician::CheckState(_float fTimeDelta)
 
 		break;
 	case Client::CMagician::Boss_Enter:
+	{
+	
+	}
+
 		break;
 	case Client::CMagician::Cane_Att1:
 		
@@ -685,6 +691,51 @@ void CMagician::CheckLimit()
 		}
 		break;
 	case Client::CMagician::Boss_Enter:
+		if (m_vecLimitTime[Boss_Enter][3] < m_fPlayTime)
+		{
+			AUTOINSTANCE(CCameraMgr, _pCamera);
+
+
+			_vector vTargetPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+			vTargetPos.m128_f32[1] += 1.2f;
+
+			static_cast<CCamera_CutScene_Enter*>(_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER))->Set_Trans(vTargetPos);
+		}
+		else if (m_vecLimitTime[Boss_Enter][2] < m_fPlayTime)
+		{
+			AUTOINSTANCE(CCameraMgr, _pCamera);
+			
+
+			_vector vTargetPos = (m_pModelCom->Get_HierarchyNode("pelvis-L-Finger21")->Get_CombinedTransformation()
+				*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix()).r[3];
+
+
+			static_cast<CCamera_CutScene_Enter*>(_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER))->Set_Trans(vTargetPos);
+		}
+		else if (m_vecLimitTime[Boss_Enter][1] < m_fPlayTime)
+		{
+			AUTOINSTANCE(CCameraMgr, _pCamera);
+			CAnimModel* _pModel = static_cast<CAnimModel*>(CGameInstance::Get_Instance()->Get_Player()->Get_ComponentPtr(TEXT("Com_Model")));
+			CTransform* target = static_cast<CTransform*>(CGameInstance::Get_Instance()->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
+			
+			_vector vTargetPos = (_pModel->Get_HierarchyNode("Bip001-Xtra07Opp")->Get_CombinedTransformation()
+				*XMLoadFloat4x4(&_pModel->Get_PivotMatrix())*target->Get_WorldMatrix()).r[3];
+
+			
+			static_cast<CCamera_CutScene_Enter*>(_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER))->Set_Trans(vTargetPos);
+
+		}
+		else if (m_vecLimitTime[Boss_Enter][0] < m_fPlayTime)
+		{
+			AUTOINSTANCE(CCameraMgr, _pCamera);
+			_vector vTargetPos = (m_pModelCom->Get_HierarchyNode("AnimTargetPoint")->Get_CombinedTransformation()
+				*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix()).r[3];
+			static_cast<CTransform*>(m_CutSceneCard->Get_ComponentPtr(TEXT("Com_Transform")))->Set_State(CTransform::STATE_POSITION, vTargetPos);
+			m_CutSceneCard->LateTick(0.f);
+			CTransform* target = static_cast<CTransform*>(m_CutSceneCard->Get_ComponentPtr(TEXT("Com_Transform")));
+			static_cast<CCamera_CutScene_Enter*>(_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER))->Set_Trans(target->Get_State(CTransform::STATE_POSITION));
+
+		}
 		break;
 	case Client::CMagician::Cane_Att1:
 		if (m_vecLimitTime[Cane_Att1][1] < m_fPlayTime)
@@ -1234,7 +1285,7 @@ HRESULT CMagician::Ready_Components()
 
 	/* For.Com_Status */
 	CStatus::STATUS _tStatus;
-	_tStatus.fMaxHp = 10.f;
+	_tStatus.fMaxHp = 300.f;
 	_tStatus.fAttack = 30.f;
 	_tStatus.fHp = _tStatus.fMaxHp;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Status"), TEXT("Com_Status"), (CComponent**)&m_pStatusCom, &_tStatus)))
@@ -1374,6 +1425,12 @@ void CMagician::Ready_LimitTime()
 
 	m_vecLimitTime[Magician_ParrySword].push_back(70.f);
 	m_vecLimitTime[Magician_ParrySword].push_back(150.f);//7.6
+
+	m_vecLimitTime[Boss_Enter].push_back(140.f);//카드 쳐다볼때
+	m_vecLimitTime[Boss_Enter].push_back(300.f);//플레이어 쳐다볼때
+	
+	m_vecLimitTime[Boss_Enter].push_back(420.f);//매지션 손 쳐다볼때
+	m_vecLimitTime[Boss_Enter].push_back(580.f);//매지션 쳐다볼때
 }
 
 CMagician * CMagician::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)

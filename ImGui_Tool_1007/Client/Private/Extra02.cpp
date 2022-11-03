@@ -262,7 +262,6 @@ void CExtra02::CheckEndAnim()
 			_Player->Set_AnimState(CPlayer::STATE_APPROACH2);
 			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
 			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Set_FOV(60.f);
-
 		}
 		//m_eCurState = LV1Villager_M_IdleGeneral;
 		break;

@@ -182,6 +182,7 @@
     <ClInclude Include="..\Public\Boss_Bat.h" />
     <ClInclude Include="..\public\CameraMgr.h" />
     <ClInclude Include="..\Public\Camera_CutScene.h" />
+    <ClInclude Include="..\Public\Camera_CutScene_Enter.h" />
     <ClInclude Include="..\Public\Camera_Free.h" />
     <ClInclude Include="..\Public\Camera_Player.h" />
     <ClInclude Include="..\Public\Cane.h" />
@@ -257,6 +258,7 @@
     <ClCompile Include="..\Private\Boss_Bat.cpp" />
     <ClCompile Include="..\private\CameraMgr.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene.cpp" />
+    <ClCompile Include="..\Private\Camera_CutScene_Enter.cpp" />
     <ClCompile Include="..\Private\Camera_Free.cpp" />
     <ClCompile Include="..\Private\Camera_Player.cpp" />
     <ClCompile Include="..\Private\Cane.cpp" />

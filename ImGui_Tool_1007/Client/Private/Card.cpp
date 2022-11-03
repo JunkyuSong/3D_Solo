@@ -24,22 +24,32 @@ HRESULT CCard::Initialize(void * pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
+	if (pArg)
+	{
+		m_pTransformCom->Set_WorldFloat4x4(
+			static_cast<CTransform*>(pArg)->Get_WorldFloat4x4()
+		);
 	
-	m_pTransformCom->Set_WorldFloat4x4(
-		static_cast<CTransform*>(pArg)->Get_WorldFloat4x4()
-	);
+		m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 1.f));
+		m_pTransformCom->Turn_Angle(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), XMConvertToRadians(90.0f));
 
-	m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 1.f));
-	m_pTransformCom->Turn_Angle(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), XMConvertToRadians(90.0f));
-	
-	_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION) 
-		+ XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK))
-		+ XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_UP))
+		_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION)
+			+ XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK))
+			+ XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_UP))
 			+ (XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT)) *(-0.1f));
+
+		_vPos.m128_f32[1] += 1.5f;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
+		XMStoreFloat3(&m_vOriginPos, _vPos);
+	}
+	else
+	{
+		m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 1.f));
+		m_pTransformCom->Turn_Angle(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), XMConvertToRadians(90.0f));
+		m_pTransformCom->Turn_Angle(m_pTransformCom->Get_State(CTransform::STATE_LOOK), XMConvertToRadians(90.0f));
+		m_pTransformCom->Turn_Angle(m_pTransformCom->Get_State(CTransform::STATE_UP), XMConvertToRadians(90.0f));
+	}
 	
-	_vPos.m128_f32[1] += 1.5f;
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
-	XMStoreFloat3(&m_vOriginPos, _vPos);
 	
 	return S_OK;
 }

@@ -5,6 +5,7 @@
 #include "Camera_Free.h"
 #include "Camera_Player.h"
 #include "Camera_CutScene.h"
+#include "Camera_CutScene_Enter.h"
 #include "Saber.h"
 #include "Dagger.h"
 #include "BackGround.h"
@@ -179,6 +180,10 @@ HRESULT CLoader::Loading_ForLogoLevel()
 
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_CutScene"),
 		CCamera_CutScene::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_CutScene_Enter"),
+		CCamera_CutScene_Enter::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 
@@ -452,10 +457,14 @@ HRESULT CLoader::Loading_ForLevel_Stage02_1()
 	/* 모델을 로드한다. */
 
 	_matrix		PivotMatrix = XMMatrixIdentity();
-
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Model_Stage_GreenHouse_floor"),
+	//	CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/GreenHouse/", "TEST.fbx"))))
+	//	return E_FAIL;
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Model_Stage_GreenHouse"),
 		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/GreenHouse/", "GreenHouse.dat"))))
 		return E_FAIL;
+
+
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Model_Monster_Weapon_Axe"),
 		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Item/MonsterWeapon/", "Axe.dat"))))
 		return E_FAIL;
@@ -761,6 +770,10 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"),
 		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Player/", "player_test.dat", PivotMatrix))))
 		return E_FAIL;
+
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Model_Player_mmm"),
+	//	CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Player/", "fdsfsd.fbx", PivotMatrix))))
+	//	return E_FAIL;
 
 	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Model_Test"),
 	//	CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Player/", "amamam.fbx", PivotMatrix))))

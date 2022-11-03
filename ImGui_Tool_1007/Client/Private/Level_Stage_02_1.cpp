@@ -140,8 +140,8 @@ HRESULT CLevel_Stage_02_1::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_STAGE_02_1, pLayerTag)))
 		return E_FAIL;
 
-	/*if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_STAGE_02_1, pLayerTag)))
-		return E_FAIL;*/
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_STAGE_02_1, pLayerTag)))
+	//	return E_FAIL;
 
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Stage_02_1"), LEVEL_STAGE_02_1, TEXT("Layer_Stage"))))
 		return E_FAIL;

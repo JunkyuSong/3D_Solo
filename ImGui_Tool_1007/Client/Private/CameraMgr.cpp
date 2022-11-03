@@ -40,7 +40,7 @@ void CCameraMgr::Initialize()
 	m_pCameras[CAMERA_FREE] = static_cast<CCamera*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Camera_Free"), &CameraDesc));
 	m_pCameras[CAMERA_PLAYER] = static_cast<CCamera*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Camera_Player"), &CameraDesc));
 	m_pCameras[CAMERA_CUTSCENE] = static_cast<CCamera*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Camera_CutScene"), &CameraDesc));
-
+	m_pCameras[CAMERA_CUTSCENE_ENTER] = static_cast<CCamera*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Camera_CutScene_Enter"), &CameraDesc));	
 }
 
 void CCameraMgr::Tick(_float fTimedelta)

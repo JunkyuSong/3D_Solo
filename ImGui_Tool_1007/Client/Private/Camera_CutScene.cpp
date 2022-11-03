@@ -44,11 +44,14 @@ HRESULT CCamera_CutScene::Initialize(void * pArg)
 void CCamera_CutScene::Tick(_float fTimeDelta)
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
+
+	
 	_float4x4	_matWorld;
 	XMStoreFloat4x4(&_matWorld, m_pCameraBone->Get_OffSetMatrix()* m_pCameraBone->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModel->Get_PivotMatrix())*m_pTarget->Get_WorldMatrix());
 	m_pTransformCom->Set_WorldFloat4x4(_matWorld);
 	_vector _vTargetPos = m_pTarget->Get_State(CTransform::STATE_POSITION);
 	_vTargetPos.m128_f32[1] += 1.f;
+	XMStoreFloat4(& m_CameraDesc.vAt, _vTargetPos);
 	m_pTransformCom->LookAt(_vTargetPos);
 	__super::Tick(fTimeDelta);
 }

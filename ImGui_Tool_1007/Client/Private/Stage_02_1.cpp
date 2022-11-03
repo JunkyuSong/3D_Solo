@@ -69,7 +69,21 @@ HRESULT CStage_02_1::Render()
 		if (FAILED(m_pModelCom->Render(i)))
 			return E_FAIL;
 	}
+	//iNumMeshes = m_pModelCom_floor->Get_NumMesh();//메쉬 갯수를 알고 메쉬 갯수만큼 렌더를 할 것임. 여기서!
 
+	//for (_uint i = 0; i < iNumMeshes; ++i)
+	//{
+	//	if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom_floor->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+	//		return E_FAIL;
+	//	if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom_floor->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+	//		return E_FAIL;
+
+	//	if (FAILED(m_pShaderCom->Begin(5)))
+	//		return E_FAIL;
+
+	//	if (FAILED(m_pModelCom->Render(i)))
+	//		return E_FAIL;
+	//}
 
 	return S_OK;
 }
@@ -110,6 +124,9 @@ HRESULT CStage_02_1::Ready_Components()
 
 	if (FAILED(__super::Add_Component(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Model_Stage_GreenHouse"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
+
+	//if (FAILED(__super::Add_Component(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Model_Stage_GreenHouse_floor"), TEXT("Com_Model_floor"), (CComponent**)&m_pModelCom_floor)))
+	//	return E_FAIL;
 
 	return S_OK;
 }

@@ -241,6 +241,12 @@
     <Filter Include="02.GameObjects\Map\Stage_02\Stage_02_1\StageMgr">
       <UniqueIdentifier>{5a298e5d-b26b-4c53-a307-3ad57dca85b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Camera\Camera_CutScene\Enter">
+      <UniqueIdentifier>{78d6123f-cc72-4de7-9357-f4cea04a4802}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Camera\Camera_CutScene\End">
+      <UniqueIdentifier>{f9af557a-cf95-4f1f-9fe0-9fa704b6b4fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -465,11 +471,14 @@
     <ClInclude Include="..\Public\Player_CutScene.h">
       <Filter>02.GameObjects\00. Player\CutScene</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Camera_CutScene.h">
-      <Filter>02.GameObjects\Camera\Camera_CutScene</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\StageMgr.h">
       <Filter>02.GameObjects\Map\Stage_02\Stage_02_1\StageMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_CutScene.h">
+      <Filter>02.GameObjects\Camera\Camera_CutScene\End</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_CutScene_Enter.h">
+      <Filter>02.GameObjects\Camera\Camera_CutScene\Enter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -677,11 +686,14 @@
     <ClCompile Include="..\Private\Player_CutScene.cpp">
       <Filter>02.GameObjects\00. Player\CutScene</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Camera_CutScene.cpp">
-      <Filter>02.GameObjects\Camera\Camera_CutScene</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\StageMgr.cpp">
       <Filter>02.GameObjects\Map\Stage_02\Stage_02_1\StageMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_CutScene.cpp">
+      <Filter>02.GameObjects\Camera\Camera_CutScene\End</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_CutScene_Enter.cpp">
+      <Filter>02.GameObjects\Camera\Camera_CutScene\Enter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

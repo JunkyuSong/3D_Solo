@@ -59,6 +59,8 @@ void CCamera::Tick(_float fTimeDelta)
 		}
 	}
 
+ 	Cam_Shake(fTimeDelta);
+
 	CPipeLine*			pPipeLine = GET_INSTANCE(CPipeLine);
 
 	pPipeLine->Set_Transform(CPipeLine::D3DTS_VIEW, m_pTransformCom->Get_WorldMatrixInverse());
@@ -97,6 +99,28 @@ void CCamera::Set_FOV(_float fFOV)
 	m_CameraDesc.fFovy = XMConvertToRadians(fFOV);
 }
 
+void CCamera::Shake_On(_float fTime, _float _fShakePower)
+{
+	m_bShake = true;
+	m_fShakeTime = fTime;
+	//m_fCurShakeTime = 0.f;
+	m_fShakePower = m_fShakeOriginPower =_fShakePower;
+	/*m_fShakePowerTime = 0.f;
+	m_fShakeSpeedTime = 0.f;
+	m_iDir = 0;*/
+}
+
+void CCamera::Shake_Off()
+{
+	m_bShake = false;
+	m_fShakeTime = 0.f;
+	m_fCurShakeTime = 0.f;
+	m_fShakePower = m_fShakeOriginPower= 0.f;
+	m_fShakePowerTime = 0.f;
+	m_fShakeSpeedTime = 0.f;
+	m_iDir = 0;
+}
+
 void CCamera::ZoomIn(_float fFoV, _float fSpeed)
 {
 	m_bZoomOut = false;
@@ -117,6 +141,79 @@ void CCamera::Cam_ZoomOut(_float fTimeDelta)
 		m_CameraDesc.fFovy += XMConvertToRadians( m_fZoomSpeed * fTimeDelta);
 	}
 
+}
+
+void CCamera::Cam_Shake(_float fTimeDelta)
+{
+	if (m_bShake == false)
+		return;
+	m_fCurShakeTime += fTimeDelta;
+	if (m_fShakeTime < m_fCurShakeTime)
+	{
+		if (m_fShakePower < 0.f)
+		{
+			Shake_Off();
+			return;
+		}
+		else
+		{
+			m_fShakePower -= 0.01f*m_fShakeOriginPower;
+		}
+	}
+
+	m_fShakeSpeedTime += fTimeDelta;
+	if (m_fShakeSpeed < m_fShakeSpeedTime)
+	{
+		m_iDir += 1;
+		m_fShakePowerTime = 0.f;
+		m_fShakeSpeedTime = 0.f;
+	}
+
+	m_fShakePowerTime += m_fShakePower * fTimeDelta;
+	
+	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	//_vector vLookAt = vPos + XMVector3Normalize( m_pTransformCom->Get_State(CTransform::STATE_LOOK))*m_CameraDesc.fNear;
+	switch (m_iDir %5)
+	{
+	case 0:
+		vPos.m128_f32[0] += m_fShakePowerTime;
+		vPos.m128_f32[1] += m_fShakePowerTime;
+		vPos.m128_f32[2] += m_fShakePowerTime;
+
+		break;
+	case 1:
+		vPos.m128_f32[0] += m_fShakePowerTime;
+		vPos.m128_f32[1] -= m_fShakePowerTime;
+		vPos.m128_f32[2] -= m_fShakePowerTime;
+
+		break;
+	case 2:
+		vPos.m128_f32[0] -= m_fShakePowerTime;
+		vPos.m128_f32[1] += m_fShakePowerTime;
+		vPos.m128_f32[2] += m_fShakePowerTime;
+
+		break;
+	case 3:
+		vPos.m128_f32[0] += m_fShakePowerTime;
+		vPos.m128_f32[1] -= m_fShakePowerTime;
+		vPos.m128_f32[2] += m_fShakePowerTime;
+
+		break;
+	case 4:
+		vPos.m128_f32[0] += m_fShakePowerTime;
+		vPos.m128_f32[1] += m_fShakePowerTime;
+		vPos.m128_f32[2] -= m_fShakePowerTime;
+
+		break;
+	case 5:
+		vPos.m128_f32[0] -= m_fShakePowerTime;
+		vPos.m128_f32[1] -= m_fShakePowerTime;
+		vPos.m128_f32[2] -= m_fShakePowerTime;
+
+		break;
+	}
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
+	//m_pTransformCom->LookAt(XMLoadFloat4(&m_CameraDesc.vAt));
 }
 
 void CCamera::Cam_ZoomIn(_float fTimeDelta)

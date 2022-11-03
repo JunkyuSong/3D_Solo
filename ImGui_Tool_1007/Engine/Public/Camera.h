@@ -39,7 +39,14 @@ public:
 	void ZoomOff(_float fSpeed);
 	void Set_FOV(_float fFOV);
 
+
+
+public:
+	void Shake_On(_float fTime,_float _fShakePower);
+	void Shake_Off();
+
 protected:
+	void Cam_Shake(_float fTimeDelta);
 	void Cam_ZoomIn(_float fTimeDelta);
 	void Cam_ZoomOut(_float fTimeDelta);
 
@@ -48,10 +55,22 @@ protected:
 	CAMERADESC					m_CameraDesc;
 
 	_float			m_fZoomSpeed = 0.f;
-
 	_bool			m_bZoomIn = false;
 	_float			m_fZoomFOV = 0.f;
 	_bool			m_bZoomOut = false;
+
+	_bool			m_bShake = false;
+	_float			m_fShakeTime = 0.f;
+	_float			m_fCurShakeTime = 0.f;
+	_float			m_fShakePower = 0.f;
+	_float			m_fShakeOriginPower = 0.f;
+
+	_float			m_fShakeSpeed = 0.02f;
+	_float			m_fShakeSpeedTime = 0.f;
+
+	_float			m_fShakePowerTime = 0.f;
+
+	_uint			m_iDir = false;
 
 
 public:

@@ -94,6 +94,8 @@ public:
 	STATE*		Get_AnimReserveState() { return &m_eReserveState; }
 	_float*		Get_Alpha() { return &m_fAppear; }
 
+	void		Set_Card(CGameObject* pCard) { m_CutSceneCard = pCard; }
+
 private:
 	void CheckEndAnim();
 	void Set_Anim(STATE _eState);
@@ -123,7 +125,7 @@ private:
 
 private:
 	STATE					m_eReserveState = STATE_END;
-	STATE					m_eCurState = Magician_Idle;
+	STATE					m_eCurState = Magician_Idle2;
 	STATE					m_ePreState = STATE_END;
 
 	_float4					m_AnimPos;
@@ -143,6 +145,8 @@ private:
 	PARTS								m_pParts;
 	vector<class CHierarchyNode*>		m_pSockets;
 	vector<class CHierarchyNode*>		m_pCanesword;
+
+	CGameObject*						m_CutSceneCard = nullptr;
 
 private:
 	HRESULT Ready_Components();

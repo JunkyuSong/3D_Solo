@@ -35,6 +35,7 @@ public:
 
 private:
 	CNonAnimModel*			m_pModelCom = nullptr;
+	CNonAnimModel*			m_pModelCom_floor = nullptr;
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;
 	CTransform*				m_pTransformCom = nullptr;

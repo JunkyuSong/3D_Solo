@@ -77,7 +77,7 @@ HRESULT CLevel_Stage_02::Ready_Lights()
 
 	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LEVEL_STAGE_02, LightDesc)))
 		return E_FAIL;
-
+	pGameInstance->Light_On(LEVEL_STAGE_02, 0);
 
 	return S_OK;
 }

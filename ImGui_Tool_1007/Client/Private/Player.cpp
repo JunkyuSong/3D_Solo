@@ -16,6 +16,7 @@
 
 #include "CameraMgr.h"
 #include "Camera_Player.h"
+#include "Camera_CutScene_Enter.h"
 
 #include "Navigation.h"
 
@@ -24,6 +25,7 @@
 
 #include "Extra01.h"
 #include "Extra02.h"
+#include "Magician.h"
 
 CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -112,7 +114,7 @@ HRESULT CPlayer::Initialize(void * pArg)
 	switch (g_eCurLevel)
 	{
 	case Client::LEVEL_GAMEPLAY:
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(69.083f, 2.402f, 42.580f, 1.f));
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(82.971f, 0.882f, 40.563f, 1.f));
 		break;
 	case Client::LEVEL_STAGE_02_1:
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(51.979f, 0.115f, -7.650f, 1.f));
@@ -450,12 +452,8 @@ void CPlayer::KeyInput_Idle(_float fTimeDelta)
 
 	if (pGameInstance->KeyDown(DIK_P))
 	{
-		pGameInstance->Light_Off(g_eCurLevel,0);
 	}
-	else if (pGameInstance->KeyDown(DIK_L))
-	{
-		pGameInstance->Light_On(g_eCurLevel, 0);
-	}
+	
 	//if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
 	if (pGameInstance->MouseDown(DIMK_LBUTTON))
 	{
@@ -940,27 +938,45 @@ void CPlayer::TargetCheck()
 
 void CPlayer::CutScene()
 {
-	
-	if (g_eCurLevel == LEVEL_STAGE_LOBBY)
+	AUTOINSTANCE(CGameInstance, _pInstance);
+
+	if (g_eCurLevel == LEVEL_GAMEPLAY && m_iStage == 0)
 	{
-		//클리어 스테이지에 따라 if문처리
-		AUTOINSTANCE(CGameInstance, _pInstance);
-		switch (m_iStage)
+		if (m_pNavigationCom->Get_Index() == 6)
 		{
-		case 0:
-			_pInstance->Reserve_Level(LEVEL_GAMEPLAY);
-			break;
-		case 1:
-			_pInstance->Reserve_Level(LEVEL_STAGE_02_1);
-			break;
-		case 2:
-			_pInstance->Reserve_Level(LEVEL_STAGE_LAST);
-			break;
+			AUTOINSTANCE(CCameraMgr, _pCamera);
+			m_eCurState = Corvus_VS_MagicianLV1_Seq_BossFightStart;
+			m_pModelCom->DirectAnim(Corvus_VS_MagicianLV1_Seq_BossFightStart);
+			//m_pTransformCom->Turn_Angle(XMVectorSet(0.f,1.f,0.f,0.f),XMConvertToRadians(180.f));
+
+			CMagician* _pMagician = dynamic_cast<CMagician*>(_pInstance->Get_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"))->Get_ObjFromLayer(0));
+			_pMagician->Set_AnimState(CMagician::Boss_Enter);
+			CTransform* _TargetTrans = static_cast<CTransform*>(_pMagician->Get_ComponentPtr(TEXT("Com_Transform")));
+			CAnimModel* _pModel = static_cast<CAnimModel*>(_pMagician->Get_ComponentPtr(TEXT("Com_Model")));
+			_pModel->DirectAnim(CMagician::Boss_Enter);
+			
+			
+			_vector vTargetPos = (m_pModelCom->Get_HierarchyNode("AnimTargetPoint")->Get_CombinedTransformation()
+				*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix()).r[3];
+			/*vTargetPos.m128_f32[0] *= 0.01f;
+			vTargetPos.m128_f32[1] *= 0.01f;
+			vTargetPos.m128_f32[2] *= 0.01f;*/
+			_TargetTrans->Set_State(CTransform::STATE_POSITION, vTargetPos);
+			m_pTransformCom->LookAt_ForLandObject(_TargetTrans->Get_State(CTransform::STATE_POSITION));
+			m_pTransformCom->Turn_Angle(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
+			_TargetTrans->LookAt_ForLandObject(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			_pCamera->Change_Camera(CCameraMgr::CAMERA_CUTSCENE_ENTER);
+			CGameObject* _pCard = _pInstance->Clone_GameObject(TEXT("Prototype_GameObject_Weapon_Card"));
+			//CTransform* CardTrans = static_cast<CTransform*>(_pCard->Get_ComponentPtr(TEXT("Com_Transform")));
+			static_cast<CCamera_CutScene_Enter*>(_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER))->Set_Target(_pMagician);
+			//_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER)->ZoomIn(30.f, 200.f);
+			static_cast<CCamera_CutScene_Enter*>(_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER))->Set_Trans(vTargetPos);
+			_pMagician->Set_Card(_pCard);
 		}
-	}	
+	}
 }
 
-void CPlayer::MoveLevel()
+void CPlayer::Gate()
 {
 	if (m_pNavigationCom->Get_Index() == 71 || m_pNavigationCom->Get_Index() == 70)
 	{
@@ -973,6 +989,28 @@ void CPlayer::MoveLevel()
 	else if (m_pNavigationCom->Get_Index() == 129 || m_pNavigationCom->Get_Index() == 130)
 	{
 		m_eCurState = STATE_APPROACH;
+	}
+}
+
+void CPlayer::MoveLevel()
+{
+	AUTOINSTANCE(CGameInstance, _pInstance);
+	if (g_eCurLevel == LEVEL_STAGE_LOBBY)
+	{
+		//클리어 스테이지에 따라 if문처리
+
+		switch (m_iStage)
+		{
+		case 0:
+			_pInstance->Reserve_Level(LEVEL_GAMEPLAY);
+			break;
+		case 1:
+			_pInstance->Reserve_Level(LEVEL_STAGE_02_1);
+			break;
+		case 2:
+			_pInstance->Reserve_Level(LEVEL_STAGE_LAST);
+			break;
+		}
 	}
 }
 
@@ -1010,7 +1048,7 @@ void CPlayer::CheckEndAnim()
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::STATE_APPROACH:
-		CutScene();
+		MoveLevel();
 		m_eCurState = STATE_IDLE;
 		m_eWeapon = WEAPON_BASE;
 		break;
@@ -1181,8 +1219,12 @@ void CPlayer::CheckEndAnim()
 	case Client::CPlayer::Corvus_SD_Fall_End:
 		m_eCurState = STATE_IDLE;
 		break;
+	case Client::CPlayer::Corvus_VS_MagicianLV1_Seq_BossFightStart:
+		_pCamera->Change_Camera(CCameraMgr::CAMERA_PLAYER);
+		m_eCurState = STATE_IDLE;
+		break;
 	}
-
+	
 	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 	m_PreAnimPos = m_AnimPos;
 }
@@ -1489,7 +1531,8 @@ void CPlayer::AfterAnim(_float fTimeDelta)
 		break;
 	case Client::CPlayer::STATE_RUN_F:
 		if (g_eCurLevel == LEVEL_STAGE_LOBBY)
-			MoveLevel();
+			Gate();
+		CutScene();
 		m_bCollision[COLLIDERTYPE_BODY] = true;
 		break;
 	case Client::CPlayer::STATE_RUN_L:

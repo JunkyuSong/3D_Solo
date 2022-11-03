@@ -22,6 +22,11 @@ CMeshContainer::CMeshContainer(const CMeshContainer & rhs)
 HRESULT CMeshContainer::Initialize_Prototype(const aiMesh * pAIMesh, TCONTAINER* _pOut)
 {
 	m_iMaterialIndex = pAIMesh->mMaterialIndex;
+	strcpy_s(_pOut->szName, pAIMesh->mName.C_Str());
+	//if (!strcmp(_pOut->szName, "Greenhouse_Floor01_05.md"))
+	//{
+	//	return S_OK;
+	//}
 	//해당 메쉬의 인덱스
 	_pOut->iIndex = m_iMaterialIndex;
 #pragma region VERTEXBUFFER

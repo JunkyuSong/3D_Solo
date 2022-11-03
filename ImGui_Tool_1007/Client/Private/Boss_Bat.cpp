@@ -9,6 +9,7 @@
 #include "Status.h"
 #include "Animation.h"
 #include "CameraMgr.h"
+#include "Camera.h"
 
 CBoss_Bat::CBoss_Bat(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
@@ -215,6 +216,7 @@ void CBoss_Bat::CheckEndAnim()
 		m_eCurState = BossBat_Idle;
 		break;
 	case Client::CBoss_Bat::BossBat_Dash:
+		//CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_Off();
 		m_eCurState = BossBat_Idle;
 		break;
 	case Client::CBoss_Bat::BossBat_FTurn_L:
@@ -370,6 +372,7 @@ void CBoss_Bat::CheckLimit()
 	case Client::CBoss_Bat::BossBat_AttackR_01_1:
 		if (m_vecLimitTime[BossBat_AttackR_01_1][1] < m_fPlayTime)
 		{
+			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_Off();
 			On_Collider(COLLIDERTYPE_BODY, true);
 			On_Collider(COLLIDERTYPE_HAND_R, false);
 		}
@@ -377,6 +380,8 @@ void CBoss_Bat::CheckLimit()
 		{
 			On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_HAND_R, true);
+			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.1f, 0.01f);
+
 		}
 		break;
 	case Client::CBoss_Bat::BossBat_AttackR_01_2b:
@@ -387,6 +392,8 @@ void CBoss_Bat::CheckLimit()
 		}
 		else if (m_vecLimitTime[BossBat_AttackR_01_2b][0] < m_fPlayTime)
 		{
+			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(3.5f, 5.f);
+
 			On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_HAND_R, true);
 		}
@@ -406,11 +413,14 @@ void CBoss_Bat::CheckLimit()
 	case Client::CBoss_Bat::BossBat_Dash:
 		if (m_vecLimitTime[BossBat_Dash][1] < m_fPlayTime)
 		{
+			
 			On_Collider(COLLIDERTYPE_BODY, true);
 			On_Collider(COLLIDERTYPE_ATTBODY, false);
 		}
 		else if (m_vecLimitTime[BossBat_Dash][0] < m_fPlayTime)
 		{
+			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(3.5f, 5.f);
+
 			On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_ATTBODY, true);
 		}
@@ -452,6 +462,8 @@ void CBoss_Bat::CheckLimit()
 		}
 		else if (m_vecLimitTime[BossBat_JumpSmash_Chest][0] < m_fPlayTime)
 		{
+			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.5f, 5.f);
+
 			On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_ATTBODY, true);
 		}
@@ -468,6 +480,8 @@ void CBoss_Bat::CheckLimit()
 		}
 		else if (m_vecLimitTime[BossBat_JumpSmashForwardL][0] < m_fPlayTime)
 		{
+			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.5f, 5.f);
+
 			On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_ATTBODY, true);
 		}
@@ -484,6 +498,8 @@ void CBoss_Bat::CheckLimit()
 		}
 		else if (m_vecLimitTime[BossBat_JumpSmashL][0] < m_fPlayTime)
 		{
+			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.5f, 5.f);
+
 			On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_ATTBODY, true);
 		}
@@ -837,7 +853,7 @@ HRESULT CBoss_Bat::Ready_Components()
 
 	/* For.Com_Status */
 	CStatus::STATUS _tStatus;
-	_tStatus.fMaxHp = 10.f;
+	_tStatus.fMaxHp = 500.f;
 	_tStatus.fAttack = 20.f;
 	_tStatus.fHp = _tStatus.fMaxHp;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Status"), TEXT("Com_Status"), (CComponent**)&m_pStatusCom, &_tStatus)))
