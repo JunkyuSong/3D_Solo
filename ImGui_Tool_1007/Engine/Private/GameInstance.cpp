@@ -53,6 +53,9 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInst, cons
 	if (FAILED(m_pComponent_Manager->Reserve_Container(iNumLevels)))
 		return E_FAIL;
 
+	if (FAILED(m_pLight_Manager->Initialize(iNumLevels)))
+		return E_FAIL;
+
 	if (FAILED(m_pFrustum->Initialize()))
 		return E_FAIL;
 
@@ -87,7 +90,9 @@ void CGameInstance::Clear(_uint iLevelIndex)
 {
 	if (nullptr == m_pObject_Manager)
 		return;
-
+	if (nullptr == m_pLight_Manager)
+		return;
+	m_pLight_Manager->Clear(iLevelIndex);
 	m_pObject_Manager->Clear(iLevelIndex);
 }
 
@@ -358,20 +363,36 @@ CGameObject * CGameInstance::Get_Player()
 	return m_pPipeLine->Get_Player();
 }
 
-const LIGHTDESC * CGameInstance::Get_LightDesc(_uint iIndex)
+LIGHTDESC * CGameInstance::Get_LightDesc(_uint _iLv, _uint iIndex)
 {
 	if (nullptr == m_pLight_Manager)
 		return nullptr;
 
-	return m_pLight_Manager->Get_LightDesc(iIndex);
+	return m_pLight_Manager->Get_LightDesc(_iLv,iIndex);
 }
 
-HRESULT CGameInstance::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const LIGHTDESC & LightDesc)
+HRESULT CGameInstance::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, _uint iLv, const LIGHTDESC & LightDesc)
 {
 	if (nullptr == m_pLight_Manager)
 		return E_FAIL;
 
-	return m_pLight_Manager->Add_Light(pDevice, pContext, LightDesc);
+	return m_pLight_Manager->Add_Light(pDevice, pContext, iLv, LightDesc);
+}
+
+HRESULT CGameInstance::Light_On(_uint iLv, _uint _iIndex)
+{
+	if (nullptr == m_pLight_Manager)
+		return E_FAIL;
+
+	return m_pLight_Manager->Light_On(iLv, _iIndex);
+}
+
+HRESULT CGameInstance::Light_Off(_uint iLv, _uint _iIndex)
+{
+	if (nullptr == m_pLight_Manager)
+		return E_FAIL;
+
+	return m_pLight_Manager->Light_Off(iLv, _iIndex);
 }
 
 const _float & CGameInstance::Rand_Float(const _float & _fMin, const _float & _fMax)

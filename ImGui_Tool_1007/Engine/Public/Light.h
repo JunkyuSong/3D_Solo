@@ -12,13 +12,13 @@ private:
 	virtual ~CLight() = default;
 
 public:
-	const LIGHTDESC* Get_LightDesc() const {
+	LIGHTDESC* Get_LightDesc() {
 		return &m_LightDesc;
 	}
 
 public:
 	HRESULT Initialize(const LIGHTDESC& LightDesc);
-	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
+	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer, class CFrustum* _pFrustum);
 
 private:
 	ID3D11Device*			m_pDevice = nullptr;

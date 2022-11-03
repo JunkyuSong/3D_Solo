@@ -71,6 +71,7 @@ HRESULT CCamera_Player::Initialize(void * pArg)
 			return E_FAIL;
 		break;
 	}
+	return S_OK;
 }
 
 void CCamera_Player::Tick(_float fTimeDelta)
@@ -120,7 +121,7 @@ void CCamera_Player::Tick(_float fTimeDelta)
 			//m_pTransformCom->LookAt(_vPos);
 		}
 	}
-	
+	//XMStoreFloat4(&(pGameInstance->Get_LightDesc(g_eCurLevel, 1)->vPosition), static_cast<CTransform*>(m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE::STATE_POSITION));
 	
 	__super::Tick(fTimeDelta);
 }

@@ -88,8 +88,10 @@ public: /* For.PipeLine */
 	CGameObject* Get_Player();
 
 public: /* For.Light_Manager */
-	const LIGHTDESC* Get_LightDesc(_uint iIndex);
-	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc);
+	LIGHTDESC* Get_LightDesc(_uint _iLv, _uint iIndex);
+	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,_uint iLv, const LIGHTDESC& LightDesc);
+	HRESULT Light_On(_uint iLv, _uint _iIndex);
+	HRESULT Light_Off(_uint iLv, _uint _iIndex);
 
 public:/* For. Random_Manager*/
 	const _float &	Rand_Float(const _float & _fMin, const _float & _fMax);

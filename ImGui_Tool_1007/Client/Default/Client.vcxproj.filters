@@ -468,7 +468,9 @@
     <ClInclude Include="..\Public\Camera_CutScene.h">
       <Filter>02.GameObjects\Camera\Camera_CutScene</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\StageMgr.h" />
+    <ClInclude Include="..\public\StageMgr.h">
+      <Filter>02.GameObjects\Map\Stage_02\Stage_02_1\StageMgr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -678,7 +680,9 @@
     <ClCompile Include="..\Private\Camera_CutScene.cpp">
       <Filter>02.GameObjects\Camera\Camera_CutScene</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\StageMgr.cpp" />
+    <ClCompile Include="..\private\StageMgr.cpp">
+      <Filter>02.GameObjects\Map\Stage_02\Stage_02_1\StageMgr</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">

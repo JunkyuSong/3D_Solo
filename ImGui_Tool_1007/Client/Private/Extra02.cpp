@@ -66,15 +66,15 @@ HRESULT CExtra02::Initialize(void * pArg)
 	}
 	else
 	{
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(51.979, 0.115, -7.650, 1.f));
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(51.979f, 0.115f, -7.650f, 1.f));
 		_bool		isMove = true;
 		Get_AnimMat();
 		_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 		if (nullptr != m_pNavigationCom)
-			isMove = m_pNavigationCom->isMove(XMVectorSet(30.672, 2.402, 50.622, 1.f), &vNormal);
+			isMove = m_pNavigationCom->isMove(XMVectorSet(30.672f, 2.402f, 50.622f, 1.f), &vNormal);
 
 		if (true == isMove)
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672, 2.402, 50.622, 1.f));
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672f, 2.402f, 50.622f, 1.f));
 	}
 
 

@@ -72,8 +72,8 @@ HRESULT CLevel_Stage_Last::Ready_Lights()
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
 
-	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LightDesc)))
-		return E_FAIL;
+	//if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LightDesc)))
+	//	return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 

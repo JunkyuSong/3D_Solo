@@ -54,15 +54,15 @@ HRESULT CMagician::Initialize(void * pArg)
 		m_pModelCom->Set_AnimationIndex(STATE_END);*/
 
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672, 2.402, 50.622, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672f, 2.402f, 50.622f, 1.f));
 	_bool		isMove = true;
 	Get_AnimMat();
 	_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	if (nullptr != m_pNavigationCom)
-		isMove = m_pNavigationCom->isMove(XMVectorSet(30.672, 2.402, 50.622, 1.f), &vNormal);
+		isMove = m_pNavigationCom->isMove(XMVectorSet(30.672f, 2.402f, 50.622f, 1.f), &vNormal);
 
 	if (true == isMove)
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672, 2.402, 50.622, 1.f));
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672f, 2.402f, 50.622f, 1.f));
 	m_eCurState = Magician_Idle;
 	return S_OK;
 }

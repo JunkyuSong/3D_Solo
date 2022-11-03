@@ -5,6 +5,7 @@
 #include "VIBuffer_Rect.h"
 #include "Light_Manager.h"
 #include "PipeLine.h"
+#include "Transform.h"
 
 CRenderer::CRenderer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent(pDevice, pContext)
@@ -45,6 +46,9 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Specular"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
+	/* For.Target_Fog */
+	//if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Fog"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, &_float4(0.0f, 0.f, 0.f, 1.f))))
+	//	return E_FAIL;
 
 	/* For.MRT_Deferred */
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Diffuse"))))
@@ -60,6 +64,10 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Specular"))))
 		return E_FAIL;
 
+	/* For.MRT_Technic */
+	//if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Technic"), TEXT("Target_Fog"))))
+	//	return E_FAIL;
+
 
 #ifdef _DEBUG
 
@@ -73,6 +81,8 @@ HRESULT CRenderer::Initialize_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Specular"), 210.f, 210.f, 140.f, 140.f)))
 		return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Fog"), 350.f, 70.f, 140.f, 140.f)))
+	//	return E_FAIL;
 
 	m_pShader = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Deferred.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements);
 	if (nullptr == m_pShader)
@@ -128,6 +138,9 @@ HRESULT CRenderer::Draw()
 
 	if (FAILED(Render_AlphaBlend()))
 		return E_FAIL;
+
+	//if (FAILED(Render_Fog()))
+	//	return E_FAIL;
 
 	if (FAILED(Render_UI()))
 		return E_FAIL;
@@ -313,6 +326,64 @@ HRESULT CRenderer::Render_AlphaBlend()
 	}
 	m_RenderObjects[RENDER_ALPHABLEND].clear();
 
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_Fog()
+{
+	/*if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Fog"))))
+		return E_FAIL;
+
+	_float4x4			WorldMatrix;
+
+	_uint				iNumViewport = 1;
+	D3D11_VIEWPORT		ViewportDesc;
+
+	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
+
+	XMStoreFloat4x4(&WorldMatrix,
+		XMMatrixTranspose(XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 0.f) * XMMatrixTranslation(0.0f, 0.0f, 0.f)));
+
+	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+
+	CPipeLine*			pPipeLine = GET_INSTANCE(CPipeLine);
+
+	_float4x4			ViewMatrixInv;
+	_float4x4			ProjMatrixInv;
+
+	XMStoreFloat4x4(&ViewMatrixInv, XMMatrixTranspose(XMMatrixInverse(nullptr, pPipeLine->Get_TransformMatrix(CPipeLine::D3DTS_VIEW))));
+	XMStoreFloat4x4(&ProjMatrixInv, XMMatrixTranspose(XMMatrixInverse(nullptr, pPipeLine->Get_TransformMatrix(CPipeLine::D3DTS_PROJ))));
+
+	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrixInv", &ViewMatrixInv, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrixInv", &ProjMatrixInv, sizeof(_float4x4))))
+		return E_FAIL;
+
+	_vector _vPlayerPos = static_cast<CTransform*>(pPipeLine->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+
+	if (FAILED(m_pShader->Set_RawValue("g_vPlayerPoition", &_vPlayerPos, sizeof(_vector))))
+		return E_FAIL;
+
+	RELEASE_INSTANCE(CPipeLine);
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+		return E_FAIL;
+
+	m_pShader->Begin(4);
+
+	m_pVIBuffer->Render();
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+*/
 	return S_OK;
 }
 

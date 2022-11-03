@@ -21,8 +21,8 @@ HRESULT CLevel_Stage_02_1::Initialize()
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
 
-	/*if (FAILED(Ready_Lights()))
-	return E_FAIL;*/
+	//if (FAILED(Ready_Lights()))
+	//return E_FAIL;
 
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
@@ -65,18 +65,34 @@ HRESULT CLevel_Stage_02_1::Render()
 
 HRESULT CLevel_Stage_02_1::Ready_Lights()
 {
-	AUTOINSTANCE(CGameInstance, pGameInstance);
+	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
 	LIGHTDESC			LightDesc;
 	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
 
 	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vDiffuse = _float4(1.0f, 1.0f, 1.0f, 1.f);
+	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.1f);
+	LightDesc.vSpecular = _float4(0.3f, 0.3f, 0.3f, 1.f);
 
-	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LightDesc)))
+	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LEVEL_STAGE_02_1, LightDesc)))
 		return E_FAIL;
+	pGameInstance->Light_On(LEVEL_STAGE_02_1, 0);
+
+	//ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
+	//LightDesc.eType = LIGHTDESC::TYPE_POINT;
+	//LightDesc.vPosition = _float4(25.0f, 5.0f, 15.0f, 1.f); //플레이어한테 붙어다닐 예정이고
+	//LightDesc.fRange = 30.f; // 플레이어 시야 느낌
+	//LightDesc.vDiffuse = _float4(1.0f, 1.f, 1.f, 1.f);
+	//LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	//LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
+
+	//if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LEVEL_GAMEPLAY, LightDesc)))
+	//	return E_FAIL;
+	//pGameInstance->Light_On(LEVEL_GAMEPLAY, 1);
+
+	RELEASE_INSTANCE(CGameInstance);
 
 
 	return S_OK;
@@ -159,7 +175,7 @@ HRESULT CLevel_Stage_02_1::Ready_Layer_Monster(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01"), LEVEL_STAGE_02_1, pLayerTag, &_tInfo)))
 		return E_FAIL;
 
-	_tInfo._vPos = XMVectorSet(48.316, 0.27f, 63.743f, 1.f);
+	_tInfo._vPos = XMVectorSet(48.316f, 0.27f, 63.743f, 1.f);
 	_tInfo._iIndex = 147;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01"), LEVEL_STAGE_02_1, pLayerTag, &_tInfo)))
 		return E_FAIL;
@@ -170,7 +186,7 @@ HRESULT CLevel_Stage_02_1::Ready_Layer_Monster(const _tchar * pLayerTag)
 		return E_FAIL;
 
 	
-	_tInfo._vPos = XMVectorSet(51.979, 0.115, -7.650, 1.f);
+	_tInfo._vPos = XMVectorSet(51.979f, 0.115f, -7.650f, 1.f);
 	_tInfo._iIndex = 0;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra02"), LEVEL_STAGE_02_1, pLayerTag,&_tInfo)))
 		return E_FAIL;

@@ -1,6 +1,7 @@
 #include "..\Public\Light.h"
 #include "Shader.h"
 #include "VIBuffer_Rect.h"
+#include "Frustum.h"
 
 CLight::CLight(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: m_pDevice(pDevice)
@@ -17,8 +18,10 @@ HRESULT CLight::Initialize(const LIGHTDESC & LightDesc)
 	return S_OK;
 }
 
-HRESULT CLight::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
+HRESULT CLight::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer, CFrustum* _pFrustum)
 {
+	
+
 	_uint		iPassIndex = 0;
 
 	if (LIGHTDESC::TYPE_DIRECTIONAL == m_LightDesc.eType)
@@ -30,6 +33,15 @@ HRESULT CLight::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
 	}
 	else
 	{
+		if (!_pFrustum->isIn_WorldSpace(XMLoadFloat4(&m_LightDesc.vPosition), m_LightDesc.fRange))
+		{
+			return S_OK;
+		}
+		if (FAILED(pShader->Set_RawValue("g_vLightPos", &m_LightDesc.vPosition, sizeof(_float4))))
+			return E_FAIL;
+		if (FAILED(pShader->Set_RawValue("g_fLightRange", &m_LightDesc.fRange, sizeof(_float))))
+			return E_FAIL;
+
 		iPassIndex = 2;
 	}
 

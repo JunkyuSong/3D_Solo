@@ -62,7 +62,35 @@ HRESULT CLevel_GamePlay::Render()
 
 HRESULT CLevel_GamePlay::Ready_Lights()
 {
-	
+	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+
+	LIGHTDESC			LightDesc;
+	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
+
+	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
+	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.1f);
+	LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+
+	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LEVEL_GAMEPLAY, LightDesc)))
+		return E_FAIL;
+	pGameInstance->Light_On(LEVEL_GAMEPLAY, 0);
+
+	//ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
+	//LightDesc.eType = LIGHTDESC::TYPE_POINT;
+	//LightDesc.vPosition = _float4(25.0f, 5.0f, 15.0f, 1.f); //플레이어한테 붙어다닐 예정이고
+	//LightDesc.fRange = 30.f; // 플레이어 시야 느낌
+	//LightDesc.vDiffuse = _float4(1.0f, 1.f, 1.f, 1.f);
+	//LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	//LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
+
+	//if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LEVEL_GAMEPLAY, LightDesc)))
+	//	return E_FAIL;
+	//pGameInstance->Light_On(LEVEL_GAMEPLAY, 1);
+
+	RELEASE_INSTANCE(CGameInstance);
+
 
 	return S_OK;
 }

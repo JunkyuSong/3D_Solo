@@ -448,6 +448,14 @@ void CPlayer::KeyInput_Idle(_float fTimeDelta)
 		Move(fTimeDelta);
 	}
 
+	if (pGameInstance->KeyDown(DIK_P))
+	{
+		pGameInstance->Light_Off(g_eCurLevel,0);
+	}
+	else if (pGameInstance->KeyDown(DIK_L))
+	{
+		pGameInstance->Light_On(g_eCurLevel, 0);
+	}
 	//if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
 	if (pGameInstance->MouseDown(DIMK_LBUTTON))
 	{
