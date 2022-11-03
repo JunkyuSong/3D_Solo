@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 
+
 BEGIN(Engine)
 
 class ENGINE_DLL CCamera abstract : public CGameObject
@@ -33,9 +34,24 @@ public:
 public:
 	class CTransform*			Get_Transform() { return m_pTransformCom; }
 
+	void ZoomIn(_float fFoV, _float fSpeed);
+	void ZoomOut(_float fFoV, _float fSpeed);
+	void ZoomOff(_float fSpeed);
+	void Set_FOV(_float fFOV);
+
+protected:
+	void Cam_ZoomIn(_float fTimeDelta);
+	void Cam_ZoomOut(_float fTimeDelta);
+
 protected:
 	class CTransform*			m_pTransformCom = nullptr;
 	CAMERADESC					m_CameraDesc;
+
+	_float			m_fZoomSpeed = 0.f;
+
+	_bool			m_bZoomIn = false;
+	_float			m_fZoomFOV = 0.f;
+	_bool			m_bZoomOut = false;
 
 
 public:

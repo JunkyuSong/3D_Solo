@@ -1143,6 +1143,8 @@ void CPlayer::CheckEndAnim()
 		{
 			Change_Hand();
 			m_bOneChange = false;
+			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomOff(100.f);
 		}
 		m_eCurState = STATE_IDLE;
 		break;
@@ -1150,6 +1152,8 @@ void CPlayer::CheckEndAnim()
 		if (m_bOneChange)
 		{
 			Change_Hand();
+			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomOff(100.f);
 			m_bOneChange = false;
 		}
 		m_eCurState = STATE_IDLE;
@@ -1461,6 +1465,7 @@ void CPlayer::Change_Anim()
 
 void CPlayer::AfterAnim(_float fTimeDelta)
 {
+	//AUTOINSTANCE(CCameraMgr, _pCamera);
 	switch (m_eCurState)
 	{
 	case Client::CPlayer::STATE_ATT1:
@@ -1583,9 +1588,18 @@ void CPlayer::AfterAnim(_float fTimeDelta)
 		{
 			Change_Hand();
 			m_bOneChange = true;
+		
+
 		}
 		break;
 	case Client::CPlayer::Corvus_VSLV2Villager_M_Execution:
+		if (m_bOneChange == false)
+		{
+			Change_Hand();
+			m_bOneChange = true;
+
+		}
+
 		break;
 	case Client::CPlayer::Corvus_VSMagician_Execution:
 		Cancle();
@@ -1657,6 +1671,7 @@ void CPlayer::Get_AnimMat()
 
 void CPlayer::Execution()
 {
+	AUTOINSTANCE(CGameInstance, _pInstance);
 	list<CGameObject*> Monsters = *m_MonsterLayer->Get_ListFromLayer();
 	CGameObject*		_Target = nullptr;
 	_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
@@ -1676,30 +1691,47 @@ void CPlayer::Execution()
 	if (_Target != nullptr)
 	{
 		CMonster* _pMonster = static_cast<CMonster*>(_Target);
+		CAnimModel* _pModel = static_cast<CAnimModel*>(_Target->Get_ComponentPtr(TEXT("Com_Model")));
 		switch (_pMonster->Get_Type())
 		{
 		case CMonster::MONSTER_EXTRA01:
 			if (false == static_cast<CExtra01*>(_pMonster)->Get_Battle())
 			{
+				AUTOINSTANCE(CCameraMgr, _pCamera);
+
 				static_cast<CExtra01*>(_pMonster)->Set_AnimState(CExtra01::LV1Villager_M_VSTakeExecution);
 				m_eCurState = Corvus_VSLV1Villager_M_Execution;
 				m_pModelCom->DirectAnim(Corvus_VSLV1Villager_M_Execution);
+				_pModel->DirectAnim(CExtra01::LV1Villager_M_VSTakeExecution);
 				CTransform* _TargetTrans = static_cast<CTransform*>(_pMonster->Get_ComponentPtr(TEXT("Com_Transform")));
 
 				m_pTransformCom->LookAt_ForLandObject(_TargetTrans->Get_State(CTransform::STATE_POSITION));
+				_vector vTargetPos = (m_pModelCom->Get_HierarchyNode("AnimTargetPoint")->Get_CombinedTransformation()
+					*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix()).r[3];
+				_TargetTrans->Set_State(CTransform::STATE_POSITION, vTargetPos);
 				_TargetTrans->LookAt_ForLandObject(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+				_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 0.5f);
+				_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomIn(40.f, 80.f);
 			}
 			break;
 		case CMonster::MONSTER_EXTRA02:
 			if (false == static_cast<CExtra02*>(_pMonster)->Get_Battle())
 			{
+				AUTOINSTANCE(CCameraMgr, _pCamera);
+
 				static_cast<CExtra02*>(_pMonster)->Set_AnimState(CExtra02::LV2Villager01_M_VS_TakeExecution_01);
 				m_eCurState = Corvus_VSLV2Villager_M_Execution;
 				m_pModelCom->DirectAnim(Corvus_VSLV2Villager_M_Execution);
+				_pModel->DirectAnim(CExtra02::LV2Villager01_M_VS_TakeExecution_01);
 				CTransform* _TargetTrans = static_cast<CTransform*>(_pMonster->Get_ComponentPtr(TEXT("Com_Transform")));
 
 				m_pTransformCom->LookAt_ForLandObject(_TargetTrans->Get_State(CTransform::STATE_POSITION));
+				_vector vTargetPos = (m_pModelCom->Get_HierarchyNode("AnimTargetPoint")->Get_CombinedTransformation()
+					*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix()).r[3];
+				_TargetTrans->Set_State(CTransform::STATE_POSITION, vTargetPos);
 				_TargetTrans->LookAt_ForLandObject(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+				_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 0.3f);
+				_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomIn(40.f, 80.f);
 			}
 			break;
 		}

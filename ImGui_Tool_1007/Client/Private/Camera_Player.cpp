@@ -198,6 +198,7 @@ void CCamera_Player::Targeting()
 	m_pTransformCom->Set_State(CTransform::STATE_LOOK, XMVector3Normalize(vLook) * vScale.z);
 }
 
+
 CCamera_Player * CCamera_Player::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CCamera_Player*		pInstance = new CCamera_Player(pDevice, pContext);

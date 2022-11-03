@@ -78,8 +78,8 @@ HRESULT CTerrain::Render()
 
 #ifdef _DEBUG
 
-	//if(m_pNavigationCom)
-	//	m_pNavigationCom->Render();
+	if(m_pNavigationCom)
+		m_pNavigationCom->Render();
 
 #endif
 

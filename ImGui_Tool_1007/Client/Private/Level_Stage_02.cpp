@@ -20,8 +20,8 @@ HRESULT CLevel_Stage_02::Initialize()
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
 
-	/*if (FAILED(Ready_Lights()))
-	return E_FAIL;*/
+	if (FAILED(Ready_Lights()))
+	return E_FAIL;
 
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
@@ -66,16 +66,17 @@ HRESULT CLevel_Stage_02::Ready_Lights()
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 
-	//LIGHTDESC			LightDesc;
-	//ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
+	LIGHTDESC			LightDesc;
+	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
 
-	//LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
-	//LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	//LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	//LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
+	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+	LightDesc.vDiffuse = _float4(1.0f, 1.0f, 1.0f, 1.f);
+	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.1f);
+	LightDesc.vSpecular = _float4(0.3f, 0.3f, 0.3f, 1.f);
 
-	//if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LightDesc)))
-	//	return E_FAIL;
+	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LEVEL_STAGE_02, LightDesc)))
+		return E_FAIL;
 
 
 	return S_OK;

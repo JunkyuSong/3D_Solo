@@ -9,6 +9,8 @@
 #include "Status.h"
 #include "Animation.h"
 #include "StageMgr.h"
+#include "CameraMgr.h"
+#include "Camera.h"
 
 CExtra01::CExtra01(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
@@ -238,13 +240,17 @@ void CExtra01::CheckEndAnim()
 		break;
 	case Client::CExtra01::LV1Villager_M_VSTakeExecution:
 		m_bDead = true;
-		if (CStageMgr::Get_Instance()->Add_Mob() == 1)
+		if (CStageMgr::Get_Instance()->Add_Mob() == 8)
 		{
+			AUTOINSTANCE(CCameraMgr, _pCamera);
 			CTransform* _pPlayerTrans = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
-			_pPlayerTrans->Set_State(CTransform::STATE_POSITION, XMVectorSet(52.585f, 0.151f, 30.219f, 1.f));
+			_pPlayerTrans->Set_State(CTransform::STATE_POSITION, XMVectorSet(54.446f, 0.115f, 29.388f, 1.f));
+
 			_pPlayerTrans->LookAt_ForLandObject(XMVectorSet(72.055f, 0.122f, 25.819f, 1.f));
 			CPlayer* _Player = static_cast<CPlayer*>(_pInstance->Get_Player());
 			_Player->Set_AnimState(CPlayer::STATE_APPROACH2);
+			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Set_FOV(60.f);
 		}
 		//m_eCurState = LV1Villager_M_IdleGeneral;
 		break;

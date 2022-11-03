@@ -28,6 +28,8 @@ public:
 	void Check_Dis();
 	void Targeting();
 
+
+
 public:
 	static CCamera_Player* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
@@ -39,6 +41,9 @@ private:
 	_float3			m_vDis;
 	_float			m_fAngleY;
 	CNavigation*	m_pNaviCom = nullptr;
+
+
+
 };
 
 END
