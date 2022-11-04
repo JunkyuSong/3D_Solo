@@ -17,8 +17,8 @@ HRESULT CLevel_Stage_Last::Initialize()
 {
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
-	/*if (FAILED(Ready_Lights()))
-		return E_FAIL;*/
+	if (FAILED(Ready_Lights()))
+		return E_FAIL;
 
 
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
@@ -70,8 +70,12 @@ HRESULT CLevel_Stage_Last::Ready_Lights()
 	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.1f);
+	LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 0.2f);
 
+	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LEVEL_STAGE_LAST, LightDesc)))
+		return E_FAIL;
+	pGameInstance->Light_On(LEVEL_STAGE_LAST, 0);
 	//if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LightDesc)))
 	//	return E_FAIL;
 
@@ -129,8 +133,8 @@ HRESULT CLevel_Stage_Last::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Stage_Last"), LEVEL_STAGE_LAST, TEXT("Layer_Stage"))))
 		return E_FAIL;
 
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Stage_Test"), LEVEL_STAGE_LAST, TEXT("Layer_Stage"))))
-	//	return E_FAIL;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Stage_Test"), LEVEL_STAGE_LAST, TEXT("Layer_Test"))))
+		return E_FAIL;
 /*
 
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_GAMEPLAY, pLayerTag)))

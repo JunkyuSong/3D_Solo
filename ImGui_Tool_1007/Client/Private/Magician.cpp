@@ -74,7 +74,7 @@ void CMagician::Tick( _float fTimeDelta)
 
 	if (m_bDead)
 	{
-		
+		m_eMonsterState = ATTACK_DEAD;
 		return;
 	}
 	if (m_pStatusCom->Get_Hp() <= 0.f && m_bCutScene == false)
@@ -101,6 +101,7 @@ void CMagician::Tick( _float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(_vAnimPoint,1.f));
 		m_pTransformCom->LookAt_ForLandObject(_TargetTrans->Get_State(CTransform::STATE_POSITION));
 		_pPlayer->Set_Stage(1);
+		m_eMonsterState = ATTACK_DEAD;
 	}
 
 	if (_Instance->KeyDown(DIK_NUMPAD1))
@@ -715,6 +716,7 @@ void CMagician::CheckLimit()
 		else if (m_vecLimitTime[Boss_Enter][1] < m_fPlayTime)
 		{
 			AUTOINSTANCE(CCameraMgr, _pCamera);
+
 			CAnimModel* _pModel = static_cast<CAnimModel*>(CGameInstance::Get_Instance()->Get_Player()->Get_ComponentPtr(TEXT("Com_Model")));
 			CTransform* target = static_cast<CTransform*>(CGameInstance::Get_Instance()->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
 			
@@ -727,6 +729,7 @@ void CMagician::CheckLimit()
 		}
 		else if (m_vecLimitTime[Boss_Enter][0] < m_fPlayTime)
 		{
+			static_cast<CPlayer*>(CGameInstance::Get_Instance()->Get_Player())->RenderOn(true);
 			AUTOINSTANCE(CCameraMgr, _pCamera);
 			_vector vTargetPos = (m_pModelCom->Get_HierarchyNode("AnimTargetPoint")->Get_CombinedTransformation()
 				*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix()).r[3];
@@ -1033,7 +1036,10 @@ void CMagician::Set_Anim(STATE _eState)
 	m_eCurState = _eState;
 	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 	m_PreAnimPos = m_AnimPos;
-	m_eMonsterState = CMonster::ATTACK_IDLE;
+	if (m_pStatusCom->Get_Hp() <= 0.f)
+		m_eMonsterState = CMonster::ATTACK_DEAD;
+	else
+		m_eMonsterState = CMonster::ATTACK_IDLE;
 	m_pModelCom->Set_AnimationIndex(m_eCurState);
 	m_fPlayTime = 0.f;
 }
@@ -1162,7 +1168,8 @@ _bool CMagician::Collision(_float fTimeDelta)
 			else
 			{
 				m_eCurState = Hurt_Short;
-				m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack());
+				if(!m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack()))
+					m_eMonsterState = ATTACK_DEAD;
 				m_fAppear = 1.f;
 			}
 			
@@ -1176,7 +1183,8 @@ _bool CMagician::Collision(_float fTimeDelta)
 			else
 			{
 				m_eCurState = Hurt_Long;
-				m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack());
+				if (!m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack()))
+					m_eMonsterState = ATTACK_DEAD;
 				m_fAppear = 1.f;
 			}
 		}
@@ -1189,7 +1197,8 @@ _bool CMagician::Collision(_float fTimeDelta)
 			else
 			{
 				m_eCurState = Hurt_Short;
-				m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack());
+				if (!m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack()))
+					m_eMonsterState = ATTACK_DEAD;
 				m_fAppear = 1.f;
 			}
 		}
@@ -1482,6 +1491,7 @@ void CMagician::Free()
 		if (_Collider)
 			Safe_Release(_Collider);
 	}
+	Safe_Release(m_CutSceneCard);
 }
 
 HRESULT CMagician::Ready_Sockets()

@@ -241,8 +241,21 @@ void CExtra02::CheckEndAnim()
 	case Client::CExtra02::LV1Villager_M_Attack03:
 		m_eCurState = LV1Villager_M_IdleGeneral;
 		break;
-	case Client::CExtra02::LV1Villager_M_Die01:
-		m_eCurState = LV1Villager_M_IdleGeneral;
+	case Client::CExtra02::LV1Villager_M_Die01:		
+		m_bDead = true;
+		if (CStageMgr::Get_Instance()->Add_Mob() == 8)
+		{
+			AUTOINSTANCE(CCameraMgr, _pCamera);
+			CTransform* _pPlayerTrans = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
+			_pPlayerTrans->Set_State(CTransform::STATE_POSITION, XMVectorSet(54.446f, 0.115f, 29.388f, 1.f));
+
+			_pPlayerTrans->LookAt_ForLandObject(XMVectorSet(72.055f, 0.122f, 25.819f, 1.f));
+			CPlayer* _Player = static_cast<CPlayer*>(_pInstance->Get_Player());
+			_Player->Set_AnimState(CPlayer::STATE_APPROACH2);
+			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Set_FOV(60.f);
+		}
+		m_eMonsterState = ATTACK_DEAD;
 		break;
 	case Client::CExtra02::LV1Villager_M_HurtCounter:
 		m_eCurState = LV1Villager_M_IdleGeneral;
@@ -420,7 +433,7 @@ void CExtra02::CheckLimit()
 	case Client::CExtra02::LV1Villager_M_HurtCounter:
 		break;
 	case Client::CExtra02::LV1Villager_M_HurtL_F:
-		if (m_fPlayTime > 30.f)
+		if (m_fPlayTime > 20.f)
 		{
 			On_Collider(COLLIDERTYPE_BODY, true);
 		}
@@ -467,7 +480,10 @@ void CExtra02::Set_Anim(STATE _eState)
 	m_eCurState = _eState;
 	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 	m_PreAnimPos = m_AnimPos;
-	m_eMonsterState = CMonster::ATTACK_IDLE;
+	if (m_pStatusCom->Get_Hp() <= 0.f)
+		m_eMonsterState = CMonster::ATTACK_DEAD;
+	else
+		m_eMonsterState = CMonster::ATTACK_IDLE;
 	m_pModelCom->Set_AnimationIndex(m_eCurState);
 	m_fPlayTime = 0.f;
 }
@@ -554,6 +570,10 @@ _bool CExtra02::Collision(_float fTimeDelta)
 		}
 		On_Collider(COLLIDERTYPE_BODY, false);
 		m_bPreStateAtt = true;
+		if (false == m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack()))
+		{
+			m_eCurState = LV1Villager_M_Die01;
+		}
 		return true;
 	}
 
@@ -725,7 +745,7 @@ HRESULT CExtra02::Ready_Components()
 
 	/* For.Com_Status */
 	CStatus::STATUS _tStatus;
-	_tStatus.fMaxHp = 80.f;
+	_tStatus.fMaxHp = 200.f;
 	_tStatus.fAttack = 7.f;
 	_tStatus.fHp = _tStatus.fMaxHp;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Status"), TEXT("Com_Status"), (CComponent**)&m_pStatusCom, &_tStatus)))

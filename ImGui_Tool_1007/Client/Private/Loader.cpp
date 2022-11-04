@@ -651,6 +651,19 @@ HRESULT CLoader::Loading_ForLevel_StageLast()
 		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_Last/Object/", "Tower03.fbx"))))
 		return E_FAIL;
 
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Lamp"),
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_Last/Light/", "Lamp.fbx"))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Lantern"),
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_Last/Light/", "Lantern.fbx"))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Light01"),
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_Last/Light/", "Light01.fbx"))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Light02"),
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_Last/Light/", "Light02.fbx"))))
+		return E_FAIL;
+
 	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Monster_Puppet"),
 		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster_List/puppet/", "puppet.dat", PivotMatrix))))

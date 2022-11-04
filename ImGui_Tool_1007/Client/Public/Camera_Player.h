@@ -25,7 +25,8 @@ public:
 
 public:
 	void Get_Target(CTransform* _pTarget) { m_pTarget = _pTarget; }
-	void Check_Dis();
+	void Check_Dis(_float fTimeDelta);
+	void Check_TargetingDis();
 	void Targeting();
 
 

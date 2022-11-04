@@ -169,7 +169,7 @@ void CCamera::Cam_Shake(_float fTimeDelta)
 		m_fShakeSpeedTime = 0.f;
 	}
 
-	m_fShakePowerTime += m_fShakePower * fTimeDelta;
+	m_fShakePowerTime += m_fShakePower * fTimeDelta * 0.5f;
 	
 	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	//_vector vLookAt = vPos + XMVector3Normalize( m_pTransformCom->Get_State(CTransform::STATE_LOOK))*m_CameraDesc.fNear;

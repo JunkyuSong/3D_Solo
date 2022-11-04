@@ -135,6 +135,8 @@ private:
 
 public:
 	void	Cancle();
+	void	RenderOn(_bool _bRender) { m_bRender = _bRender; }
+
 private:
 	void	Update_Collider();
 	_bool	Collision(_float fTimeDelta);
@@ -165,7 +167,7 @@ private:
 
 private:
 	CShader*				m_pShaderCom = nullptr;
-
+	_bool					m_bRender = true;
 	CRenderer*				m_pRendererCom = nullptr;
 	CTransform*				m_pTransformCom = nullptr;
 	CAnimModel*				m_pModelCom = nullptr;
@@ -263,6 +265,7 @@ private:
 	CNavigation*			m_pNavigationCom = nullptr;
 	class CUI_Targeting*	m_pUI_Targeting = nullptr;
 	_uint					m_iStage = 0;
+	bool					m_bCutScene[LEVEL_END] = { NULL };
 
 public:
 	void Set_Stage(_uint _iStage) {

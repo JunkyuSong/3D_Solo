@@ -33,7 +33,7 @@ public:
 	inline _bool				Damage(const _float _iTargetAtt)
 	{
 		m_fHp -= _iTargetAtt;
-		if (m_fHp < 0)
+		if (m_fHp <= 0)
 		{
 			m_fHp = 0;
 			return false;

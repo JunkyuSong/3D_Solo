@@ -39,10 +39,15 @@ HRESULT CCamera_Player::Initialize(void * pArg)
 	if (m_pPlayer == nullptr)
 	{
 		m_pPlayer = pGameInstance->Get_Player();
+
 	}
 	
 	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 1.f), XMConvertToRadians(60.f));
 	m_fAngleY = XMConvertToRadians(60.f);
+	CTransform* _pTrans = static_cast<CTransform*>(m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _pTrans->Get_State(CTransform::STATE_POSITION));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, (XMVector3TransformCoord(XMLoadFloat3(&m_vDis), m_pTransformCom->Get_WorldMatrix())));
+	XMStoreFloat4(&(m_CameraDesc.vAt), m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 
 	/* For.Com_Navigation */
 	CNavigation::NAVIGATIONDESC			NaviDesc;
@@ -85,7 +90,7 @@ void CCamera_Player::Tick(_float fTimeDelta)
 		_float	_fDis = fabs(XMVectorGetX(XMVector3Length(_vTargetPos - _vPos)));
 		if (_fDis > 1.f)
 			Targeting();
-		//Check_Dis();
+		Check_TargetingDis();
 	}
 	else
 	{
@@ -106,9 +111,9 @@ void CCamera_Player::Tick(_float fTimeDelta)
 			m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), MouseMove * fTimeDelta * 0.05f);
 			}*/
 		}
-		//Check_Dis();
+		Check_Dis(fTimeDelta);
 	}
-	Check_Dis();
+	//Check_Dis(fTimeDelta);
 	_vector	vCamPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	if (m_pNaviCom->isMove(vCamPos, nullptr))
 	{
@@ -136,9 +141,81 @@ HRESULT CCamera_Player::Render()
 	return S_OK;
 }
 
-void CCamera_Player::Check_Dis()
+void CCamera_Player::Check_Dis(_float fTimeDelta)
 {
 	if (m_pPlayer == nullptr)
+	{
+		MSG_BOX(TEXT("Camera : None Player"));
+		return;
+	}
+
+	CTransform* _pTrans = static_cast<CTransform*>(m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")));
+
+	_vector _vPos = _pTrans->Get_State(CTransform::STATE_POSITION);
+
+	_vector _vCamPos = XMLoadFloat4(&(m_CameraDesc.vAt));
+
+	_float fDistance = fabs(XMVectorGetX(XMVector3Length(_vPos - _vCamPos)));
+
+	_vector _vDir =/* XMVector3Normalize*/(_vPos - _vCamPos);
+
+	/*if (fDistance > 0.7f)
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			_vPos - (_vDir*0.65f*fTimeDelta));
+		XMStoreFloat4(&(m_CameraDesc.vAt), _vPos - (_vDir*0.65f*fTimeDelta));
+	}
+	else if (fDistance > 0.03f)
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			_vCamPos + (_vDir*0.025f*fTimeDelta));
+		XMStoreFloat4(&(m_CameraDesc.vAt), _vCamPos + (_vDir*0.025f*fTimeDelta));
+	}
+	else
+	{
+
+	}*/
+
+	if (fDistance < 0.01f)
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			_vPos);
+		XMStoreFloat4(&(m_CameraDesc.vAt), _vPos);
+	}
+	else if (fDistance > 1.5f)
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			_vCamPos + (XMVector3Normalize(_vDir)*fTimeDelta*4.f));
+		XMStoreFloat4(&(m_CameraDesc.vAt), _vCamPos + (XMVector3Normalize(_vDir)*fTimeDelta*4.f));
+	}
+	else 
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			_vCamPos + (_vDir*fTimeDelta*2.f));
+		XMStoreFloat4(&(m_CameraDesc.vAt), _vCamPos + (_vDir*fTimeDelta*2.f));
+	}
+
+	//m_CameraDesc.vAt.y += _vCamPos.m128_f32[1] + 1.5f;
+	//_vCamPos.m128_f32[1] += 1.5f;
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vCamPos);
+
+	
+	_matrix _world = m_pTransformCom->Get_WorldMatrix();
+	_world.r[3].m128_f32[1] += 0.5f;
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, (XMVector3TransformCoord(XMLoadFloat3(&m_vDis), _world)));
+
+	//_vector vWorldPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+	POINT			ptMouse;
+	ptMouse.x = g_iWinSizeX / 2;
+	ptMouse.y = g_iWinSizeY / 2;
+	ClientToScreen(g_hWnd, &ptMouse);
+	SetCursorPos(ptMouse.x, ptMouse.y);
+}
+
+void CCamera_Player::Check_TargetingDis()
+{
+		if (m_pPlayer == nullptr)
 	{
 		MSG_BOX(TEXT("Camera : None Player"));
 		return;

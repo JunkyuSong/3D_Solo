@@ -113,6 +113,10 @@ private:
 	CCollider*				m_pColliderCom[COLLILDERTYPE_END] = { nullptr };
 	_bool					m_bCollision[COLLILDERTYPE_END] = { false };
 
+	_float					m_fHitMaxTime = 0.5f;
+	_float					m_fHitCurTime = 0.0f;
+
+
 	DIRECT					m_eDir = DIR_END;
 
 private:

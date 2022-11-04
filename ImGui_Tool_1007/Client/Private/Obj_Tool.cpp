@@ -295,7 +295,7 @@ HRESULT CObj_Tool::Tool_Obj()
 	if (m_pLayer != nullptr)
 	{
 
-		if (ImGui::Button("Get_Model"))
+		if (ImGui::Button("Get_Model"))	
 		{
 			m_pPickModel = static_cast<CStage_Test*>(CGameInstance::Get_Instance()->Get_Layer(g_eCurLevel, TEXT("Layer_Test"))->Get_ObjFromLayer(0));
 		}

@@ -940,7 +940,7 @@ void CPlayer::CutScene()
 {
 	AUTOINSTANCE(CGameInstance, _pInstance);
 
-	if (g_eCurLevel == LEVEL_GAMEPLAY && m_iStage == 0)
+	if (g_eCurLevel == LEVEL_GAMEPLAY && !m_bCutScene[LEVEL_GAMEPLAY])
 	{
 		if (m_pNavigationCom->Get_Index() == 6)
 		{
@@ -972,6 +972,8 @@ void CPlayer::CutScene()
 			//_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER)->ZoomIn(30.f, 200.f);
 			static_cast<CCamera_CutScene_Enter*>(_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER))->Set_Trans(vTargetPos);
 			_pMagician->Set_Card(_pCard);
+			m_bCutScene[LEVEL_GAMEPLAY] = true;
+			m_bRender = false;
 		}
 	}
 }
@@ -1222,6 +1224,9 @@ void CPlayer::CheckEndAnim()
 	case Client::CPlayer::Corvus_VS_MagicianLV1_Seq_BossFightStart:
 		_pCamera->Change_Camera(CCameraMgr::CAMERA_PLAYER);
 		m_eCurState = STATE_IDLE;
+		m_pTransformCom->Turn_Angle(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
+		m_pModelCom->DirectAnim(STATE_IDLE);
+		
 		break;
 	}
 	
@@ -1403,7 +1408,7 @@ void CPlayer::CheckLimit()
 	case Client::CPlayer::SD_ParryToMob:
 		break;
 	case Client::CPlayer::SD_HurtIdle:
-		if (m_fPlayTime > 5.f)
+		if (m_fPlayTime > 15.f)
 		{
 			m_bCollision[COLLIDERTYPE_BODY] = true;
 			//m_eWeapon = WEAPON_BASE;
@@ -1986,7 +1991,7 @@ HRESULT CPlayer::Ready_Components()
 
 void CPlayer::Add_Render()
 {
-	if (nullptr == m_pRendererCom)
+	if (nullptr == m_pRendererCom || !m_bRender)
 		return;
 
 	switch (m_eWeapon)

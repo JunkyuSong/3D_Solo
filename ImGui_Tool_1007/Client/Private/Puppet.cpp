@@ -691,7 +691,7 @@ void CPuppet::Tick_Imgui()
 	AUTOINSTANCE(CGameInstance, _pInstance);
 	_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	CImGui::Get_Instance()->Begin("Puppet");
-	if (_pInstance->KeyPressing(DIK_NUMPAD8))
+	/*if (_pInstance->KeyPressing(DIK_NUMPAD8))
 		_vPos.m128_f32[2] += 0.1f;
 	if (_pInstance->KeyPressing(DIK_NUMPAD5))
 		_vPos.m128_f32[2] -= 0.1f;
@@ -719,8 +719,8 @@ void CPuppet::Tick_Imgui()
 	_float3 vRot = m_pTransformCom->Get_Rotation();
 
 	CImGui::Get_Instance()->floatcheck(&(vRot.y), "Angle");
-
-	if (CImGui::Get_Instance()->Button("Start"))
+*/
+	if (CImGui::Get_Instance()->Button("pattern1"))
 	{
 		_matrix _RotMatrix = m_pTransformCom->Get_WorldMatrix();
 		_RotMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
@@ -735,7 +735,22 @@ void CPuppet::Tick_Imgui()
 		XMStoreFloat3(&m_vNextLook, XMVector3Normalize( XMLoadFloat3(&m_vAttPos) - XMLoadFloat3(&m_vLocalPos)));
 	}
 
-	m_pTransformCom->Set_Rotation(XMLoadFloat3(& vRot));
+	if (CImGui::Get_Instance()->Button("pattern2"))
+	{
+		_matrix _RotMatrix = m_pTransformCom->Get_WorldMatrix();
+		_RotMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+		XMStoreFloat3(&m_vAttPos, XMVector3TransformCoord(XMLoadFloat3(&m_ListNextLook[Puppet_AttackF_A]), _RotMatrix)); //ÁÂÇ¥
+
+		m_eReserveState = Puppet_AttackF_A;
+		m_eMonsterState = CMonster::ATTACK_ATTACK;
+
+		_vector _vPlayerPos = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+
+		XMStoreFloat3(&m_vAttPos, _vPlayerPos + XMLoadFloat3(&m_vAttPos));
+		XMStoreFloat3(&m_vNextLook, XMVector3Normalize(XMLoadFloat3(&m_vAttPos) - XMLoadFloat3(&m_vLocalPos)));
+	}
+
+	//m_pTransformCom->Set_Rotation(XMLoadFloat3(& vRot));
 	//m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(vRot.y));
 	CImGui::Get_Instance()->End();
 	
