@@ -25,7 +25,7 @@ public:
 	virtual HRESULT Render();
 
 public:
-	virtual void		Set_Info(OBJ_DESC _tInfo) override;
+	virtual HRESULT		Set_Info(OBJ_DESC _tInfo) override;
 
 	void		ImGuiTick();
 

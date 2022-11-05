@@ -33,10 +33,14 @@ HRESULT CLamp::Initialize(void * pArg)
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 
 	_matrix matStreetLight= *(_matrix*)pArg;
+	matStreetLight.r[0] *= 100.f;
+	matStreetLight.r[1] *= 100.f;
+	matStreetLight.r[2] *= 100.f;
 	_vector _vPos = XMVector3TransformCoord(XMVectorSet(-0.03f, 3.02f, 1.05f, 1.f), matStreetLight);
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 	m_pTransformCom->Turn_Angle(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(62.f));
+	m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 0.f));
 
 	_vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	_vPos.m128_f32[1] += 0.15f;
@@ -44,10 +48,10 @@ HRESULT CLamp::Initialize(void * pArg)
 	ZeroMemory(&LightDesc, sizeof(DIRLIGHTDESC));
 
 	XMStoreFloat4(&LightDesc.vPosition, _vPos);
-	LightDesc.fRange = 3.f;
+	LightDesc.fRange = 15.f;
 	LightDesc.vDiffuse = CLIENT_RGB(255.f, 127.f, 0.f);
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.1f);
-	LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+	LightDesc.vSpecular = _float4(0.4f, 0.4f, 0.4f, 0.2f);
 
 	
 	m_iLightIndex = pGameInstance->Add_Light(m_pDevice, m_pContext, LEVEL_STAGE_LAST, CLight_Manager::STATICPOINTLIHGT, LightDesc);
@@ -123,7 +127,7 @@ HRESULT CLamp::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Light02"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Lamp"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 	return S_OK;
@@ -173,10 +177,4 @@ CGameObject * CLamp::Clone(void * pArg)
 void CLamp::Free()
 {
 	__super::Free();
-
-	if (m_tInfo.szModelTag != nullptr)
-	{
-		//Safe_Delete_Array(m_tInfo.szModelTag);
-	}
-	Safe_Release(m_pModelCom);
 }

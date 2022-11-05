@@ -81,7 +81,7 @@ _uint CLight_Manager::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pC
 	m_DirLights[iLv].push_back(nullptr);
 	m_DeadDirLights[iLv].push_back(pLight);
 
-	return m_DeadDirLights[iLv].size();
+	return m_DeadDirLights[iLv].size() - 1;
 }
 
 _uint CLight_Manager::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, _uint iLv, LIGHTTYPE eLightType, const POINTLIGHTDESC & LightDesc, _float fSpeed, _float fTime)
@@ -96,7 +96,7 @@ _uint CLight_Manager::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pC
 
 			m_DynamicPointLights[iLv].push_back(nullptr);
 			m_DeadDynamicPointLights[iLv].push_back(pLight);
-			return m_DeadDynamicPointLights[iLv].size();
+			return m_DeadDynamicPointLights[iLv].size() - 1;
 		}
 	break;
 	case Engine::CLight_Manager::STATICPOINTLIHGT:
@@ -107,7 +107,7 @@ _uint CLight_Manager::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pC
 
 			m_StaticPointLights[iLv].push_back(nullptr);
 			m_DeadStaticPointLights[iLv].push_back(pLight);
-			return m_DeadStaticPointLights[iLv].size();
+			return m_DeadStaticPointLights[iLv].size() - 1;
 		}
 	break;
 	}

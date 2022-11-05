@@ -121,7 +121,7 @@ void CPlayer_CutScene::PlayAnimation(_float fTimeDelta)
 	m_PreAnimPos = _vAnim;
 }
 
-void CPlayer_CutScene::Set_Info(OBJ_DESC _tInfo)
+HRESULT CPlayer_CutScene::Set_Info(OBJ_DESC _tInfo)
 {
 	m_tInfo.eLevel = _tInfo.eLevel;
 
@@ -147,6 +147,7 @@ void CPlayer_CutScene::Set_Info(OBJ_DESC _tInfo)
 
 	m_tInfo.matWorld = _tInfo.matWorld;
 	m_pTransformCom->Set_WorldFloat4x4(m_tInfo.matWorld);
+	return S_OK;
 }
 
 void CPlayer_CutScene::ImGuiTick()

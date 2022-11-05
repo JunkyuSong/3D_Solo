@@ -28,10 +28,15 @@ HRESULT CStreetLight::Initialize(void * pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+
 	ZeroMemory(&m_tInfo, sizeof(OBJ_DESC));
 
-	CObj_Plus::Initialize(pArg);
-
+	if (pArg)
+	{
+		OBJ_DESC _tInfo = *static_cast<OBJ_DESC*>(pArg);
+		m_tInfo.matWorld = _tInfo.matWorld;
+		m_pTransformCom->Set_WorldFloat4x4(m_tInfo.matWorld);
+	}
 	
 
 	AUTOINSTANCE(CGameInstance, _pInstance);
@@ -110,8 +115,10 @@ HRESULT CStreetLight::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Lamp"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Light02"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
+
+	lstrcpy(m_tInfo.szModelTag, TEXT("Prototype_Component_Model_Light02"));
 
 	return S_OK;
 }
@@ -161,9 +168,5 @@ void CStreetLight::Free()
 {
 	__super::Free();
 
-	if (m_tInfo.szModelTag != nullptr)
-	{
-		//Safe_Delete_Array(m_tInfo.szModelTag);
-	}
-	Safe_Release(m_pModelCom);
+	Safe_Release(m_pLamp);
 }

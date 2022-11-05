@@ -35,7 +35,7 @@ public:
 	virtual HRESULT Render() = 0;
 
 public:
-	virtual void		Set_Info(OBJ_DESC _tInfo) = 0;
+	virtual HRESULT		Set_Info(OBJ_DESC _tInfo) = 0;
 	OBJ_DESC	Get_Info() { return m_tInfo; }
 
 	void Set_Pass(PASS _ePass) { m_ePass = _ePass; }

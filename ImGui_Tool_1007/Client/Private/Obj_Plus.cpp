@@ -27,7 +27,9 @@ HRESULT CObj_Plus::Initialize(void * pArg)
 	if (pArg)
 	{
 		OBJ_DESC _tInfo = *static_cast<OBJ_DESC*>(pArg);
-		Set_Info(_tInfo);
+		if (FAILED(Set_Info(_tInfo)))
+			return E_FAIL;
+
 	}
 	return S_OK;
 }

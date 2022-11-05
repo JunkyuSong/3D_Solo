@@ -43,7 +43,7 @@ public:
 	void PlayAnimation(_float fTimeDelta);
 
 public:
-	virtual void		Set_Info(OBJ_DESC _tInfo) override;
+	virtual HRESULT		Set_Info(OBJ_DESC _tInfo) override;
 
 	void		ImGuiTick();
 	void		Set_AnimState(CUTSCENE	_eState) { m_eCurState = _eState; }

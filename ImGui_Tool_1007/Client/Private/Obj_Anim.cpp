@@ -121,14 +121,15 @@ void CObj_Anim::PlayAnimation(_float fTimeDelta)
 	m_PreAnimPos = _vAnim;
 }
 
-void CObj_Anim::Set_Info(OBJ_DESC _tInfo)
+HRESULT CObj_Anim::Set_Info(OBJ_DESC _tInfo)
 {
 	m_tInfo.eLevel = _tInfo.eLevel;
 
 	if (m_pModelCom == nullptr)
 	{
 		lstrcpy(m_tInfo.szModelTag, _tInfo.szModelTag);
-		__super::Add_Component(g_eCurLevel, m_tInfo.szModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom);
+		if (__super::Add_Component(g_eCurLevel, m_tInfo.szModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom))
+			return E_FAIL;
 
 	}
 	else if (lstrcmp(m_tInfo.szModelTag, _tInfo.szModelTag))
@@ -142,11 +143,13 @@ void CObj_Anim::Set_Info(OBJ_DESC _tInfo)
 
 		//m_tInfo.szModelTag = _tInfo.szModelTag;
 		lstrcpy(m_tInfo.szModelTag, _tInfo.szModelTag);
-		__super::Add_Component(g_eCurLevel, m_tInfo.szModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom);
+		if (__super::Add_Component(g_eCurLevel, m_tInfo.szModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom))
+			return E_FAIL;
 	}
 
 	m_tInfo.matWorld = _tInfo.matWorld;
 	m_pTransformCom->Set_WorldFloat4x4(m_tInfo.matWorld);
+	return S_OK;
 }
 
 void CObj_Anim::ImGuiTick()

@@ -25,7 +25,8 @@ HRESULT CObj_NonAnim::Initialize(void * pArg)
 
 	ZeroMemory(&m_tInfo, sizeof(OBJ_DESC));
 
-	__super::Initialize(pArg);
+	if (FAILED(__super::Initialize(pArg)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -74,7 +75,7 @@ HRESULT CObj_NonAnim::Render()
 	return S_OK;
 }
 
-void CObj_NonAnim::Set_Info(OBJ_DESC _tInfo)
+HRESULT CObj_NonAnim::Set_Info(OBJ_DESC _tInfo)
 {
 	m_tInfo.eLevel = _tInfo.eLevel;
 
@@ -82,7 +83,8 @@ void CObj_NonAnim::Set_Info(OBJ_DESC _tInfo)
 	{
 		lstrcpy(m_tInfo.szModelTag, _tInfo.szModelTag);
 		
-		__super::Add_Component(g_eCurLevel, m_tInfo.szModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom);
+		if (__super::Add_Component(g_eCurLevel, m_tInfo.szModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom))
+			return E_FAIL;
 
 	}
 	else if (lstrcmp(m_tInfo.szModelTag, _tInfo.szModelTag))
@@ -95,11 +97,13 @@ void CObj_NonAnim::Set_Info(OBJ_DESC _tInfo)
 		m_Components.erase(iter);
 
 		lstrcpy(m_tInfo.szModelTag, _tInfo.szModelTag);
-		__super::Add_Component(g_eCurLevel, m_tInfo.szModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom);
+		if (__super::Add_Component(g_eCurLevel, m_tInfo.szModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom))
+			return E_FAIL;
 	}
 
 	m_tInfo.matWorld = _tInfo.matWorld;
 	m_pTransformCom->Set_WorldFloat4x4(m_tInfo.matWorld);
+	return S_OK;
 }
 
 void CObj_NonAnim::ImGuiTick()

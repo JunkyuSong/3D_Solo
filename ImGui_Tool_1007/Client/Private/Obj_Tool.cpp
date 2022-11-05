@@ -193,7 +193,7 @@ void CObj_Tool::Load_Map()
 		GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
 	DWORD		dwByte = 0;
-
+	_uint iasd = 0;
 	CObj_Plus::OBJ_DESC	_tInfo;
 	ZeroMemory(&_tInfo, sizeof(CObj_Plus::OBJ_DESC));
 	while (true)
@@ -203,12 +203,23 @@ void CObj_Tool::Load_Map()
 		if (dwByte == 0)
 			break;
 
-		if (FAILED(_Instance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Obj_NonAnim"), g_eCurLevel, TEXT("Layer_Map"), &_tInfo)))
+		if (!lstrcmp(_tInfo.szModelTag, TEXT("Prototype_Component_Model_Light02")))
+		{
+			if (FAILED(_Instance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Map_StreetLight"), g_eCurLevel, TEXT("Layer_Map"), &_tInfo)))
+			{
+				MSG_BOX(TEXT("FAILED LOAD MAP"));
+				CloseHandle(hFile);
+				return;
+			}
+		}
+
+		else if (FAILED(_Instance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Obj_NonAnim"), g_eCurLevel, TEXT("Layer_Map"), &_tInfo)))
 		{
 			MSG_BOX(TEXT("FAILED LOAD MAP"));
 			CloseHandle(hFile);
 			return;
 		}
+		++iasd;
 	}
 
 	CloseHandle(hFile);
