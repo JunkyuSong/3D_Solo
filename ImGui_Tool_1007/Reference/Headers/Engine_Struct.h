@@ -17,13 +17,30 @@ namespace Engine
 		XMFLOAT3	vPosition;
 	}KEYFRAME;
 
-	typedef struct tagLightDesc
+	typedef struct tagDirLightDesc
 	{
-		enum TYPE { TYPE_POINT, TYPE_DIRECTIONAL, TYPE_END };
+		//enum TYPE { TYPE_POINT, TYPE_DIRECTIONAL, TYPE_END };
 
-		TYPE			eType;
+		//TYPE			eType;
 
 		XMFLOAT4		vDirection;
+
+		//XMFLOAT4		vPosition;
+		//float			fRange;
+
+		XMFLOAT4		vDiffuse;
+		XMFLOAT4		vAmbient;
+		XMFLOAT4		vSpecular;
+
+	}DIRLIGHTDESC;
+
+	typedef struct tagPointLightDesc
+	{
+		//enum TYPE { TYPE_POINT, TYPE_DIRECTIONAL, TYPE_END };
+
+		//TYPE			eType;
+
+		//XMFLOAT4		vDirection;
 
 		XMFLOAT4		vPosition;
 		float			fRange;
@@ -32,7 +49,7 @@ namespace Engine
 		XMFLOAT4		vAmbient;
 		XMFLOAT4		vSpecular;
 
-	}LIGHTDESC;
+	}POINTLIGHTDESC;
 
 	//cell
 	typedef struct tagVertexColor

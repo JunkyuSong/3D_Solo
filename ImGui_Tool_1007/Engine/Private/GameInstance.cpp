@@ -77,6 +77,7 @@ void CGameInstance::Tick_Engine( _float fTimeDelta)
 	m_pInput_Device->Update();
 	m_pLevel_Manager->Tick(fTimeDelta);
 	m_pObject_Manager->Tick(fTimeDelta);
+	m_pLight_Manager->Tick(fTimeDelta);
 	m_pFrustum->Tick();
 	m_pCollision_Mgr->Tick();
 	//m_pPipeLine->Update();
@@ -363,36 +364,51 @@ CGameObject * CGameInstance::Get_Player()
 	return m_pPipeLine->Get_Player();
 }
 
-LIGHTDESC * CGameInstance::Get_LightDesc(_uint _iLv, _uint iIndex)
+DIRLIGHTDESC * CGameInstance::Get_DirLightDesc(_uint _iLv, _uint iIndex)
 {
 	if (nullptr == m_pLight_Manager)
 		return nullptr;
 
-	return m_pLight_Manager->Get_LightDesc(_iLv,iIndex);
+	return m_pLight_Manager->Get_DirLightDesc(_iLv,iIndex);
 }
 
-HRESULT CGameInstance::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, _uint iLv, const LIGHTDESC & LightDesc)
+POINTLIGHTDESC * CGameInstance::Get_PointLightDesc(_uint _iLv, CLight_Manager::LIGHTTYPE eLightType, _uint iIndex)
+{
+	if (nullptr == m_pLight_Manager)
+		return nullptr;
+
+	return m_pLight_Manager->Get_PointLightDesc(_iLv, eLightType, iIndex);
+}
+
+_uint CGameInstance::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, _uint iLv, const DIRLIGHTDESC & LightDesc)
 {
 	if (nullptr == m_pLight_Manager)
 		return E_FAIL;
 
 	return m_pLight_Manager->Add_Light(pDevice, pContext, iLv, LightDesc);
 }
-
-HRESULT CGameInstance::Light_On(_uint iLv, _uint _iIndex)
+_uint CGameInstance::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, _uint iLv, CLight_Manager::LIGHTTYPE eLightType, const POINTLIGHTDESC & LightDesc, _float fSpeed, _float fTime)
 {
 	if (nullptr == m_pLight_Manager)
 		return E_FAIL;
 
-	return m_pLight_Manager->Light_On(iLv, _iIndex);
+	return m_pLight_Manager->Add_Light(pDevice, pContext, iLv, eLightType, LightDesc, fSpeed, fTime);
 }
 
-HRESULT CGameInstance::Light_Off(_uint iLv, _uint _iIndex)
+HRESULT CGameInstance::Light_On(_uint iLv, CLight_Manager::LIGHTTYPE eLightType, _uint _iIndex)
 {
 	if (nullptr == m_pLight_Manager)
 		return E_FAIL;
 
-	return m_pLight_Manager->Light_Off(iLv, _iIndex);
+	return m_pLight_Manager->Light_On(iLv, eLightType, _iIndex);
+}
+
+HRESULT CGameInstance::Light_Off(_uint iLv, CLight_Manager::LIGHTTYPE eLightType, _uint _iIndex)
+{
+	if (nullptr == m_pLight_Manager)
+		return E_FAIL;
+
+	return m_pLight_Manager->Light_Off(iLv, eLightType, _iIndex);
 }
 
 const _float & CGameInstance::Rand_Float(const _float & _fMin, const _float & _fMax)

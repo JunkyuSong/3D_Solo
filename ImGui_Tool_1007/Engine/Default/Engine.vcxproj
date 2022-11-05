@@ -174,6 +174,8 @@
     <ClCompile Include="..\Private\Component.cpp" />
     <ClCompile Include="..\Private\Component_Manager.cpp" />
     <ClCompile Include="..\Private\DebugDraw.cpp" />
+    <ClCompile Include="..\Private\DirLight.cpp" />
+    <ClCompile Include="..\Private\DynamicPointLight.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
     <ClCompile Include="..\Private\GameObject.cpp" />
     <ClCompile Include="..\Private\Graphic_Device.cpp" />
@@ -195,11 +197,13 @@
     <ClCompile Include="..\Private\Picking.cpp" />
     <ClCompile Include="..\private\PipeLine.cpp" />
     <ClCompile Include="..\private\PointInCell.cpp" />
+    <ClCompile Include="..\Private\PointLight.cpp" />
     <ClCompile Include="..\Private\RandMgr.cpp" />
     <ClCompile Include="..\Private\Renderer.cpp" />
     <ClCompile Include="..\Private\RenderTarget.cpp" />
     <ClCompile Include="..\private\Shader.cpp" />
     <ClCompile Include="..\Private\Sphere.cpp" />
+    <ClCompile Include="..\Private\StaticPointLight.cpp" />
     <ClCompile Include="..\Private\Target_Manager.cpp" />
     <ClCompile Include="..\private\Texture.cpp" />
     <ClCompile Include="..\Private\Timer.cpp" />
@@ -230,6 +234,8 @@
     <ClInclude Include="..\Public\Component.h" />
     <ClInclude Include="..\Public\Component_Manager.h" />
     <ClInclude Include="..\Public\DebugDraw.h" />
+    <ClInclude Include="..\Public\DirLight.h" />
+    <ClInclude Include="..\Public\DynamicPointLight.h" />
     <ClInclude Include="..\Public\Engine_Binary.h" />
     <ClInclude Include="..\Public\Engine_Defines.h" />
     <ClInclude Include="..\Public\Engine_Function.h" />
@@ -259,11 +265,13 @@
     <ClInclude Include="..\Public\Picking.h" />
     <ClInclude Include="..\public\PipeLine.h" />
     <ClInclude Include="..\public\PointInCell.h" />
+    <ClInclude Include="..\Public\PointLight.h" />
     <ClInclude Include="..\Public\RandMgr.h" />
     <ClInclude Include="..\Public\Renderer.h" />
     <ClInclude Include="..\Public\RenderTarget.h" />
     <ClInclude Include="..\public\Shader.h" />
     <ClInclude Include="..\Public\Sphere.h" />
+    <ClInclude Include="..\Public\StaticPointLight.h" />
     <ClInclude Include="..\Public\Target_Manager.h" />
     <ClInclude Include="..\public\Texture.h" />
     <ClInclude Include="..\Public\Timer.h" />

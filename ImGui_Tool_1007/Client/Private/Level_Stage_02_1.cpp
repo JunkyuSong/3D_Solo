@@ -67,18 +67,17 @@ HRESULT CLevel_Stage_02_1::Ready_Lights()
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
-	LIGHTDESC			LightDesc;
-	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
+	DIRLIGHTDESC			LightDesc;
+	ZeroMemory(&LightDesc, sizeof(DIRLIGHTDESC));
 
-	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.0f, 1.0f, 1.0f, 1.f);
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.1f);
-	LightDesc.vSpecular = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 0.2f);
 
-	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LEVEL_STAGE_02_1, LightDesc)))
+	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LEVEL_GAMEPLAY, LightDesc)))
 		return E_FAIL;
-	pGameInstance->Light_On(LEVEL_STAGE_02_1, 0);
+	pGameInstance->Light_On(LEVEL_GAMEPLAY, CLight_Manager::DIRLIGHT, 0);
 
 	//ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
 	//LightDesc.eType = LIGHTDESC::TYPE_POINT;

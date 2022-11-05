@@ -247,6 +247,12 @@
     <Filter Include="02.GameObjects\Camera\Camera_CutScene\End">
       <UniqueIdentifier>{f9af557a-cf95-4f1f-9fe0-9fa704b6b4fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\06. Map_Obj\StreetLight">
+      <UniqueIdentifier>{a88b23af-ba78-4f0d-aad9-f5a27d4ce9c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\06. Map_Obj\StreetLight\Lamp">
+      <UniqueIdentifier>{0346bcda-a8c5-409d-925a-6b3df625c83a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -480,6 +486,12 @@
     <ClInclude Include="..\Public\Camera_CutScene_Enter.h">
       <Filter>02.GameObjects\Camera\Camera_CutScene\Enter</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\StreetLight.h">
+      <Filter>02.GameObjects\06. Map_Obj\StreetLight</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Lamp.h">
+      <Filter>02.GameObjects\06. Map_Obj\StreetLight\Lamp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -694,6 +706,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Camera_CutScene_Enter.cpp">
       <Filter>02.GameObjects\Camera\Camera_CutScene\Enter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\StreetLigth.cpp">
+      <Filter>02.GameObjects\06. Map_Obj\StreetLight</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Lamp.cpp">
+      <Filter>02.GameObjects\06. Map_Obj\StreetLight\Lamp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

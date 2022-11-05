@@ -64,10 +64,9 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
-	LIGHTDESC			LightDesc;
-	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
+	DIRLIGHTDESC			LightDesc;
+	ZeroMemory(&LightDesc, sizeof(DIRLIGHTDESC));
 
-	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.1f);
@@ -75,7 +74,7 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 
 	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LEVEL_GAMEPLAY, LightDesc)))
 		return E_FAIL;
-	pGameInstance->Light_On(LEVEL_GAMEPLAY, 0);
+	pGameInstance->Light_On(LEVEL_GAMEPLAY, CLight_Manager::DIRLIGHT,0);
 
 	//ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
 	//LightDesc.eType = LIGHTDESC::TYPE_POINT;

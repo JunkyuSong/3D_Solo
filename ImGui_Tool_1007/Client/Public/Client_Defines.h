@@ -1,5 +1,7 @@
 #pragma once
 
+#define CLIENT_RGB(r,g,b) _float4(r / 255.f, g / 255.f, b / 255.f, 1.f)
+
 namespace Client
 {
 	static const unsigned int g_iWinSizeX = 1280;

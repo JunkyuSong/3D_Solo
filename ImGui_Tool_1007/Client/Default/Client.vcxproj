@@ -196,6 +196,7 @@
     <ClInclude Include="..\Public\Extra02.h" />
     <ClInclude Include="..\Public\ImGuiMgr.h" />
     <ClInclude Include="..\Public\Knife.h" />
+    <ClInclude Include="..\Public\Lamp.h" />
     <ClInclude Include="..\Public\Level_Client.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
@@ -228,6 +229,7 @@
     <ClInclude Include="..\Public\Stage_Lobby.h" />
     <ClInclude Include="..\Public\Stage_Test.h" />
     <ClInclude Include="..\Public\Status.h" />
+    <ClInclude Include="..\Public\StreetLight.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\Public\TerrainMgr.h" />
     <ClInclude Include="..\public\Texture_Tool.h" />
@@ -271,6 +273,7 @@
     <ClCompile Include="..\Private\Extra02.cpp" />
     <ClCompile Include="..\Private\ImGuiMgr.cpp" />
     <ClCompile Include="..\Private\Knife.cpp" />
+    <ClCompile Include="..\Private\Lamp.cpp" />
     <ClCompile Include="..\Private\Level_Client.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
@@ -303,6 +306,7 @@
     <ClCompile Include="..\Private\Stage_Lobby.cpp" />
     <ClCompile Include="..\Private\Stage_Test.cpp" />
     <ClCompile Include="..\Private\Status.cpp" />
+    <ClCompile Include="..\Private\StreetLigth.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\Private\TerrainMgr.cpp" />
     <ClCompile Include="..\private\Texture_Tool.cpp" />

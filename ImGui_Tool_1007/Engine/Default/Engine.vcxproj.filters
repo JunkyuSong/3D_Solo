@@ -160,6 +160,18 @@
     <ClCompile Include="..\Private\VIBuffer_Point_Instancing.cpp">
       <Filter>03.Components\02.VIBuffer\Point\Instancing</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\DynamicPointLight.cpp">
+      <Filter>04.Utility\03.LIght\04. PointLight\Dynamic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\StaticPointLight.cpp">
+      <Filter>04.Utility\03.LIght\04. PointLight\Static</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PointLight.cpp">
+      <Filter>04.Utility\03.LIght\04. PointLight</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DirLight.cpp">
+      <Filter>04.Utility\03.LIght\03. DirLight</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -342,6 +354,18 @@
     <ClInclude Include="..\Public\Camera.h">
       <Filter>02.GameObjects\01.Camera</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\DynamicPointLight.h">
+      <Filter>04.Utility\03.LIght\04. PointLight\Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\StaticPointLight.h">
+      <Filter>04.Utility\03.LIght\04. PointLight\Static</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PointLight.h">
+      <Filter>04.Utility\03.LIght\04. PointLight</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DirLight.h">
+      <Filter>04.Utility\03.LIght\03. DirLight</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="99.Defines">
@@ -517,6 +541,24 @@
     </Filter>
     <Filter Include="03.Components\02.VIBuffer\Point\Instancing">
       <UniqueIdentifier>{b42980c7-6bef-4208-9451-de3db0a9468d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\03.LIght\03. DirLight">
+      <UniqueIdentifier>{cf6504aa-4764-4ed8-8b82-e1953eac8ccd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\03.LIght\04. PointLight">
+      <UniqueIdentifier>{51f9321f-bca8-44ca-87c4-099e4d306498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\03.LIght\04. PointLight\Dynamic">
+      <UniqueIdentifier>{f0106cf3-fa4d-41df-b3e8-ad243566f29d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\03.LIght\04. PointLight\Static">
+      <UniqueIdentifier>{0b6bedcf-1dc7-40cd-89c7-9d16b805586d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\03.LIght\04. PointLight\Dynamic\UpPointLight">
+      <UniqueIdentifier>{4441ef6e-055f-452e-8b3e-20517440ec62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\03.LIght\04. PointLight\Dynamic\DownLight">
+      <UniqueIdentifier>{80ab1adf-e946-472f-8803-fdfe0ed9a10a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

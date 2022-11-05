@@ -41,6 +41,8 @@
 #include "Extra02.h"
 #include "Stage_Test.h"
 #include "Puppet.h"
+#include "Lamp.h"
+#include "StreetLight.h"
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -596,8 +598,16 @@ HRESULT CLoader::Loading_ForLevel_StageLast()
 		CStage_Test::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-		if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Puppet"),
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Puppet"),
 		CPuppet::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Map_StreetLight"),
+		CStreetLight::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Map_Lamp"),
+		CLamp::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Client_Defines.h"
-#include "Obj_Plus.h"
+#include "Obj_NonAnim.h"
 
 
 BEGIN(Engine)
@@ -10,12 +10,12 @@ END
 
 BEGIN(Client)
 
-class CObj_NonAnim : public CObj_Plus
+class CStreetLight final : public CObj_NonAnim
 {
-protected:
-	CObj_NonAnim(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CObj_NonAnim(const CObj_NonAnim& rhs);
-	virtual ~CObj_NonAnim() = default;
+private:
+	CStreetLight(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CStreetLight(const CStreetLight& rhs);
+	virtual ~CStreetLight() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -24,22 +24,15 @@ public:
 	virtual void LateTick( _float fTimeDelta);
 	virtual HRESULT Render();
 
-public:
-	virtual void		Set_Info(OBJ_DESC _tInfo) override;
-
-	void		ImGuiTick();
-
-	_bool	Picking(_float3& _vPos);
-
-protected:
-	CNonAnimModel*					m_pModelCom = nullptr;
-
 private:
 	HRESULT Ready_Components();
 	HRESULT SetUp_ShaderResources();
 
+private:
+	CGameObject* m_pLamp = nullptr;
+
 public:
-	static CObj_NonAnim* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CStreetLight* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };
