@@ -121,10 +121,8 @@ void CCamera_Player::Tick(_float fTimeDelta)
 		_float Y = m_pNaviCom->Get_PosY(vCamPos);
 		if (Y + 0.5f   > vCamPos.m128_f32[1])
 		{
-			vCamPos.m128_f32[1] = m_pNaviCom->Get_PosY(vCamPos) + 0.5f;
+			vCamPos.m128_f32[1] = Y + 0.5f;
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPos);
-			
-			//m_pTransformCom->LookAt(_vPos);
 		}
 	}
 	//XMStoreFloat4(&(pGameInstance->Get_LightDesc(g_eCurLevel, 1)->vPosition), static_cast<CTransform*>(m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE::STATE_POSITION));

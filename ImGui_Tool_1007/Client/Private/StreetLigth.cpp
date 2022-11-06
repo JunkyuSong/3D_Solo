@@ -25,11 +25,11 @@ HRESULT CStreetLight::Initialize_Prototype()
 
 HRESULT CStreetLight::Initialize(void * pArg)
 {
-	if (FAILED(Ready_Components()))
-		return E_FAIL;
-
 
 	ZeroMemory(&m_tInfo, sizeof(OBJ_DESC));
+
+	if (FAILED(Ready_Components()))
+		return E_FAIL;
 
 	if (pArg)
 	{
@@ -131,6 +131,8 @@ HRESULT CStreetLight::SetUp_ShaderResources()
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_CamPosition", &pGameInstance->Get_CamPosition(), sizeof(_float4))))
 		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);

@@ -34,7 +34,8 @@ public:
 public:
 	class CTransform*			Get_Transform() { return m_pTransformCom; }
 
-	void ZoomIn(_float fFoV, _float fSpeed);
+
+	void ZoomIn(_float fFoV, _float fSpeed, _float fTime = 0.f);
 	void ZoomOut(_float fFoV, _float fSpeed);
 	void ZoomOff(_float fSpeed);
 	void Set_FOV(_float fFOV);
@@ -49,7 +50,7 @@ protected:
 	void Cam_Shake(_float fTimeDelta);
 	void Cam_ZoomIn(_float fTimeDelta);
 	void Cam_ZoomOut(_float fTimeDelta);
-
+	
 protected:
 	class CTransform*			m_pTransformCom = nullptr;
 	CAMERADESC					m_CameraDesc;
@@ -58,6 +59,8 @@ protected:
 	_bool			m_bZoomIn = false;
 	_float			m_fZoomFOV = 0.f;
 	_bool			m_bZoomOut = false;
+	_float			m_fZoomTime = 0.f;
+	_float			m_fZoomCurTime = 0.f;
 
 	_bool			m_bShake = false;
 	_float			m_fShakeTime = 0.f;

@@ -23,6 +23,7 @@ _bool CDynamicPointLight::Tick(_float TimeDelta)
 	m_fCurTime += TimeDelta;
 	if (m_fCurTime > m_fTime)
 	{
+		m_fCurTime = 0.f;
 		return false;
 	}
 

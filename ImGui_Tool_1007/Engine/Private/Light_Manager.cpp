@@ -33,7 +33,7 @@ void CLight_Manager::Tick(_float fTimeDelta)
 	{
 		for (_uint j = 0 ; j < m_DynamicPointLights[i].size(); ++j)
 		{
-			if (m_DynamicPointLights[i][j]->Tick(fTimeDelta) == false)
+			if (m_DynamicPointLights[i][j] && m_DynamicPointLights[i][j]->Tick(fTimeDelta) == false)
 			{
 				if (m_DeadDynamicPointLights[i][j] == nullptr)
 				{
@@ -159,7 +159,9 @@ HRESULT CLight_Manager::Light_On(_uint iLv, LIGHTTYPE eLightType, _uint _iIndex)
 		{
 			m_DynamicPointLights[iLv][_iIndex] = m_DeadDynamicPointLights[iLv][_iIndex];
 			m_DeadDynamicPointLights[iLv][_iIndex] = nullptr;
+			
 		}
+		static_cast<CDynamicPointLight*>(m_DynamicPointLights[iLv][_iIndex])->Reset_Time();
 		break;
 	case Engine::CLight_Manager::STATICPOINTLIHGT:
 		if (_iIndex >= m_DeadStaticPointLights[iLv].size() || iLv >= m_iNumLevels)

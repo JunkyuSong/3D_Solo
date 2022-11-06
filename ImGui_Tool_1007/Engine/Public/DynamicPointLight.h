@@ -17,6 +17,8 @@ public:
 	virtual _bool	Tick(_float TimeDelta);
 	HRESULT			Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer, class CFrustum* _pFrustum);
 
+	void			Reset_Time() { m_fCurTime = 0.f; }
+
 private:
 	_float			m_fSpeed = 0.f;
 	_float			m_fTime = 0.f;

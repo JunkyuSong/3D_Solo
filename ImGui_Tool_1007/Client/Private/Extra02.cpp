@@ -112,23 +112,6 @@ void CExtra02::Tick(_float fTimeDelta)
 	if (m_bDead)
 		return;
 
-	if (_Instance->KeyDown(DIK_NUMPAD1))
-	{
-		m_eCurState = LV1Villager_M_Attack01;
-	}
-	else if (_Instance->KeyDown(DIK_NUMPAD2))
-	{
-		m_eCurState = LV1Villager_M_Attack02;
-	}
-	else if (_Instance->KeyDown(DIK_NUMPAD3))
-	{
-		m_eCurState = LV1Villager_M_Attack03;
-	}
-	else if (_Instance->KeyDown(DIK_NUMPAD4))
-	{
-		m_eCurState = LV1Villager_M_Die01;
-	}
-
 	if (m_pModelCom != nullptr)
 	{
 		Check_Stun();
@@ -171,7 +154,7 @@ void CExtra02::LateTick(_float fTimeDelta)
 		PlayAnimation(fTimeDelta);
 	}
 	_bool		isDraw = _pInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
-	//if (isDraw)
+	if (isDraw)
 		RenderGroup();
 }
 

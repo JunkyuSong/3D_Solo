@@ -107,6 +107,7 @@ private:
 	_float3					m_vNextLook;
 	_bool					m_bPreStateAtt = false;
 
+
 private:
 	HRESULT Ready_Components();
 	HRESULT SetUp_ShaderResources();

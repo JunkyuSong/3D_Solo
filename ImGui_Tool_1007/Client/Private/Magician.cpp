@@ -1170,6 +1170,9 @@ _bool CMagician::Collision(_float fTimeDelta)
 				m_eCurState = Hurt_Short;
 				if(!m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack()))
 					m_eMonsterState = ATTACK_DEAD;
+				//CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.1f, 1.f);
+				CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomIn(50.f, 80.f, 0.3f);
+
 				m_fAppear = 1.f;
 			}
 			
@@ -1185,6 +1188,9 @@ _bool CMagician::Collision(_float fTimeDelta)
 				m_eCurState = Hurt_Long;
 				if (!m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack()))
 					m_eMonsterState = ATTACK_DEAD;
+				//CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.1f, 1.f);
+				CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomIn(50.f, 80.f, 0.3f);
+
 				m_fAppear = 1.f;
 			}
 		}
@@ -1199,6 +1205,9 @@ _bool CMagician::Collision(_float fTimeDelta)
 				m_eCurState = Hurt_Short;
 				if (!m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack()))
 					m_eMonsterState = ATTACK_DEAD;
+				//CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.1f, 1.f);
+				CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomIn(50.f, 80.f, 0.3f);
+
 				m_fAppear = 1.f;
 			}
 		}
@@ -1294,7 +1303,7 @@ HRESULT CMagician::Ready_Components()
 
 	/* For.Com_Status */
 	CStatus::STATUS _tStatus;
-	_tStatus.fMaxHp = 300.f;
+	_tStatus.fMaxHp = 500.f;
 	_tStatus.fAttack = 30.f;
 	_tStatus.fHp = _tStatus.fMaxHp;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Status"), TEXT("Com_Status"), (CComponent**)&m_pStatusCom, &_tStatus)))
@@ -1366,28 +1375,7 @@ HRESULT CMagician::SetUp_ShaderResources()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_fAlpha", &m_fAppear, sizeof(_float))))
 		return E_FAIL;
-	//if (FAILED(m_pShaderCom->Set_RawValue("g_vCamPosition", &pGameInstance->Get_CamPosition(), sizeof(_float4))))
-	//	return E_FAIL;
-
 	
-	//const LIGHTDESC* pLightDesc = pGameInstance->Get_LightDesc(0);
-	//if (nullptr == pLightDesc)
-	//	return E_FAIL;
-
-	//if (LIGHTDESC::TYPE_DIRECTIONAL == pLightDesc->eType)
-	//{
-	//	if (FAILED(m_pShaderCom->Set_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof(_float4))))
-	//		return E_FAIL;
-	//}
-
-	//if (FAILED(m_pShaderCom->Set_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof(_float4))))
-	//	return E_FAIL;
-
-	//if (FAILED(m_pShaderCom->Set_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof(_float4))))
-	//	return E_FAIL;
-
-	///*if (FAILED(m_pShaderCom->Set_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
-	//	return E_FAIL;*/
 
 	RELEASE_INSTANCE(CGameInstance);
 

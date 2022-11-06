@@ -3,6 +3,8 @@ matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D	g_DiffuseTexture;
 texture2D	g_NormalTexture;
 
+vector		g_CamPosition;
+
 float		g_fAlpha;
 
 sampler DefaultSampler = sampler_state {
@@ -41,6 +43,7 @@ struct VS_OUT
 	float4		vProjPos : TEXCOORD1;
 	float3		vTangent : TANGENT;
 	float3		vBinormal : BINORMAL;
+	float4		vWorldPosition : TEXCOORD2;
 };
 
 
@@ -59,7 +62,7 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
 	Out.vTexUV = In.vTexUV;
 	Out.vProjPos = Out.vPosition;
-
+	Out.vWorldPosition = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
 
 	return Out;
 }
@@ -72,6 +75,7 @@ struct PS_IN
 	float4		vProjPos : TEXCOORD1;
 	float3		vTangent : TANGENT;
 	float3		vBinormal : BINORMAL;
+	float4		vWorldPosition : TEXCOORD2;
 };
 
 struct PS_OUT
@@ -97,7 +101,12 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	vNormal = normalize(mul(vNormal, WorldMatrix));
 
-	if (0 == Out.vDiffuse.a)
+	if (abs(length(g_CamPosition - In.vWorldPosition)) < 1.5f)
+	{
+		Out.vDiffuse.a = 0.f;
+	}
+
+	if (0 >= Out.vDiffuse.a)
 		discard;
 
 	// -1 ~ 1
@@ -162,7 +171,12 @@ PS_OUT PS_Stage(PS_IN In)
 
 	vNormal = normalize(mul(vNormal, WorldMatrix));
 
-	if (0 == Out.vDiffuse.a)
+	if ((length(g_CamPosition - In.vWorldPosition)) < 0.5f)
+	{
+		discard;
+	}
+
+	if (0 >= Out.vDiffuse.a)
 		discard;
 
 	// -1 ~ 1

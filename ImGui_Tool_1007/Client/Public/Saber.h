@@ -26,7 +26,10 @@ public:
 	virtual HRESULT Render();
 
 
+	void		Light_On();
 
+private:
+	_uint	m_iLight = 0;
 
 
 private:

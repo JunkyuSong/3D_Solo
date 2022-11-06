@@ -36,6 +36,7 @@ HRESULT CCamera::Initialize(void * pArg)
 void CCamera::Tick(_float fTimeDelta)
 {
 	fTimeDelta /= CTimer_Manager::Get_Instance()->Get_TimeSpeed(TEXT("Timer_Main"));
+	
 	if (m_bZoomIn)
 	{
 		Cam_ZoomIn(fTimeDelta);
@@ -121,12 +122,14 @@ void CCamera::Shake_Off()
 	m_iDir = 0;
 }
 
-void CCamera::ZoomIn(_float fFoV, _float fSpeed)
+void CCamera::ZoomIn(_float fFoV, _float fSpeed, _float fTime)
 {
 	m_bZoomOut = false;
 	m_bZoomIn = true;
 	m_fZoomFOV = XMConvertToRadians(fFoV);
 	m_fZoomSpeed = fSpeed;
+	m_fZoomTime = fTime;
+	m_fZoomCurTime = 0.f;
 }
 
 void CCamera::Cam_ZoomOut(_float fTimeDelta)
@@ -222,6 +225,15 @@ void CCamera::Cam_ZoomIn(_float fTimeDelta)
 	if (fabs(m_CameraDesc.fFovy - m_fZoomFOV) < XMConvertToRadians(3.f))
 	{
 		m_CameraDesc.fFovy = m_fZoomFOV;
+		if (m_fZoomTime != 0.f)
+		{
+			m_fZoomCurTime += fTimeDelta;
+			if (m_fZoomCurTime > m_fZoomTime)
+			{
+				m_fZoomCurTime = 0.f;
+				ZoomOff(m_fZoomSpeed);
+			}
+		}
 	}
 	else
 	{

@@ -48,7 +48,7 @@ HRESULT CLamp::Initialize(void * pArg)
 	ZeroMemory(&LightDesc, sizeof(DIRLIGHTDESC));
 
 	XMStoreFloat4(&LightDesc.vPosition, _vPos);
-	LightDesc.fRange = 15.f;
+	LightDesc.fRange = 12.5f;
 	LightDesc.vDiffuse = CLIENT_RGB(255.f, 127.f, 0.f);
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.1f);
 	LightDesc.vSpecular = _float4(0.4f, 0.4f, 0.4f, 0.2f);
@@ -141,6 +141,8 @@ HRESULT CLamp::SetUp_ShaderResources()
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_CamPosition", &pGameInstance->Get_CamPosition(), sizeof(_float4))))
 		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);

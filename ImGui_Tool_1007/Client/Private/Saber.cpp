@@ -23,12 +23,21 @@ HRESULT CSaber::Initialize_Prototype()
 
 HRESULT CSaber::Initialize(void * pArg)
 {
+	AUTOINSTANCE(CGameInstance, _pInstance);
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
 	m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 1.f));
 	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMConvertToRadians(-90.0f));
+	
 
+	POINTLIGHTDESC LIGHT;
+	LIGHT.fRange = 1.5f;
+	LIGHT.vDiffuse = _float4(1.f, 0.f, 0.f, 1.f);
+	LIGHT.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+	LIGHT.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	LIGHT.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+	m_iLight = _pInstance->Add_Light(m_pDevice, m_pContext, g_eCurLevel, CLight_Manager::DYNAMICPOINTLIHGT, LIGHT, -0.3f,0.1f);
 
 	return S_OK;
 }
@@ -59,10 +68,7 @@ void CSaber::Tick(_float fTimeDelta, CGameObject * _pUser)
 
 void CSaber::LateTick(_float fTimeDelta)
 {
-	if (nullptr == m_pRendererCom)
-		return;
-
-
+	
 }
 
 HRESULT CSaber::Render()
@@ -70,6 +76,13 @@ HRESULT CSaber::Render()
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
 		return E_FAIL;
+
+	CGameObject* pTarget = m_pColliderCom->Get_Target();
+
+	if (pTarget)
+	{
+		Light_On();
+	}
 
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
@@ -82,6 +95,9 @@ HRESULT CSaber::Render()
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Set_RawValue("g_CamPosition", &pGameInstance->Get_CamPosition(), sizeof(_float4))))
 		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -109,6 +125,27 @@ HRESULT CSaber::Render()
 
 	return S_OK;
 
+}
+
+void CSaber::Light_On()
+{
+	AUTOINSTANCE(CGameInstance, _pInstance);
+
+	_vector LightPos, vHigh, vLow;
+	vHigh = XMVectorSet(100.0f, 0.f, 0.f, 1.f);
+	vLow = XMVectorSet(-5.f, 0.f, 0.f, 1.f);
+
+	vHigh = XMVector2TransformCoord(vHigh, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+	vLow = XMVector2TransformCoord(vLow, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+
+	LightPos = XMVectorSetW((vHigh + vLow) * 0.5f, 1.f);
+
+	POINTLIGHTDESC* LIGHT;
+	_pInstance->Light_On(g_eCurLevel, CLight_Manager::DYNAMICPOINTLIHGT, m_iLight);
+	LIGHT = _pInstance->Get_PointLightDesc(g_eCurLevel, CLight_Manager::DYNAMICPOINTLIHGT, m_iLight);
+	XMStoreFloat4(&(LIGHT->vPosition), LightPos);
+	LIGHT->fRange = 3.f;
+	
 }
 
 

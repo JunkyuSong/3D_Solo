@@ -71,7 +71,7 @@ void CMainApp::Tick(const _float& fTimeDelta)
 	m_pGameInstance->Tick_Engine(fTimeDelta);
 	CCameraMgr::Get_Instance()->Tick(fTimeDelta);
 	CPipeLine::Get_Instance()->Update();
-	CCollisionMgr::Get_Instance()->Clear_CollisoinList();
+	
 }
 
 HRESULT CMainApp::Render()
@@ -98,11 +98,11 @@ HRESULT CMainApp::Render()
 		m_fTimeAcc = 0.f;
 	}
 
-	//SetWindowText(g_hWnd, m_szFPS);
+	SetWindowText(g_hWnd, m_szFPS);
 #endif // _DEBUG
 
 	
-
+	CCollisionMgr::Get_Instance()->Clear_CollisoinList();
 	return S_OK;
 }
 

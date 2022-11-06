@@ -465,7 +465,7 @@ void CPuppet::RenderGroup()
 	if (nullptr == m_pRendererCom)
 		return;
 	
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
 }
 
 _bool CPuppet::Collision(_float fTimeDelta)

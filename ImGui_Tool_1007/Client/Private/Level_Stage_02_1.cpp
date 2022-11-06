@@ -75,9 +75,9 @@ HRESULT CLevel_Stage_02_1::Ready_Lights()
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.1f);
 	LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 0.2f);
 
-	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LEVEL_GAMEPLAY, LightDesc)))
+	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LEVEL_STAGE_02_1, LightDesc)))
 		return E_FAIL;
-	pGameInstance->Light_On(LEVEL_GAMEPLAY, CLight_Manager::DIRLIGHT, 0);
+	pGameInstance->Light_On(LEVEL_STAGE_02_1, CLight_Manager::DIRLIGHT, 0);
 
 	//ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
 	//LightDesc.eType = LIGHTDESC::TYPE_POINT;
