@@ -11,6 +11,7 @@
 #include "StageMgr.h"
 #include "CameraMgr.h"
 #include "Camera.h"
+#include "Camera_CutScene_Enter.h"
 
 CExtra01::CExtra01(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
@@ -225,7 +226,7 @@ void CExtra01::CheckEndAnim()
 		break;
 	case Client::CExtra01::LV1Villager_M_Die01:
 		m_bDead = true;
-		if (CStageMgr::Get_Instance()->Add_Mob() == 8)
+		if (CStageMgr::Get_Instance()->Add_Mob() >= 1)
 		{
 			AUTOINSTANCE(CCameraMgr, _pCamera);
 			CTransform* _pPlayerTrans = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
@@ -236,6 +237,11 @@ void CExtra01::CheckEndAnim()
 			_Player->Set_AnimState(CPlayer::STATE_APPROACH2);
 			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
 			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Set_FOV(60.f);
+
+			_pCamera->Change_Camera(CCameraMgr::CAMERA_CUTSCENE_ENTER);
+			CCamera_CutScene_Enter* _pCutSceneCam = static_cast<CCamera_CutScene_Enter*> (_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER));
+			_pCutSceneCam->Tick(0.f);
+			_pCutSceneCam->Set_CutSceneNum(1);
 		}
 		m_eMonsterState = ATTACK_DEAD;
 		break;

@@ -27,6 +27,8 @@
 #include "Extra02.h"
 #include "Magician.h"
 
+#include "Timer_Manager.h"
+
 CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -1213,6 +1215,9 @@ void CPlayer::CheckEndAnim()
 		m_eWeapon = WEAPON_NONE;
 		break;
 	case Client::CPlayer::Strong_Jump2:
+		_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+		static_cast<CCamera_CutScene_Enter*>(_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER))->Set_CutSceneNum(5);
+
 		m_eCurState = Corvus_SD_Fall_Loop;
 		break;
 	case Client::CPlayer::Corvus_SD_Fall_Loop:
@@ -1399,7 +1404,20 @@ void CPlayer::CheckLimit()
 			m_bCollision[COLLIDERTYPE_CLAW] = true;
 		}
 		break;
-	case Client::CPlayer::Strong_Jump:
+	case Client::CPlayer::Strong_Jump2:
+		if (m_vecLimitTime[Strong_Jump2][0] < m_fPlayTime)
+		{
+			AUTOINSTANCE(CCameraMgr, _pCamera);
+			AUTOINSTANCE(CGameInstance, _pInstance);
+
+			static_cast<CCamera_CutScene_Enter*>(_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER))->Set_CutSceneNum(4);
+			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 0.7f);
+		}
+		else
+		{
+			AUTOINSTANCE(CCameraMgr, _pCamera);
+			static_cast<CCamera_CutScene_Enter*>(_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER))->Set_CutSceneNum(2);
+		}
 		break;
 	case Client::CPlayer::RavenAttack_Start:
 		break;
@@ -1615,7 +1633,11 @@ void CPlayer::AfterAnim(_float fTimeDelta)
 	case Client::CPlayer::Raven_ClawNear:
 		m_eWeapon = WEAPON_NONE;
 		break;
-	case Client::CPlayer::Strong_Jump:
+	case Client::CPlayer::Strong_Jump2:
+	{
+		
+	}
+
 		break;
 	case Client::CPlayer::RavenAttack_Start:
 		break;
@@ -2078,6 +2100,9 @@ HRESULT CPlayer::Ready_AnimLimit()
 
 	//회피
 	m_vecLimitTime[STATE_AVOIDATTACK].push_back(30.f);
+
+	//임시
+	m_vecLimitTime[Strong_Jump2].push_back(40.f);
 
 	return S_OK;
 }

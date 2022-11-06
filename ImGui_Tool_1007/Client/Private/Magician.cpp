@@ -1428,6 +1428,10 @@ void CMagician::Ready_LimitTime()
 	
 	m_vecLimitTime[Boss_Enter].push_back(420.f);//매지션 손 쳐다볼때
 	m_vecLimitTime[Boss_Enter].push_back(580.f);//매지션 쳐다볼때
+
+
+
+	
 }
 
 CMagician * CMagician::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)

@@ -11,6 +11,7 @@
 #include "StageMgr.h"
 #include "CameraMgr.h"
 #include "Camera.h"
+#include "Camera_CutScene_Enter.h"
 
 CExtra02::CExtra02(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
@@ -226,7 +227,7 @@ void CExtra02::CheckEndAnim()
 		break;
 	case Client::CExtra02::LV1Villager_M_Die01:		
 		m_bDead = true;
-		if (CStageMgr::Get_Instance()->Add_Mob() == 8)
+		if (CStageMgr::Get_Instance()->Add_Mob() >= 1)
 		{
 			AUTOINSTANCE(CCameraMgr, _pCamera);
 			CTransform* _pPlayerTrans = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
@@ -237,6 +238,11 @@ void CExtra02::CheckEndAnim()
 			_Player->Set_AnimState(CPlayer::STATE_APPROACH2);
 			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
 			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Set_FOV(60.f);
+
+			_pCamera->Change_Camera(CCameraMgr::CAMERA_CUTSCENE_ENTER);
+			CCamera_CutScene_Enter* _pCutSceneCam = static_cast<CCamera_CutScene_Enter*> (_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER));
+			_pCutSceneCam->Tick(0.f);
+			_pCutSceneCam->Set_CutSceneNum(1);
 		}
 		m_eMonsterState = ATTACK_DEAD;
 		break;
@@ -248,7 +254,7 @@ void CExtra02::CheckEndAnim()
 		break;
 	case Client::CExtra02::LV2Villager01_M_VS_TakeExecution_01:
 		m_bDead = true;
-		if (CStageMgr::Get_Instance()->Add_Mob() == 8)
+		if (CStageMgr::Get_Instance()->Add_Mob() <= 8)
 		{
 			AUTOINSTANCE(CCameraMgr, _pCamera);
 			CTransform* _pPlayerTrans = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
@@ -258,6 +264,11 @@ void CExtra02::CheckEndAnim()
 			_Player->Set_AnimState(CPlayer::STATE_APPROACH2);
 			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
 			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Set_FOV(60.f);
+
+			_pCamera->Change_Camera(CCameraMgr::CAMERA_CUTSCENE_ENTER);
+			CCamera_CutScene_Enter* _pCutSceneCam = static_cast<CCamera_CutScene_Enter*> (_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER));
+			_pCutSceneCam->Tick(0.f);
+			_pCutSceneCam->Set_CutSceneNum(1);
 		}
 		//m_eCurState = LV1Villager_M_IdleGeneral;
 		break;

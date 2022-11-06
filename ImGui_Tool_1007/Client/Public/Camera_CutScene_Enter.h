@@ -31,7 +31,10 @@ public:
 	{		
 		XMStoreFloat4(&m_vLookAt, _pTarget);
 	}
-
+	void Set_CutSceneNum(_uint _iCutScene)
+	{
+		m_iCutScene = _iCutScene;
+	}
 
 public:
 	static CCamera_CutScene_Enter* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -43,6 +46,11 @@ private:
 	_float4				m_vLookAt;
 	CAnimModel*			m_pModel = nullptr;
 	CHierarchyNode*		m_pCameraBone = nullptr;
+
+	//ÄÆ¾À º¤ÅÍ
+	_uint				m_iCutScene = 0;
+	_float				m_fAngleY = 0.f;
+	_float				m_fAngleX = 0.f;
 };
 
 END

@@ -38,6 +38,7 @@ HRESULT CCamera_CutScene_Enter::Initialize(void * pArg)
 	Safe_AddRef(m_pModel);
 	m_pCameraBone = m_pModel->Get_HierarchyNode("camera");
 	Safe_AddRef(m_pCameraBone);
+
 	return S_OK;
 }
 
@@ -57,14 +58,117 @@ void CCamera_CutScene_Enter::Tick(_float fTimeDelta)
 		m_CameraDesc.fNear = 0.05f;
 		XMStoreFloat4(&m_CameraDesc.vAt, _vTargetPos);
 		m_pTransformCom->LookAt(_vTargetPos);
-		__super::Tick(fTimeDelta);
 	}
+		break;
+	case Client::LEVEL_STAGE_02_1:
+		
+		switch (m_iCutScene)
+		{
+		case 0:
+			// 플레이어 위치와 방향을 받아서 거기서 6만큼 떨어진 위치에 라이트로 40도 정도 올리고 공전 1회
+		{			
+			_float4x4 _PlayerWorld;
+			XMStoreFloat4x4(&_PlayerWorld, static_cast<CTransform*>(pGameInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")))->Get_WorldMatrix());
+			_PlayerWorld._42 += 0.5f;
+
+			m_pTransformCom->Set_WorldFloat4x4(_PlayerWorld);
+
+			m_pTransformCom->Turn_Angle(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), XMConvertToRadians(40.f));
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_pTransformCom->Get_State(CTransform::STATE_POSITION) - (XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK)) * 4.f));
+			m_pTransformCom->LookAt(static_cast<CTransform*>(pGameInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION));
+			// 그게 카메라 최초 위치
+		}
+		break;
+		case 1:
+			// 플레이어를 계속 바라보고
+			m_pTransformCom->LookAt(static_cast<CTransform*>(pGameInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION));
+			break;
+		case 2:
+			// 점프 시작할때 위치를 y축 기준으로만 싸악 돌리면서 플레이어 공전
+		{
+			m_fAngleY += fTimeDelta / pGameInstance->Get_TimeSpeed(TEXT("Timer_Main"));
+			if (XMConvertToRadians(90.f) >= m_fAngleY)
+			{
+				m_pTransformCom->LookAt(XMVectorSet(60.512f, 1.916f, 28.185f, 1.f));
+				_vector _vDis = XMVectorSetW(m_pTransformCom->Get_State(CTransform::STATE_POSITION) - XMVectorSet(60.512f, 1.916f, 28.185f, 1.f), 1.f);
+
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(60.512f, 1.916f, 28.185f, 1.f));
+
+				m_pTransformCom->Turn_Angle(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta / pGameInstance->Get_TimeSpeed(TEXT("Timer_Main")));
+
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION, 
+					XMVectorSet(60.512f, 1.916f, 28.185f, 1.f) - XMVector3Normalize( m_pTransformCom->Get_State(CTransform::STATE_LOOK)) * XMVector3Length(_vDis).m128_f32[0]
+				);
+				m_pTransformCom->LookAt(static_cast<CTransform*>(pGameInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION)); // 플레이어 바라본다
+			}
+			
+			
+		}
+			
+			break;
+		case 3:
+			// 플레이어가 가장 정점에 있을때(40) 속도가 엄청 느려지고 얼마 있다가
+
+			break;
+		case 4:
+			// 플레이어 떨어지기 시작할때 빠르게 카메라를 플레이어 공전으로 라이트 90도에서 바라보게
+		{
+			m_fAngleX += fTimeDelta * 2.f;
+			if (XMConvertToRadians(80.f) >= m_fAngleX)
+			{
+				//m_pTransformCom->LookAt(XMVectorSet(60.512f, 1.916f, 28.185f, 1.f));
+				_vector _vDis = XMVectorSetW(m_pTransformCom->Get_State(CTransform::STATE_POSITION) - XMVectorSet(60.512f, 1.916f, 28.185f, 1.f), 1.f);
+
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(60.512f, 1.916f, 28.185f, 1.f));
+
+				m_pTransformCom->Turn_Angle(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), fTimeDelta * 2.f);
+
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+					XMVectorSet(60.512f, 1.916f, 28.185f, 1.f) - XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK)) * XMVector3Length(_vDis).m128_f32[0]
+				);
+			}
+			else
+			{
+				CTransform* _pTrans = static_cast<CTransform*>(pGameInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
+				_vector _vPos = _pTrans->Get_State(CTransform::STATE_POSITION);
+				
+				_vector _vDis = _vPos - m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+				
+				m_pTransformCom->Go_Dir(XMVector3Normalize(_vDis), fTimeDelta*0.6f);
+
+			}
+			
+		}
+		
+			break;
+
+		case 5:
+		{
+				CTransform* _pTrans = static_cast<CTransform*>(pGameInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
+				_vector _vPos = _pTrans->Get_State(CTransform::STATE_POSITION);
+				//m_pTransformCom->LookAt(_vPos);
+				_vector _vDis = _vPos - m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+				
+				m_pTransformCom->Go_Dir(XMVector3Normalize(_vDis), fTimeDelta*0.6f);
+
+				
+		}
+			break;
+		}
+		
+	
+		
+		
+
 		break;
 	default:
 		break;
 	}
 
-	
+	__super::Tick(fTimeDelta);
+
 }
 
 void CCamera_CutScene_Enter::LateTick(_float fTimeDelta)
