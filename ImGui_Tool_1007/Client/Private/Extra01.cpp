@@ -259,7 +259,7 @@ void CExtra01::CheckEndAnim()
 		break;
 	case Client::CExtra01::LV1Villager_M_VSTakeExecution:
 		m_bDead = true;
-		if (CStageMgr::Get_Instance()->Add_Mob() == 8)
+		if (CStageMgr::Get_Instance()->Add_Mob() >= 8)
 		{
 			AUTOINSTANCE(CCameraMgr, _pCamera);
 			CTransform* _pPlayerTrans = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
@@ -421,7 +421,7 @@ void CExtra01::CheckLimit()
 	case Client::CExtra01::LV1Villager_M_HurtCounter:
 		break;
 	case Client::CExtra01::LV1Villager_M_HurtL_F:
-		if (m_fPlayTime > 20.f)
+		if (m_fPlayTime > 10.f)
 		{
 			On_Collider(COLLIDERTYPE_BODY, true);
 		}
