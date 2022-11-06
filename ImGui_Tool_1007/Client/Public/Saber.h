@@ -31,6 +31,13 @@ public:
 private:
 	_uint	m_iLight = 0;
 
+	_bool	m_bHitTime = false;
+
+	_float	m_fDelayTime = 0.05f;
+	_float	m_fCurDelayTime = 0.0f;
+	_float	m_fStopTime = 0.05f;
+	_float	m_fCurStopTime = 0.0f;
+
 
 private:
 	HRESULT Ready_Components();

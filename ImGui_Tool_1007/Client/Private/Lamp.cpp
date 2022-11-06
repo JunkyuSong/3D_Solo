@@ -48,7 +48,7 @@ HRESULT CLamp::Initialize(void * pArg)
 	ZeroMemory(&LightDesc, sizeof(DIRLIGHTDESC));
 
 	XMStoreFloat4(&LightDesc.vPosition, _vPos);
-	LightDesc.fRange = 12.5f;
+	LightDesc.fRange = 10.f;
 	LightDesc.vDiffuse = CLIENT_RGB(255.f, 127.f, 0.f);
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.1f);
 	LightDesc.vSpecular = _float4(0.4f, 0.4f, 0.4f, 0.2f);

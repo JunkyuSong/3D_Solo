@@ -227,7 +227,7 @@ void CExtra02::CheckEndAnim()
 		break;
 	case Client::CExtra02::LV1Villager_M_Die01:		
 		m_bDead = true;
-		if (CStageMgr::Get_Instance()->Add_Mob() >= 1)
+		if (CStageMgr::Get_Instance()->Add_Mob() >= 8)
 		{
 			AUTOINSTANCE(CCameraMgr, _pCamera);
 			CTransform* _pPlayerTrans = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));

@@ -1171,7 +1171,7 @@ _bool CMagician::Collision(_float fTimeDelta)
 				if(!m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack()))
 					m_eMonsterState = ATTACK_DEAD;
 				//CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.1f, 1.f);
-				CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomIn(50.f, 80.f, 0.3f);
+				
 
 				m_fAppear = 1.f;
 			}
@@ -1189,7 +1189,7 @@ _bool CMagician::Collision(_float fTimeDelta)
 				if (!m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack()))
 					m_eMonsterState = ATTACK_DEAD;
 				//CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.1f, 1.f);
-				CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomIn(50.f, 80.f, 0.3f);
+			
 
 				m_fAppear = 1.f;
 			}
@@ -1206,7 +1206,7 @@ _bool CMagician::Collision(_float fTimeDelta)
 				if (!m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack()))
 					m_eMonsterState = ATTACK_DEAD;
 				//CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.1f, 1.f);
-				CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomIn(50.f, 80.f, 0.3f);
+				//CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomIn(50.f, 80.f, 0.3f);
 
 				m_fAppear = 1.f;
 			}

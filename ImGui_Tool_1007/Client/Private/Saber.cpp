@@ -3,6 +3,8 @@
 #include "GameInstance.h"
 
 #include "CollisionMgr.h"
+#include "CameraMgr.h"
+#include "Camera.h"
 
 #include "Trail.h"
 
@@ -64,6 +66,19 @@ void CSaber::Tick(_float fTimeDelta, CGameObject * _pUser)
 		m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_WEAPON, m_pColliderCom, _pUser);
 	}
+
+	m_fCurDelayTime += fTimeDelta / CGameInstance::Get_Instance()->Get_TimeSpeed(TEXT("Timer_Main"));
+	if (m_bHitTime && m_fCurDelayTime > m_fDelayTime)
+	{
+		m_fCurStopTime += fTimeDelta / CGameInstance::Get_Instance()->Get_TimeSpeed(TEXT("Timer_Main"));
+		if (m_fCurStopTime > m_fStopTime)
+		{
+			CGameInstance::Get_Instance()->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+			m_bHitTime = false;
+			m_fCurStopTime = 0.f;
+		}
+	}
+	
 }
 
 void CSaber::LateTick(_float fTimeDelta)
@@ -81,7 +96,15 @@ HRESULT CSaber::Render()
 
 	if (pTarget)
 	{
+		// 라이트는 패링되었을때, 그 외엔 피 이펙트(시간 멈추는 타이밍에)!
 		Light_On();
+		CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomIn(50.f, 80.f, 0.3f);
+		//CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.1f, 0.5f);
+
+		CGameInstance::Get_Instance()->Set_TimeSpeed(TEXT("Timer_Main"), 0.1f);
+		m_fCurStopTime = 0.f;
+		m_fCurDelayTime = 0.f;
+		m_bHitTime = true;
 	}
 
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
