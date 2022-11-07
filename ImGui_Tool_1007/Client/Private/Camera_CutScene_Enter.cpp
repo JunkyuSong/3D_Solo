@@ -38,7 +38,21 @@ HRESULT CCamera_CutScene_Enter::Initialize(void * pArg)
 	Safe_AddRef(m_pModel);
 	m_pCameraBone = m_pModel->Get_HierarchyNode("camera");
 	Safe_AddRef(m_pCameraBone);
+	
 
+		switch (g_eCurLevel)
+		{
+		case Client::LEVEL_GAMEPLAY:
+			
+			break;
+		case Client::LEVEL_STAGE_02_1:
+			
+			break;
+		case Client::LEVEL_STAGE_02:
+			m_CamSpeed = 20.f;
+			break;
+
+		}
 	return S_OK;
 }
 
@@ -213,7 +227,7 @@ void CCamera_CutScene_Enter::Enter_Lv_Stage_02(_float fTimeDelta)
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, vLookPoint);
 			m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(40.f));
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-				m_pTransformCom->Get_State(CTransform::STATE_POSITION) + m_pTransformCom->Get_State(CTransform::STATE_LOOK)*6.f
+				m_pTransformCom->Get_State(CTransform::STATE_POSITION) + m_pTransformCom->Get_State(CTransform::STATE_LOOK)*4.f
 			);
 			m_pTransformCom->LookAt(vLookPoint);
 		}
@@ -226,11 +240,25 @@ void CCamera_CutScene_Enter::Enter_Lv_Stage_02(_float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vLookPoint);
 		m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-180.f));
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-			m_pTransformCom->Get_State(CTransform::STATE_POSITION) + m_pTransformCom->Get_State(CTransform::STATE_LOOK)*20.f
+			m_pTransformCom->Get_State(CTransform::STATE_POSITION) + m_pTransformCom->Get_State(CTransform::STATE_LOOK)*m_CamSpeed
 		);
 		m_pTransformCom->LookAt(vLookPoint);
+		m_CamSpeed += fTimeDelta*1.f;
 	}
 		break;
+	case 2:
+		//¹ÚÁã¸¸ ÃÄ´Ùº½ > 0
+	{
+		_vector vLookPoint = XMVectorSet(30.672f, 3.402f, 50.622f, 1.f);
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vLookPoint);
+		m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-180.f));
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			m_pTransformCom->Get_State(CTransform::STATE_POSITION) + m_pTransformCom->Get_State(CTransform::STATE_LOOK)*m_CamSpeed
+		);
+		m_pTransformCom->LookAt(vLookPoint);
+		m_CamSpeed += fTimeDelta*1.f;
+	}
+	break;
 	}
 }
 

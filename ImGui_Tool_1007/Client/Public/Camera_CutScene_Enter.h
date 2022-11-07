@@ -60,6 +60,8 @@ private:
 	_uint				m_iCutScene = 0;
 	_float				m_fAngleY = 0.f;
 	_float				m_fAngleX = 0.f;
+
+	_float				m_CamSpeed = 0.f;
 };
 
 END

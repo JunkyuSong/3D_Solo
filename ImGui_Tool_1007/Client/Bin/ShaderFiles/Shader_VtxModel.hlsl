@@ -101,17 +101,12 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	vNormal = normalize(mul(vNormal, WorldMatrix));
 
-	if (abs(length(g_CamPosition - In.vWorldPosition)) < 1.5f)
-	{
-		Out.vDiffuse.a = 0.f;
-	}
-
 	if (0 >= Out.vDiffuse.a)
 		discard;
 
 	// -1 ~ 1
 	//  0 ~ 1
-	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 300.0f, 0.0f, 0.0f);
 
 	return Out;
@@ -170,11 +165,6 @@ PS_OUT PS_Stage(PS_IN In)
 	float3x3	WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal);
 
 	vNormal = normalize(mul(vNormal, WorldMatrix));
-
-	if ((length(g_CamPosition - In.vWorldPosition)) < 0.5f)
-	{
-		discard;
-	}
 
 	if (0 >= Out.vDiffuse.a)
 		discard;
