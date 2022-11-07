@@ -141,13 +141,13 @@ void CHierarchyNode::Set_CombinedTransformation(_float4 * _vAnim, _float4x4 _piv
 	}
 	else if (!strcmp(m_szName, RootY))
 	{
-		/*_float4x4 _Temp;
+		_float4x4 _Temp;
 
 		XMStoreFloat4x4(&_Temp, XMLoadFloat4x4(&m_CombinedTransformation)*(XMLoadFloat4x4(&_pivot)));
 
 		_vAnim->y += _Temp._42;
 
-		m_CombinedTransformation._42 = 0.f;*/
+		m_CombinedTransformation._42 = 0.f;
 
 	}
 }
@@ -191,7 +191,7 @@ void CHierarchyNode::Set_CombinedTransformation(_float4 * _vAnim, _bool, char * 
 	}
 	else if (!strcmp(m_szName, RootY))
 	{
-		//m_CombinedTransformation._42 = 0.f;
+		m_CombinedTransformation._42 = 0.f;
 	}
 }
 

@@ -136,8 +136,9 @@ void CBoss_Bat::LateTick(_float fTimeDelta)
 	if (Collision(fTimeDelta))
 	{
 		CheckAnim();
-		CheckState(fTimeDelta);
+		
 		PlayAnimation(fTimeDelta);
+		CheckState(fTimeDelta);
 	}
 
 	RenderGroup();
@@ -183,13 +184,38 @@ void CBoss_Bat::PlayAnimation(_float fTimeDelta)
 		return;
 	_float4 _vAnim;
 	XMStoreFloat4(&_vAnim, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-	if (m_pModelCom->Play_Animation(fTimeDelta * m_fPlaySpeed, &_vAnim, &m_fPlayTime, m_bAgainAnim))
+
+	if (m_bJumpAnim)
 	{
-		CheckEndAnim();
+		if (m_pModelCom->Play_Animation(fTimeDelta * m_fPlaySpeed, &_vAnim, &m_fPlayTime, m_bAgainAnim, "Bip001-Pelvis"))
+		{
+			CheckEndAnim();
+		}
+		CheckLimit();
+
+		_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+		_float Y = _vAnim.y;
+		_vPos.m128_f32[1] = 0.f;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
+
+		XMStoreFloat4(&m_AnimPos, (XMLoadFloat4(&_vAnim) - XMLoadFloat4(&m_PreAnimPos)));
+
+		m_AnimPos.y = Y;
+		m_PreAnimPos = _vAnim;
 	}
-	CheckLimit();
-	XMStoreFloat4(&m_AnimPos, (XMLoadFloat4(&_vAnim) - XMLoadFloat4(&m_PreAnimPos)));
-	m_PreAnimPos = _vAnim;
+	else
+	{
+		if (m_pModelCom->Play_Animation(fTimeDelta * m_fPlaySpeed, &_vAnim, &m_fPlayTime, m_bAgainAnim))
+		{
+			CheckEndAnim();
+		}
+		CheckLimit();
+
+		XMStoreFloat4(&m_AnimPos, (XMLoadFloat4(&_vAnim) - XMLoadFloat4(&m_PreAnimPos)));
+
+		m_PreAnimPos = _vAnim;
+	}
 }
 
 
@@ -346,6 +372,8 @@ void CBoss_Bat::CheckState(_float fTimeDelta)
 
 void CBoss_Bat::CheckLimit()
 {
+	m_bJumpAnim = false;
+
 	switch (m_eCurState)
 	{
 	case Client::CBoss_Bat::BossBat_AttackL_01_1:
@@ -456,20 +484,25 @@ void CBoss_Bat::CheckLimit()
 		if (m_vecLimitTime[BossBat_FTurn_L][1] < m_fPlayTime)
 		{
 			On_Collider(COLLIDERTYPE_BODY, true);
+			m_bJumpAnim = false;
+
 		}
 		else if (m_vecLimitTime[BossBat_FTurn_L][0] < m_fPlayTime)
+			m_bJumpAnim = true;
 		{
 			On_Collider(COLLIDERTYPE_BODY, false);
 		}
-
 		break;
 	case Client::CBoss_Bat::BossBat_FTurn_R:
 		if (m_vecLimitTime[BossBat_FTurn_R][1] < m_fPlayTime)
 		{
 			On_Collider(COLLIDERTYPE_BODY, true);
+			m_bJumpAnim = false;
+
 		}
 		else if (m_vecLimitTime[BossBat_FTurn_R][0] < m_fPlayTime)
 		{
+			m_bJumpAnim = true;
 			On_Collider(COLLIDERTYPE_BODY, false);
 		}
 		break;
@@ -497,27 +530,32 @@ void CBoss_Bat::CheckLimit()
 
 		break;
 	case Client::CBoss_Bat::BossBat_JumpSmash_Chest:
-		if (m_vecLimitTime[BossBat_JumpSmash_Chest][1] < m_fPlayTime)
+		if (m_vecLimitTime[BossBat_JumpSmash_Chest][2] < m_fPlayTime)
 		{
 			On_Collider(COLLIDERTYPE_BODY, true);
 			On_Collider(COLLIDERTYPE_ATTBODY, false);
 			m_fPlaySpeed = 1.f;
 		}
-		else if (m_vecLimitTime[BossBat_JumpSmash_Chest][0] < m_fPlayTime)
+		else if (m_vecLimitTime[BossBat_JumpSmash_Chest][1] < m_fPlayTime)
 		{
 			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.5f, 5.f);
+			m_bJumpAnim = false;
 
 			On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_ATTBODY, true);
 			m_fPlaySpeed = 3.f;
 		}
+		else if (m_vecLimitTime[BossBat_JumpSmash_Chest][0] < m_fPlayTime)
+		{
+			m_bJumpAnim = true;
+		}
 		break;
 	case Client::CBoss_Bat::BossBat_JumpSmashForwardL:
-		if (m_vecLimitTime[BossBat_JumpSmashForwardL][2] < m_fPlayTime)
+		if (m_vecLimitTime[BossBat_JumpSmashForwardL][3] < m_fPlayTime)
 		{
 			m_eCurState = BossBat_Idle;
 		}
-		else if (m_vecLimitTime[BossBat_JumpSmashForwardL][1] < m_fPlayTime)
+		else if (m_vecLimitTime[BossBat_JumpSmashForwardL][2] < m_fPlayTime)
 		{
 			//CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.5f, 5.f);
 
@@ -525,21 +563,25 @@ void CBoss_Bat::CheckLimit()
 			On_Collider(COLLIDERTYPE_ATTBODY, false);
 			m_fPlaySpeed = 1.f;
 		}
-		else if (m_vecLimitTime[BossBat_JumpSmashForwardL][0] < m_fPlayTime)
+		else if (m_vecLimitTime[BossBat_JumpSmashForwardL][1] < m_fPlayTime)
 		{
 			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.5f, 5.f);
-
+			m_bJumpAnim = false;
 			On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_ATTBODY, true);
 			m_fPlaySpeed = 3.f;
 		}
+		else if (m_vecLimitTime[BossBat_JumpSmashForwardL][0] < m_fPlayTime)
+		{
+			m_bJumpAnim = true;
+		}
 		break;
 	case Client::CBoss_Bat::BossBat_JumpSmashL:
-		if (m_vecLimitTime[BossBat_JumpSmashL][2] < m_fPlayTime)
+		if (m_vecLimitTime[BossBat_JumpSmashL][3] < m_fPlayTime)
 		{
 			m_eCurState = BossBat_Idle;
 		}
-		else if (m_vecLimitTime[BossBat_JumpSmashL][1] < m_fPlayTime)
+		else if (m_vecLimitTime[BossBat_JumpSmashL][2] < m_fPlayTime)
 		{
 			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_Off();
 
@@ -547,13 +589,19 @@ void CBoss_Bat::CheckLimit()
 			On_Collider(COLLIDERTYPE_BODY, true);
 			On_Collider(COLLIDERTYPE_ATTBODY, false);
 		}
-		else if (m_vecLimitTime[BossBat_JumpSmashL][0] < m_fPlayTime)
+		else if (m_vecLimitTime[BossBat_JumpSmashL][1] < m_fPlayTime)
 		{
 			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.5f, 5.f);
+			m_bJumpAnim = true;
 
 			m_fPlaySpeed = 3.f;
 			On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_ATTBODY, true);
+
+		}
+		else if (m_vecLimitTime[BossBat_JumpSmashL][0] < m_fPlayTime)
+		{
+			m_bJumpAnim = false;
 		}
 		break;
 	case Client::CBoss_Bat::BossBat_FightStart:
@@ -1046,15 +1094,18 @@ void CBoss_Bat::Ready_LimitTime()
 	m_vecLimitTime[BossBat_HurtXL_L].push_back(10.f); // 바디 다시 피격으로
 
 	//BossBat_JumpSmash_Chest  -> 여기부터
+	m_vecLimitTime[BossBat_JumpSmash_Chest].push_back(20.f);
 	m_vecLimitTime[BossBat_JumpSmash_Chest].push_back(80.f); // 바디 무기로
 	m_vecLimitTime[BossBat_JumpSmash_Chest].push_back(100.f); // 바디 다시 피격으로
 
 	//BossBat_JumpSmashForwardL  -> 여기부터
+	m_vecLimitTime[BossBat_JumpSmashForwardL].push_back(60.f);
 	m_vecLimitTime[BossBat_JumpSmashForwardL].push_back(170.f); // 바디 무기로
 	m_vecLimitTime[BossBat_JumpSmashForwardL].push_back(200.f); // 바디 다시 피격으로
 	m_vecLimitTime[BossBat_JumpSmashForwardL].push_back(400.f); // 아이들 상태로
 
 	//BossBat_JumpSmashL  -> 여기부터
+	m_vecLimitTime[BossBat_JumpSmashL].push_back(60.f); // y값 받아오기 시작
 	m_vecLimitTime[BossBat_JumpSmashL].push_back(174.f); // 바디 무기로
 	m_vecLimitTime[BossBat_JumpSmashL].push_back(200.f); // 바디 다시 피격으로
 	m_vecLimitTime[BossBat_JumpSmashL].push_back(400.f); // 아이들 상태로

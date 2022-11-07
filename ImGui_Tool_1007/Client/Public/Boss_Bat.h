@@ -33,7 +33,7 @@ public:
 		BossBat_AttackR_01_2b,
 		BossBat_Bite_2,
 		BossBat_Dash,
-		BossBat_FTurn_L,
+		BossBat_FTurn_L,//7
 		BossBat_FTurn_R,
 		BossBat_HurtXL_R,
 		BossBat_HurtXL_L,
@@ -119,6 +119,8 @@ private:
 
 
 	DIRECT					m_eDir = DIR_END;
+
+	_bool					m_bJumpAnim = false;
 
 private:
 	HRESULT Ready_Components();
