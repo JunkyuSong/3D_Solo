@@ -65,6 +65,7 @@ HRESULT CPlayer::Initialize(void * pArg)
 {
 
 	AUTOINSTANCE(CGameInstance, pGameInstance);
+	AUTOINSTANCE(CCameraMgr, pCameraMgr);
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -122,7 +123,9 @@ HRESULT CPlayer::Initialize(void * pArg)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(51.979f, 0.115f, -7.650f, 1.f));
 		break;
 	case Client::LEVEL_STAGE_02:
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(44.083f, 0.f, 17.580f, 1.f));
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(44.083f, 10.f, 17.580f, 1.f));
+		//pCameraMgr->Change_Camera(CCameraMgr::CAMERA_CUTSCENE_ENTER);
+		m_eCurState = Corvus_SD_Fall_Loop;
 		break;
 	case Client::LEVEL_STAGE_LAST:
 		m_pNavigationCom->Set_Index(388);
@@ -1221,10 +1224,26 @@ void CPlayer::CheckEndAnim()
 		m_eCurState = Corvus_SD_Fall_Loop;
 		break;
 	case Client::CPlayer::Corvus_SD_Fall_Loop:
-		_pInstance->Reserve_Level(LEVEL_STAGE_02);
+		if (g_eCurLevel == LEVEL_STAGE_02_1)
+			_pInstance->Reserve_Level(LEVEL_STAGE_02);
+		else if (g_eCurLevel == LEVEL_STAGE_02)
+			m_eCurState = Corvus_SD_Fall_Loop;
+		
 		break;
 	case Client::CPlayer::Corvus_SD_Fall_End:
-		m_eCurState = STATE_IDLE;
+		if (g_eCurLevel == LEVEL_STAGE_02)
+		{
+			CNavigation::NAVIGATIONDESC			NaviDesc;
+			ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
+			NaviDesc.iCurrentIndex = 0;
+			if (FAILED(__super::Add_Component(LEVEL_STAGE_02, TEXT("Prototype_Component_Navigation_Stage_02"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
+				return;
+			m_eCurState = STATE_IDLE;
+			static_cast<CCamera_CutScene_Enter*>(_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER))->Set_CutSceneNum(1);
+			m_eWeapon = WEAPON_BASE;
+			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+		}
+		
 		break;
 	case Client::CPlayer::Corvus_VS_MagicianLV1_Seq_BossFightStart:
 		_pCamera->Change_Camera(CCameraMgr::CAMERA_PLAYER);
@@ -1678,10 +1697,36 @@ void CPlayer::AfterAnim(_float fTimeDelta)
 		Cancle();
 		break;
 	case Client::CPlayer::Corvus_SD_Fall_Loop:
+		m_eWeapon = WEAPON_NONE;
 		m_pTransformCom->Go_Up(-fTimeDelta * m_fAddSpeed * 0.7f);
 		m_fAddSpeed *= 1.1f;
+		if (g_eCurLevel == LEVEL_STAGE_02)
+		{
+			AUTOINSTANCE(CCameraMgr, _pCamera);
+			_pCamera->Change_Camera(CCameraMgr::CAMERA_CUTSCENE_ENTER);
+
+			_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+			if (vPos.m128_f32[1] < 1.5f)
+			{
+				AUTOINSTANCE(CGameInstance, _pGameInstance);
+				m_eCurState = Corvus_SD_Fall_End;
+				//_pGameInstance->Set_TimeSpeed(TEXT("Timer_Main"), 0.1f);
+			}
+		}
 		break;
 	case Client::CPlayer::Corvus_SD_Fall_End:
+		_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		if (vPos.m128_f32[1] > 0.f)
+		{
+			m_pTransformCom->Go_Up(-fTimeDelta * m_fAddSpeed * 0.7f);
+			m_fAddSpeed *= 1.1f;
+		}
+		else
+		{
+			vPos.m128_f32[1] = 0.f;
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
+		}
+		
 
 		break;
 	}
@@ -1995,8 +2040,7 @@ HRESULT CPlayer::Ready_Components()
 			return E_FAIL;
 		break;
 	case Client::LEVEL_STAGE_02:
-		if (FAILED(__super::Add_Component(LEVEL_STAGE_02, TEXT("Prototype_Component_Navigation_Stage_02"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
-			return E_FAIL;
+		
 		break;
 	case Client::LEVEL_STAGE_LAST:
 		if (FAILED(__super::Add_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Navigation_Stage_Last"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))

@@ -10,6 +10,7 @@
 #include "Animation.h"
 #include "CameraMgr.h"
 #include "Camera.h"
+#include "Camera_CutScene_Enter.h"
 
 CBoss_Bat::CBoss_Bat(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
@@ -42,16 +43,16 @@ HRESULT CBoss_Bat::Initialize(void * pArg)
 
 
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672f, 2.402f, 50.622f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672f, 0.f, 50.622f, 1.f));
 	_bool		isMove = true;
 	Get_AnimMat();
 	_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	if (nullptr != m_pNavigationCom)
-		isMove = m_pNavigationCom->isMove(XMVectorSet(30.672f, 2.402f, 50.622f, 1.f), &vNormal);
+		isMove = m_pNavigationCom->isMove(XMVectorSet(30.672f, 0.f, 50.622f, 1.f), &vNormal);
 
 	if (true == isMove)
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672f, 2.402f, 50.622f, 1.f));
-	m_eCurState = BossBat_Idle;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672f, 0.f, 50.622f, 1.f));
+	m_eCurState = BossBat_IdleBeforeFight;
 
 	On_Collider(COLLIDERTYPE_BODY,true);
 	return S_OK;
@@ -249,7 +250,13 @@ void CBoss_Bat::CheckEndAnim()
 		m_eCurState = BossBat_Idle;
 		break;
 	case Client::CBoss_Bat::BossBat_FightStart:
-		m_eCurState = BossBat_Idle;
+		//m_eCurState = BossBat_IdleBeforeFight;
+		//m_eCurState = BossBat_Idle;
+		{
+			AUTOINSTANCE(CCameraMgr, _pCamMgr);
+			_pCamMgr->Change_Camera(CCameraMgr::CAMERA_PLAYER);
+			m_eCurState = BossBat_Idle;
+		}
 		break;
 	case Client::CBoss_Bat::BossBat_Stun:
 		m_eCurState = BossBat_Idle;
@@ -326,6 +333,13 @@ void CBoss_Bat::CheckState(_float fTimeDelta)
 		Turn();
 		m_pTransformCom->Go_Straight(fTimeDelta / 2.f);
 		break;
+	case Client::CBoss_Bat::BossBat_IdleBeforeFight:
+	{
+		AUTOINSTANCE(CCameraMgr, _pCameraMgr);
+		if (static_cast<CCamera_CutScene_Enter*>(_pCameraMgr->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER))->Get_CutSceneNum() == 1)
+			m_eCurState = BossBat_FightStart;
+	}
+		break;
 	}
 	Get_AnimMat();
 }
@@ -339,11 +353,13 @@ void CBoss_Bat::CheckLimit()
 		{
 			//On_Collider(COLLIDERTYPE_BODY, true);
 			On_Collider(COLLIDERTYPE_HAND_L, false);
+			m_fPlaySpeed = 1.f;
 		}
 		else if (m_vecLimitTime[BossBat_AttackL_01_1][0] < m_fPlayTime)
 		{
 			//On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_HAND_L, true);
+			m_fPlaySpeed = 3.f;
 		}
 		break;
 	case Client::CBoss_Bat::BossBat_AttackL_01_2b:
@@ -351,11 +367,13 @@ void CBoss_Bat::CheckLimit()
 		{
 			//On_Collider(COLLIDERTYPE_BODY, true);
 			On_Collider(COLLIDERTYPE_HAND_L, false);
+			m_fPlaySpeed = 1.f;
 		}
 		else if (m_vecLimitTime[BossBat_AttackL_01_2b][0] < m_fPlayTime)
 		{
 			//On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_HAND_L, true);
+			m_fPlaySpeed = 3.f;
 		}
 		break;
 	case Client::CBoss_Bat::BossBat_AttackL_01_3a:
@@ -363,11 +381,13 @@ void CBoss_Bat::CheckLimit()
 		{
 			//On_Collider(COLLIDERTYPE_BODY, true);
 			On_Collider(COLLIDERTYPE_HAND_R, false);
+			m_fPlaySpeed = 1.f;
 		}
 		else if (m_vecLimitTime[BossBat_AttackL_01_3a][0] < m_fPlayTime)
 		{
 			//On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_HAND_R, true);
+			m_fPlaySpeed = 3.f;
 		}
 		break;
 	case Client::CBoss_Bat::BossBat_AttackR_01_1:
@@ -376,27 +396,28 @@ void CBoss_Bat::CheckLimit()
 			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_Off();
 			//On_Collider(COLLIDERTYPE_BODY, true);
 			On_Collider(COLLIDERTYPE_HAND_R, false);
+			m_fPlaySpeed = 1.f;
 		}
 		else if (m_vecLimitTime[BossBat_AttackR_01_1][0] < m_fPlayTime)
 		{
 			//On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_HAND_R, true);
 			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.1f, 0.01f);
-
+			m_fPlaySpeed = 3.f;
 		}
 		break;
 	case Client::CBoss_Bat::BossBat_AttackR_01_2b:
 		if (m_vecLimitTime[BossBat_AttackR_01_2b][1] < m_fPlayTime)
 		{
 			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_Off();
-
+			m_fPlaySpeed = 1.f;
 			//On_Collider(COLLIDERTYPE_BODY, true);
 			On_Collider(COLLIDERTYPE_HAND_R, false);
 		}
 		else if (m_vecLimitTime[BossBat_AttackR_01_2b][0] < m_fPlayTime)
 		{
 			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(3.5f, 5.f);
-
+			m_fPlaySpeed = 3.f;
 			//On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_HAND_R, true);
 		}
@@ -404,11 +425,13 @@ void CBoss_Bat::CheckLimit()
 	case Client::CBoss_Bat::BossBat_Bite_2:
 		if (m_vecLimitTime[BossBat_Bite_2][1] < m_fPlayTime)
 		{
+			m_fPlaySpeed = 1.f;
 			//On_Collider(COLLIDERTYPE_BODY, true);
 			On_Collider(COLLIDERTYPE_MOUSE, false);
 		}
 		else if (m_vecLimitTime[BossBat_Bite_2][0] < m_fPlayTime)
 		{
+			m_fPlaySpeed = 3.f;
 			//On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_MOUSE, true);
 		}
@@ -416,14 +439,14 @@ void CBoss_Bat::CheckLimit()
 	case Client::CBoss_Bat::BossBat_Dash:
 		if (m_vecLimitTime[BossBat_Dash][1] < m_fPlayTime)
 		{
-			
+			//m_fPlaySpeed = 3.f;
 			//On_Collider(COLLIDERTYPE_BODY, true);
 			On_Collider(COLLIDERTYPE_ATTBODY, false);
 		}
 		else if (m_vecLimitTime[BossBat_Dash][0] < m_fPlayTime)
 		{
 			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(3.5f, 5.f);
-
+			//m_fPlaySpeed = 3.f;
 			//On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_ATTBODY, true);
 		}
@@ -478,6 +501,7 @@ void CBoss_Bat::CheckLimit()
 		{
 			On_Collider(COLLIDERTYPE_BODY, true);
 			On_Collider(COLLIDERTYPE_ATTBODY, false);
+			m_fPlaySpeed = 1.f;
 		}
 		else if (m_vecLimitTime[BossBat_JumpSmash_Chest][0] < m_fPlayTime)
 		{
@@ -485,6 +509,7 @@ void CBoss_Bat::CheckLimit()
 
 			On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_ATTBODY, true);
+			m_fPlaySpeed = 3.f;
 		}
 		break;
 	case Client::CBoss_Bat::BossBat_JumpSmashForwardL:
@@ -498,6 +523,7 @@ void CBoss_Bat::CheckLimit()
 
 			On_Collider(COLLIDERTYPE_BODY, true);
 			On_Collider(COLLIDERTYPE_ATTBODY, false);
+			m_fPlaySpeed = 1.f;
 		}
 		else if (m_vecLimitTime[BossBat_JumpSmashForwardL][0] < m_fPlayTime)
 		{
@@ -505,6 +531,7 @@ void CBoss_Bat::CheckLimit()
 
 			On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_ATTBODY, true);
+			m_fPlaySpeed = 3.f;
 		}
 		break;
 	case Client::CBoss_Bat::BossBat_JumpSmashL:
@@ -516,6 +543,7 @@ void CBoss_Bat::CheckLimit()
 		{
 			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_Off();
 
+			m_fPlaySpeed = 1.f;
 			On_Collider(COLLIDERTYPE_BODY, true);
 			On_Collider(COLLIDERTYPE_ATTBODY, false);
 		}
@@ -523,6 +551,7 @@ void CBoss_Bat::CheckLimit()
 		{
 			CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.5f, 5.f);
 
+			m_fPlaySpeed = 3.f;
 			On_Collider(COLLIDERTYPE_BODY, false);
 			On_Collider(COLLIDERTYPE_ATTBODY, true);
 		}
@@ -1076,7 +1105,11 @@ void CBoss_Bat::Free()
 
 void CBoss_Bat::Update_Collider()
 {
-	//if (m_bCollision[COLLIDERTYPE_BODY])
+	if (m_bCollision[COLLIDERTYPE_PUSH])
+	{
+		m_pColliderCom[COLLIDERTYPE_PUSH]->Update(m_pTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_PUSH, m_pColliderCom[COLLIDERTYPE_PUSH], this);
+	}
 
 	if (m_bCollision[COLLIDERTYPE_BODY])
 	{

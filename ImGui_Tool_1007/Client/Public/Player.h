@@ -72,6 +72,7 @@ public:
 		Corvus_SD_Fall_End,
 		Strong_Jump2,
 		Corvus_Jump,
+		Corvus_SD1_Fall_Attack,
 		STATE_END
 	};
 

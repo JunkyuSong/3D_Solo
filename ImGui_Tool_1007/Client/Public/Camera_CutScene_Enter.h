@@ -35,6 +35,15 @@ public:
 	{
 		m_iCutScene = _iCutScene;
 	}
+	_uint Get_CutSceneNum()
+	{
+		return m_iCutScene;
+	}
+
+private:
+	void End_Lv_Stage_02_1(_float fTimeDelta);
+	void Enter_Lv_Stage_01(_float fTimeDelta);
+	void Enter_Lv_Stage_02(_float fTimeDelta);
 
 public:
 	static CCamera_CutScene_Enter* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

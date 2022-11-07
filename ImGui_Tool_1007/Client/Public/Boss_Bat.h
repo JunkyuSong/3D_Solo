@@ -24,7 +24,7 @@ BEGIN(Client)
 class CBoss_Bat final : public CMonster
 {
 public:
-	enum MAGICIANCOLLIDER { COLLIDERTYPE_BODY, COLLIDERTYPE_ATTBODY, COLLIDERTYPE_HAND_R, COLLIDERTYPE_HAND_L, COLLIDERTYPE_MOUSE, COLLILDERTYPE_END };
+	enum MAGICIANCOLLIDER { COLLIDERTYPE_PUSH, COLLIDERTYPE_BODY, COLLIDERTYPE_ATTBODY, COLLIDERTYPE_HAND_R, COLLIDERTYPE_HAND_L, COLLIDERTYPE_MOUSE, COLLILDERTYPE_END };
 	enum STATE {
 		BossBat_AttackL_01_1,
 		BossBat_AttackL_01_2b,
@@ -49,6 +49,7 @@ public:
 		BossBat_TurnL90,
 		BossBat_TurnR90,
 		BossBat_WalkF,
+		BossBat_IdleBeforeFight,
 		STATE_END
 	};
 private:
@@ -99,7 +100,7 @@ private:
 
 private:
 	STATE					m_eReserveState = STATE_END;
-	STATE					m_eCurState = BossBat_Idle;
+	STATE					m_eCurState = BossBat_IdleBeforeFight;
 	STATE					m_ePreState = STATE_END;
 
 	_float4					m_AnimPos;

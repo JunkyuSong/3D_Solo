@@ -229,9 +229,6 @@
     <Filter Include="02.GameObjects\05. Monster\Puppet">
       <UniqueIdentifier>{e2bd935f-66ba-437d-a33f-0b0e75548e6d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00. Player\CutScene">
-      <UniqueIdentifier>{0d83a8e8-1859-41c3-a321-24461f9aef30}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\Camera\Camera_CutScene">
       <UniqueIdentifier>{c0bc3b66-ff56-4495-be81-f0b62d156c89}</UniqueIdentifier>
     </Filter>
@@ -252,6 +249,18 @@
     </Filter>
     <Filter Include="02.GameObjects\06. Map_Obj\StreetLight\Lamp">
       <UniqueIdentifier>{0346bcda-a8c5-409d-925a-6b3df625c83a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Monster\Extra\Extra01\Stage_2-1">
+      <UniqueIdentifier>{83ba1027-a048-4c46-a9fb-b7dcd5ae6f3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Monster\Extra\Extra01\Stage_Last">
+      <UniqueIdentifier>{54a1c42c-066b-45ad-b2f2-9d571d05a5d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Monster\Extra\Extra02\Stage_2-1">
+      <UniqueIdentifier>{e3d997d8-04e5-4bb4-b9c4-02d6495c8a4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Monster\Extra\Extra02\Stage_Last">
+      <UniqueIdentifier>{a93a19cd-0978-4ec1-bd00-717ef64dd4c5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -453,12 +462,6 @@
     <ClInclude Include="..\Public\Level_Stage_02_1.h">
       <Filter>01.Levels\03.Stage_02\Stage_02_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Extra01.h">
-      <Filter>02.GameObjects\05. Monster\Extra\Extra01</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Extra02.h">
-      <Filter>02.GameObjects\05. Monster\Extra\Extra02</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\MonsterAxe.h">
       <Filter>02.GameObjects\05. Monster\Extra\ExtraWeapon</Filter>
     </ClInclude>
@@ -474,9 +477,6 @@
     <ClInclude Include="..\Public\Puppet.h">
       <Filter>02.GameObjects\05. Monster\Puppet</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Player_CutScene.h">
-      <Filter>02.GameObjects\00. Player\CutScene</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\StageMgr.h">
       <Filter>02.GameObjects\Map\Stage_02\Stage_02_1\StageMgr</Filter>
     </ClInclude>
@@ -491,6 +491,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Lamp.h">
       <Filter>02.GameObjects\06. Map_Obj\StreetLight\Lamp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Extra01.h">
+      <Filter>02.GameObjects\05. Monster\Extra\Extra01\Stage_2-1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Extra02.h">
+      <Filter>02.GameObjects\05. Monster\Extra\Extra02\Stage_2-1</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -674,12 +680,6 @@
     <ClCompile Include="..\Private\Level_Stage_02_1.cpp">
       <Filter>01.Levels\03.Stage_02\Stage_02_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Extra01.cpp">
-      <Filter>02.GameObjects\05. Monster\Extra\Extra01</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Extra02.cpp">
-      <Filter>02.GameObjects\05. Monster\Extra\Extra02</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\MonsterAxe.cpp">
       <Filter>02.GameObjects\05. Monster\Extra\ExtraWeapon</Filter>
     </ClCompile>
@@ -695,9 +695,6 @@
     <ClCompile Include="..\Private\Puppet.cpp">
       <Filter>02.GameObjects\05. Monster\Puppet</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Player_CutScene.cpp">
-      <Filter>02.GameObjects\00. Player\CutScene</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\StageMgr.cpp">
       <Filter>02.GameObjects\Map\Stage_02\Stage_02_1\StageMgr</Filter>
     </ClCompile>
@@ -712,6 +709,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Lamp.cpp">
       <Filter>02.GameObjects\06. Map_Obj\StreetLight\Lamp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Extra01.cpp">
+      <Filter>02.GameObjects\05. Monster\Extra\Extra01\Stage_2-1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Extra02.cpp">
+      <Filter>02.GameObjects\05. Monster\Extra\Extra02\Stage_2-1</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
