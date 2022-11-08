@@ -13,7 +13,7 @@ BEGIN(Client)
 일정 범위 안에 없으면 그 범위 안에 들어올때까지 턴한다
 */
 
-class CExtra02 final : public CMonster
+class CExtra02_Last final : public CMonster
 {
 public:
 	enum EXTRA02COLLIDER { COLLIDERTYPE_BODY, COLLIDERTYPE_PUSH, COLLIDERTYPE_ARM, COLLILDERTYPE_END };
@@ -36,16 +36,15 @@ public:
 		LV2Villager01_M_Walk,
 		LV1Villager_M_IdleGeneral,
 		LV1Villager_M_SP_Idle,
-
 		STATE_END
 	};
 private:
 	enum DIRECT { DIR_F, DIR_B, DIR_R, DIR_L, DIR_FR, DIR_BR, DIR_FL, DIR_BL, DIR_END };
 
 private:
-	CExtra02(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CExtra02(const CExtra02& rhs);
-	virtual ~CExtra02() = default;
+	CExtra02_Last(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CExtra02_Last(const CExtra02_Last& rhs);
+	virtual ~CExtra02_Last() = default;
 
 
 public:
@@ -137,7 +136,7 @@ private:
 
 
 public:
-	static CExtra02* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CExtra02_Last* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CMonster* Clone(void* pArg);
 	virtual void Free() override;
 };

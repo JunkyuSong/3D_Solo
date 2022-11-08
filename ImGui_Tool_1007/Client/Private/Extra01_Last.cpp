@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "..\Public\Extra01.h"
+#include "..\Public\Extra01_Last.h"
 #include "GameInstance.h"
 #include "ImGuiMgr.h"
 #include "HierarchyNode.h"
@@ -13,19 +13,19 @@
 #include "Camera.h"
 #include "Camera_CutScene_Enter.h"
 
-CExtra01::CExtra01(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CExtra01_Last::CExtra01_Last(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
 {
 }
 
-CExtra01::CExtra01(const CExtra01 & rhs)
+CExtra01_Last::CExtra01_Last(const CExtra01_Last & rhs)
 	: CMonster(rhs)
 	, m_AnimPos(rhs.m_AnimPos)
 	, m_PreAnimPos(rhs.m_PreAnimPos)
 {
 }
 
-HRESULT CExtra01::Initialize_Prototype()
+HRESULT CExtra01_Last::Initialize_Prototype()
 {
 	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 	m_PreAnimPos = m_AnimPos;
@@ -35,7 +35,7 @@ HRESULT CExtra01::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CExtra01::Initialize(void * pArg)
+HRESULT CExtra01_Last::Initialize(void * pArg)
 {
 	m_eMonsterType = MONSTER_EXTRA01;
 
@@ -79,12 +79,12 @@ HRESULT CExtra01::Initialize(void * pArg)
 
 
 
-	m_eCurState = LV1Villager_M_IdleGeneral;
+	m_eCurState = LV1Villager_M_SP_Idle;
 	On_Collider(COLLIDERTYPE_BODY, true);
 	return S_OK;
 }
 
-void CExtra01::Tick(_float fTimeDelta)
+void CExtra01_Last::Tick(_float fTimeDelta)
 {
 	if (m_bDead)
 	{
@@ -110,8 +110,8 @@ void CExtra01::Tick(_float fTimeDelta)
 		Check_Stun();
 		CheckAnim();
 
-		
-		PlayAnimation(fTimeDelta);
+		if (m_eCurState != LV1Villager_M_SP_Idle)
+			PlayAnimation(fTimeDelta);
 		CheckState(fTimeDelta);
 	}
 
@@ -123,7 +123,7 @@ void CExtra01::Tick(_float fTimeDelta)
 	Update_Collider();
 }
 
-void CExtra01::LateTick(_float fTimeDelta)
+void CExtra01_Last::LateTick(_float fTimeDelta)
 {
 	if (m_bDead)
 	{
@@ -131,6 +131,14 @@ void CExtra01::LateTick(_float fTimeDelta)
 		return;
 	}
 	AUTOINSTANCE(CGameInstance, _pInstance);
+	if (m_eCurState == LV1Villager_M_SP_Idle)
+	{
+		_bool		isDraw = _pInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
+		if (isDraw)
+			RenderGroup();
+		return;
+	}
+	
 	if (Collision(fTimeDelta))
 	{
 		CheckAnim();
@@ -142,7 +150,7 @@ void CExtra01::LateTick(_float fTimeDelta)
 		RenderGroup();
 }
 
-HRESULT CExtra01::Render()
+HRESULT CExtra01_Last::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
@@ -176,7 +184,7 @@ HRESULT CExtra01::Render()
 	return S_OK;
 }
 
-void CExtra01::PlayAnimation(_float fTimeDelta)
+void CExtra01_Last::PlayAnimation(_float fTimeDelta)
 {
 	if (m_bAnimStop)
 		return;
@@ -192,74 +200,44 @@ void CExtra01::PlayAnimation(_float fTimeDelta)
 }
 
 
-void CExtra01::CheckEndAnim()
+void CExtra01_Last::CheckEndAnim()
 {
 	m_fPlaySpeed = 1.f;
 	AUTOINSTANCE(CGameInstance, _pInstance);
 	switch (m_eCurState)
 	{
-	case Client::CExtra01::LV1Villager_M_Attack01:
+	case Client::CExtra01_Last::LV1Villager_M_Attack01:
 		m_eCurState = LV1Villager_M_IdleGeneral;
 		break;
-	case Client::CExtra01::LV1Villager_M_Attack02:
+	case Client::CExtra01_Last::LV1Villager_M_Attack02:
 		m_eCurState = LV1Villager_M_IdleGeneral;
 		break;
-	case Client::CExtra01::LV1Villager_M_Attack03:
+	case Client::CExtra01_Last::LV1Villager_M_Attack03:
 		m_eCurState = LV1Villager_M_IdleGeneral;
 		break;
-	case Client::CExtra01::LV1Villager_M_Die01:
-		m_bDead = true;
-		if (CStageMgr::Get_Instance()->Add_Mob() >= 8)
-		{
-			AUTOINSTANCE(CCameraMgr, _pCamera);
-			CTransform* _pPlayerTrans = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
-			_pPlayerTrans->Set_State(CTransform::STATE_POSITION, XMVectorSet(54.446f, 0.115f, 29.388f, 1.f));
-
-			_pPlayerTrans->LookAt_ForLandObject(XMVectorSet(72.055f, 0.122f, 25.819f, 1.f));
-			CPlayer* _Player = static_cast<CPlayer*>(_pInstance->Get_Player());
-			_Player->Set_AnimState(CPlayer::STATE_APPROACH2);
-			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
-			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Set_FOV(60.f);
-
-			_pCamera->Change_Camera(CCameraMgr::CAMERA_CUTSCENE_ENTER);
-			CCamera_CutScene_Enter* _pCutSceneCam = static_cast<CCamera_CutScene_Enter*> (_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER));
-			_pCutSceneCam->Tick(0.f);
-			_pCutSceneCam->Set_CutSceneNum(1);
-		}
+	case Client::CExtra01_Last::LV1Villager_M_Die01:
+		m_bDead = true;		
 		m_eMonsterState = ATTACK_DEAD;
 		break;
-	case Client::CExtra01::LV1Villager_M_HurtCounter:
+	case Client::CExtra01_Last::LV1Villager_M_HurtCounter:
 		m_eCurState = LV1Villager_M_IdleGeneral;
 		break;
-	case Client::CExtra01::LV1Villager_M_HurtL_F:
+	case Client::CExtra01_Last::LV1Villager_M_HurtL_F:
 		m_eCurState = LV1Villager_M_IdleGeneral;
 		break;
-	case Client::CExtra01::LV1Villager_M_Sit_Idle:
+	case Client::CExtra01_Last::LV1Villager_M_Sit_Idle:
 		m_eCurState = LV1Villager_M_IdleGeneral;
 		break;
-	case Client::CExtra01::LV1Villager_M_SP_Idle1:
+	case Client::CExtra01_Last::LV1Villager_M_SP_Idle1:
 		m_eCurState = LV1Villager_M_IdleGeneral;
 		break;
-	case Client::CExtra01::LV1Villager_M_VSTakeExecution:
-		m_bDead = true;
-		if (CStageMgr::Get_Instance()->Add_Mob() >= 8)
-		{
-			AUTOINSTANCE(CCameraMgr, _pCamera);
-			CTransform* _pPlayerTrans = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
-			_pPlayerTrans->Set_State(CTransform::STATE_POSITION, XMVectorSet(54.446f, 0.115f, 29.388f, 1.f));
-
-			_pPlayerTrans->LookAt_ForLandObject(XMVectorSet(72.055f, 0.122f, 25.819f, 1.f));
-			CPlayer* _Player = static_cast<CPlayer*>(_pInstance->Get_Player());
-			_Player->Set_AnimState(CPlayer::STATE_APPROACH2);
-			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
-			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Set_FOV(60.f);
-		}
-		//m_eCurState = LV1Villager_M_IdleGeneral;
+	case Client::CExtra01_Last::LV1Villager_M_VSTakeExecution:
+		m_bDead = true;		
 		break;
-	case Client::CExtra01::LV1Villager_M_WalkF:
+	case Client::CExtra01_Last::LV1Villager_M_WalkF:
 		m_eCurState = LV1Villager_M_WalkF;
 		break;
-	case Client::CExtra01::LV1Villager_M_IdleGeneral:
+	case Client::CExtra01_Last::LV1Villager_M_IdleGeneral:
 		m_eCurState = LV1Villager_M_IdleGeneral;
 		break;
 	}
@@ -268,107 +246,63 @@ void CExtra01::CheckEndAnim()
 	m_PreAnimPos = m_AnimPos;
 }
 
-void CExtra01::CheckState(_float fTimeDelta)
+void CExtra01_Last::CheckState(_float fTimeDelta)
 {
 	AUTOINSTANCE(CGameInstance, _pInstance);
 	switch (m_eCurState)
 	{
-	case Client::CExtra01::LV1Villager_M_Attack01:
+	case Client::CExtra01_Last::LV1Villager_M_Attack01:
 		break;
-	case Client::CExtra01::LV1Villager_M_Attack02:
+	case Client::CExtra01_Last::LV1Villager_M_Attack02:
 		break;
-	case Client::CExtra01::LV1Villager_M_Attack03:
+	case Client::CExtra01_Last::LV1Villager_M_Attack03:
 		break;
-	case Client::CExtra01::LV1Villager_M_Die01:
+	case Client::CExtra01_Last::LV1Villager_M_Die01:
 		break;
-	case Client::CExtra01::LV1Villager_M_HurtCounter:
+	case Client::CExtra01_Last::LV1Villager_M_HurtCounter:
 		break;
-	case Client::CExtra01::LV1Villager_M_HurtL_F:
+	case Client::CExtra01_Last::LV1Villager_M_HurtL_F:
 		break;
-	case Client::CExtra01::LV1Villager_M_Sit_Idle:
+	case Client::CExtra01_Last::LV1Villager_M_Sit_Idle:
 		break;
-	case Client::CExtra01::LV1Villager_M_SP_Idle1:
+	case Client::CExtra01_Last::LV1Villager_M_SP_Idle1:
 		break;
-	case Client::CExtra01::LV1Villager_M_VSTakeExecution:
+	case Client::CExtra01_Last::LV1Villager_M_VSTakeExecution:
 		break;
-	case Client::CExtra01::LV1Villager_M_WalkF:
-		if ((m_bPreStateAtt = InRange()) == false)
+	case Client::CExtra01_Last::LV1Villager_M_WalkF:
 		{
-			_float _RandMove = _pInstance->Rand_Float(5.f, 8.f);
-			m_fMove += fTimeDelta;
-			if (m_fMove > _RandMove)
-			{
-				m_eCurState = LV1Villager_M_IdleGeneral;
-			}
-			m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_LOOK),XMLoadFloat3(&m_vNextLook), 0.9f);
-		}
-		{
+			_vector _PlayerPos = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+			m_pTransformCom->LookAt_ForLandObject(_PlayerPos);
+
 			_vector		vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 			_vector		vLook = m_pTransformCom->Get_State(CTransform::STATE_LOOK);
 
-			vPosition += XMVector3Normalize(vLook) * fTimeDelta;
+			m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
 
-			_bool		isMove = true;
-
-			if (nullptr != m_pNavigationCom)
-			{
-				isMove = m_pNavigationCom->isMove(vPosition,nullptr);
-
-				if (true == isMove)
-				{
-					vPosition.m128_f32[1] = m_pNavigationCom->Get_PosY(vPosition);
-					m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
-				}
-				else
-				{
-					
-					_float		_RandRot = _pInstance->Rand_Float(120.f, 240.f);
-					_matrix		RotationMatrix = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(_RandRot));
-					XMStoreFloat3(&m_vNextLook, XMVector3TransformNormal(m_pTransformCom->Get_State(CTransform::STATE_LOOK), RotationMatrix));
-					m_eCurState = LV1Villager_M_IdleGeneral;
-					m_bLine = true;
-				}
-			}
+			Pattern();
 		}
+		break;
+	case Client::CExtra01_Last::LV1Villager_M_IdleGeneral:
 		
 		break;
-	case Client::CExtra01::LV1Villager_M_IdleGeneral:
-		if (m_bLine)
+	case Client::CExtra01_Last::LV1Villager_M_SP_Idle:
+	{
+		_vector _PlayerPos = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+		if (fabs(XMVector3Length(_PlayerPos - m_pTransformCom->Get_State(CTransform::STATE_POSITION)).m128_f32[0]) > 5.f)
 		{
-			m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_LOOK), XMLoadFloat3(&m_vNextLook), 0.9f);
-			if (XMVector3Length((m_pTransformCom->Get_State(CTransform::STATE_LOOK) - XMLoadFloat3(&m_vNextLook))).m128_f32[0] < 0.03f)
-			{
-				m_bLine = false;
-			}
+			m_eCurState = LV1Villager_M_WalkF;
 		}
-		else
-		{
-			if (InRange() == false)
-			{
-				_float _RandMove = _pInstance->Rand_Float(0.f, 2.f);
-				m_fMove += fTimeDelta;
-				if (m_fMove > _RandMove)
-				{
-					_float		_RandRot = _pInstance->Rand_Float(0.f, 360.f);
-					_matrix		RotationMatrix = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(_RandRot));
-					XMStoreFloat3(&m_vNextLook, XMVector3TransformNormal(XMVectorSet(0.f, 0.f, 1.f, 0.f), RotationMatrix));
-
-					m_fMove = 0.f;
-					m_eCurState = LV1Villager_M_WalkF;
-				}
-			}
-		}
-		
+	}
 		break;
 	}
 	Get_AnimMat();
 }
 
-void CExtra01::CheckLimit()
+void CExtra01_Last::CheckLimit()
 {
 	switch (m_eCurState)
 	{
-	case Client::CExtra01::LV1Villager_M_Attack01:
+	case Client::CExtra01_Last::LV1Villager_M_Attack01:
 		if (m_vecLimitTime[LV1Villager_M_Attack01][2] < m_fPlayTime)
 		{
 			m_pParts->Set_CollisionOn(false);
@@ -391,39 +325,39 @@ void CExtra01::CheckLimit()
 		}
 		
 		break;
-	case Client::CExtra01::LV1Villager_M_Attack02:
+	case Client::CExtra01_Last::LV1Villager_M_Attack02:
 		break;
-	case Client::CExtra01::LV1Villager_M_Attack03:
+	case Client::CExtra01_Last::LV1Villager_M_Attack03:
 		if (m_vecLimitTime[LV1Villager_M_Attack03][0] < m_fPlayTime)
 		{
 			m_pParts->Set_CollisionOn(false);
 		}
 		break;
-	case Client::CExtra01::LV1Villager_M_Die01:
+	case Client::CExtra01_Last::LV1Villager_M_Die01:
 		break;
-	case Client::CExtra01::LV1Villager_M_HurtCounter:
+	case Client::CExtra01_Last::LV1Villager_M_HurtCounter:
 		break;
-	case Client::CExtra01::LV1Villager_M_HurtL_F:
+	case Client::CExtra01_Last::LV1Villager_M_HurtL_F:
 		if (m_fPlayTime > 10.f)
 		{
 			On_Collider(COLLIDERTYPE_BODY, true);
 		}
 		break;
-	case Client::CExtra01::LV1Villager_M_Sit_Idle:
+	case Client::CExtra01_Last::LV1Villager_M_Sit_Idle:
 		
 		break;
-	case Client::CExtra01::LV1Villager_M_SP_Idle1:
+	case Client::CExtra01_Last::LV1Villager_M_SP_Idle1:
 		break;
-	case Client::CExtra01::LV1Villager_M_VSTakeExecution:
+	case Client::CExtra01_Last::LV1Villager_M_VSTakeExecution:
 		break;
-	case Client::CExtra01::LV1Villager_M_WalkF:
+	case Client::CExtra01_Last::LV1Villager_M_WalkF:
 		break;
-	case Client::CExtra01::LV1Villager_M_IdleGeneral:
+	case Client::CExtra01_Last::LV1Villager_M_IdleGeneral:
 		break;
 	}
 }
 
-void CExtra01::Set_Anim(STATE _eState)
+void CExtra01_Last::Set_Anim(STATE _eState)
 {
 	m_eCurState = _eState;
 	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
@@ -436,7 +370,7 @@ void CExtra01::Set_Anim(STATE _eState)
 	m_fPlayTime = 0.f;
 }
 
-void CExtra01::CheckAnim()
+void CExtra01_Last::CheckAnim()
 {
 	if (m_ePreState != m_eCurState)
 	{
@@ -445,7 +379,7 @@ void CExtra01::CheckAnim()
 	}
 }
 
-void CExtra01::Get_AnimMat()
+void CExtra01_Last::Get_AnimMat()
 {
 	if (m_bAnimStop)
 		return;
@@ -465,7 +399,7 @@ void CExtra01::Get_AnimMat()
 	}
 }
 
-void CExtra01::RenderGroup()
+void CExtra01_Last::RenderGroup()
 {
 	if (nullptr == m_pRendererCom)
 		return;
@@ -474,7 +408,7 @@ void CExtra01::RenderGroup()
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, m_pParts);
 }
 
-_bool CExtra01::Collision(_float fTimeDelta)
+_bool CExtra01_Last::Collision(_float fTimeDelta)
 {
 	CGameObject* _pTarget = nullptr;
 
@@ -529,18 +463,18 @@ _bool CExtra01::Collision(_float fTimeDelta)
 	return false;
 }
 
-void CExtra01::On_Collider(EXTRA01COLLIDER _eCollider, _bool _bCollision)
+void CExtra01_Last::On_Collider(EXTRA01COLLIDER _eCollider, _bool _bCollision)
 {
 	switch (_eCollider)
 	{
-	case Client::CExtra01::COLLIDERTYPE_BODY:
+	case Client::CExtra01_Last::COLLIDERTYPE_BODY:
 		if (m_bCollision[COLLIDERTYPE_BODY] = _bCollision)
 			CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
 		break;
 	}
 }
 
-void CExtra01::Look_Move_Player(_float _fPosX, _float _fPosZ)
+void CExtra01_Last::Look_Move_Player(_float _fPosX, _float _fPosZ)
 {
 	// 애니메이션 진행 중에 턴하는 함수
 
@@ -566,7 +500,7 @@ void CExtra01::Look_Move_Player(_float _fPosX, _float _fPosZ)
 	m_pTransformCom->LookAt_ForLandObject(_Trans->Get_State(CTransform::STATE_POSITION));
 }
 
-void CExtra01::Look_Player()
+void CExtra01_Last::Look_Player()
 {
 	//한번에 바라보는거
 	AUTOINSTANCE(CGameInstance, _Intance);
@@ -576,7 +510,7 @@ void CExtra01::Look_Player()
 	m_pTransformCom->LookAt_ForLandObject(_Trans->Get_State(CTransform::STATE_POSITION));
 }
 
-_bool CExtra01::InRange()
+_bool CExtra01_Last::InRange()
 {
 
 	AUTOINSTANCE(CGameInstance, _pInstance);
@@ -628,7 +562,7 @@ _bool CExtra01::InRange()
 	return false;
 }
 
-void CExtra01::Pattern()
+void CExtra01_Last::Pattern()
 {
 	//거리에 따라 확률적으로 공격하고 날라댕기고
 	// 거리 짧으면 또 그러고 어키어키
@@ -654,13 +588,13 @@ void CExtra01::Pattern()
 	}
 }
 
-HRESULT CExtra01::Ready_Components()
+HRESULT CExtra01_Last::Ready_Components()
 {
 	/* For.Com_Transform */
 	CTransform::TRANSFORMDESC	_Desc;
 	_Desc.fRotationPerSec = XMConvertToRadians(90.f);
 	//_Desc.fSpeedPerSec = 1.5f;
-	_Desc.fSpeedPerSec = 2.5f;
+	_Desc.fSpeedPerSec = 1.f;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &_Desc)))
 		return E_FAIL;
 
@@ -705,14 +639,14 @@ HRESULT CExtra01::Ready_Components()
 	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
 	NaviDesc.iCurrentIndex = 0;
 
-	if (FAILED(__super::Add_Component(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Navigation_Stage_02_1"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Navigation_Stage_Last"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
 		return E_FAIL;
 
 
 	return S_OK;
 }
 
-HRESULT CExtra01::SetUp_ShaderResources()
+HRESULT CExtra01_Last::SetUp_ShaderResources()
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 	if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TP(), sizeof(_float4x4))))
@@ -728,7 +662,7 @@ HRESULT CExtra01::SetUp_ShaderResources()
 	return S_OK;
 }
 
-void CExtra01::Ready_LimitTime()
+void CExtra01_Last::Ready_LimitTime()
 {
 	m_vecLimitTime[LV1Villager_M_Attack01].push_back(100.f);//공격 콜라이더 on
 	m_vecLimitTime[LV1Villager_M_Attack01].push_back(110.f);
@@ -737,33 +671,33 @@ void CExtra01::Ready_LimitTime()
 	m_vecLimitTime[LV1Villager_M_Attack03].push_back(60.f);//공격 콜라이더 off
 }
 
-CExtra01 * CExtra01::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CExtra01_Last * CExtra01_Last::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CExtra01*		pInstance = new CExtra01(pDevice, pContext);
+	CExtra01_Last*		pInstance = new CExtra01_Last(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CExtra01"));
+		MSG_BOX(TEXT("Failed To Created : CExtra01_Last"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CMonster * CExtra01::Clone(void * pArg)
+CMonster * CExtra01_Last::Clone(void * pArg)
 {
-	CExtra01*		pInstance = new CExtra01(*this);
+	CExtra01_Last*		pInstance = new CExtra01_Last(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CExtra01"));
+		MSG_BOX(TEXT("Failed To Cloned : CExtra01_Last"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CExtra01::Free()
+void CExtra01_Last::Free()
 {
 	__super::Free();
 
@@ -776,7 +710,7 @@ void CExtra01::Free()
 	Safe_Release(m_pSockets);
 }
 
-void CExtra01::Update_Collider()
+void CExtra01_Last::Update_Collider()
 {
 	//if (m_bCollision[COLLIDERTYPE_BODY])
 	m_pColliderCom[COLLIDERTYPE_PUSH]->Update(m_pTransformCom->Get_WorldMatrix());
@@ -790,7 +724,7 @@ void CExtra01::Update_Collider()
 
 }
 
-void CExtra01::Check_Stun()
+void CExtra01_Last::Check_Stun()
 {
 	if (m_eMonsterState == CMonster::ATTACK_STUN)
 	{
@@ -799,7 +733,7 @@ void CExtra01::Check_Stun()
 	}
 }
 
-HRESULT CExtra01::Ready_Weapon()
+HRESULT CExtra01_Last::Ready_Weapon()
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 
@@ -822,7 +756,7 @@ HRESULT CExtra01::Ready_Weapon()
 	return S_OK;
 }
 
-HRESULT CExtra01::Update_Weapon()
+HRESULT CExtra01_Last::Update_Weapon()
 {
 	if (nullptr == m_pSockets)
 		return E_FAIL;

@@ -6,6 +6,7 @@
 BEGIN(Engine)
 class CHierarchyNode;
 END
+
 BEGIN(Client)
 
 /*
@@ -13,40 +14,34 @@ BEGIN(Client)
 일정 범위 안에 없으면 그 범위 안에 들어올때까지 턴한다
 */
 
-class CExtra02 final : public CMonster
+class CExtra01_Last final : public CMonster
 {
 public:
-	enum EXTRA02COLLIDER { COLLIDERTYPE_BODY, COLLIDERTYPE_PUSH, COLLIDERTYPE_ARM, COLLILDERTYPE_END };
+	enum EXTRA01COLLIDER { COLLIDERTYPE_BODY, COLLIDERTYPE_PUSH, COLLILDERTYPE_END };
 	enum STATE {
 		LV1Villager_M_Attack01,
 		LV1Villager_M_Attack02,
 		LV1Villager_M_Attack03,
-		LV1Villager_M_Attack04,
-		LV1Villager_M_Attack05,
-		LV1Villager_M_Attack06,
 		LV1Villager_M_Die01,
 		LV1Villager_M_HurtCounter,
-		LV1Villager_M_HurtKnockBack,
 		LV1Villager_M_HurtL_F,
+		LV1Villager_M_Sit_Idle,
+		LV1Villager_M_SP_Idle1,
 		LV1Villager_M_VSTakeExecution,
 		LV1Villager_M_WalkF,
-		LV2Villager01_M_ComboA01,
-		LV2Villager01_M_ComboA02,
-		LV2Villager01_M_VS_TakeExecution_01,
-		LV2Villager01_M_Walk,
 		LV1Villager_M_IdleGeneral,
+		LV1Villager_M_HurtS_FL,
+		LV1Villager_M_HurtS_FR,
 		LV1Villager_M_SP_Idle,
-
 		STATE_END
 	};
 private:
 	enum DIRECT { DIR_F, DIR_B, DIR_R, DIR_L, DIR_FR, DIR_BR, DIR_FL, DIR_BL, DIR_END };
 
 private:
-	CExtra02(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CExtra02(const CExtra02& rhs);
-	virtual ~CExtra02() = default;
-
+	CExtra01_Last(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CExtra01_Last(const CExtra01_Last& rhs);
+	virtual ~CExtra01_Last() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -77,7 +72,7 @@ private:
 	void RenderGroup();
 	_bool Collision(_float fTimeDelta);
 
-	void On_Collider(EXTRA02COLLIDER _eCollider, _bool _bCollision);
+	void On_Collider(EXTRA01COLLIDER _eCollider, _bool _bCollision);
 
 	void Look_Move_Player(_float _fPosX, _float _fPosZ);
 	void Look_Player();
@@ -93,7 +88,7 @@ private:
 
 private:
 	STATE					m_eReserveState = STATE_END;
-	STATE					m_eCurState = LV1Villager_M_IdleGeneral;
+	STATE					m_eCurState = LV1Villager_M_SP_Idle1;
 	STATE					m_ePreState = STATE_END;
 
 	_float4					m_AnimPos;
@@ -137,7 +132,7 @@ private:
 
 
 public:
-	static CExtra02* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CExtra01_Last* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CMonster* Clone(void* pArg);
 	virtual void Free() override;
 };

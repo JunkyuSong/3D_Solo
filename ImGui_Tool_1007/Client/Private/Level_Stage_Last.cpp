@@ -6,6 +6,7 @@
 #include "Camera_Player.h"
 #include "CameraMgr.h"
 #include "UI_Mgr.h"
+#include "Monster.h"
 
 
 CLevel_Stage_Last::CLevel_Stage_Last(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -126,9 +127,9 @@ HRESULT CLevel_Stage_Last::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_STAGE_LAST, pLayerTag)))
 		return E_FAIL;
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_STAGE_LAST, pLayerTag)))
+	/*if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_STAGE_LAST, pLayerTag)))
 		return E_FAIL;
-
+*/
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Stage_Last"), LEVEL_STAGE_LAST, TEXT("Layer_Stage"))))
 		return E_FAIL;
 
@@ -156,6 +157,14 @@ HRESULT CLevel_Stage_Last::Ready_Layer_Monster(const _tchar * pLayerTag)
 	//}
 
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Puppet"), LEVEL_STAGE_LAST, pLayerTag)))
+		return E_FAIL;
+
+	CMonster::MONSTERINFO _tInfo;
+
+	ZeroMemory(&_tInfo, sizeof(CMonster::MONSTERINFO));
+	_tInfo._vPos = XMVectorSet(61.113f, 30.302f, 76.070f, 1.f);
+	_tInfo._iIndex = 396;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
 		return E_FAIL;
 
 

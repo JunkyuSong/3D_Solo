@@ -193,7 +193,9 @@
     <ClInclude Include="..\Public\Dagger.h" />
     <ClInclude Include="..\public\Dummy.h" />
     <ClInclude Include="..\Public\Extra01.h" />
+    <ClInclude Include="..\Public\Extra01_Last.h" />
     <ClInclude Include="..\Public\Extra02.h" />
+    <ClInclude Include="..\Public\Extra02_Last.h" />
     <ClInclude Include="..\Public\ImGuiMgr.h" />
     <ClInclude Include="..\Public\Knife.h" />
     <ClInclude Include="..\Public\Lamp.h" />
@@ -269,7 +271,9 @@
     <ClCompile Include="..\Private\Dagger.cpp" />
     <ClCompile Include="..\private\Dummy.cpp" />
     <ClCompile Include="..\Private\Extra01.cpp" />
+    <ClCompile Include="..\Private\Extra01_Last.cpp" />
     <ClCompile Include="..\Private\Extra02.cpp" />
+    <ClCompile Include="..\Private\Extra02_Last.cpp" />
     <ClCompile Include="..\Private\ImGuiMgr.cpp" />
     <ClCompile Include="..\Private\Knife.cpp" />
     <ClCompile Include="..\Private\Lamp.cpp" />

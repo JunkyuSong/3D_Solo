@@ -498,6 +498,12 @@
     <ClInclude Include="..\Public\Extra02.h">
       <Filter>02.GameObjects\05. Monster\Extra\Extra02\Stage_2-1</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Extra01_Last.h">
+      <Filter>02.GameObjects\05. Monster\Extra\Extra01\Stage_Last</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Extra02_Last.h">
+      <Filter>02.GameObjects\05. Monster\Extra\Extra02\Stage_Last</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -715,6 +721,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Extra02.cpp">
       <Filter>02.GameObjects\05. Monster\Extra\Extra02\Stage_2-1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Extra01_Last.cpp">
+      <Filter>02.GameObjects\05. Monster\Extra\Extra01\Stage_Last</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Extra02_Last.cpp">
+      <Filter>02.GameObjects\05. Monster\Extra\Extra02\Stage_Last</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

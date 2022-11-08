@@ -30,6 +30,9 @@ public:
 		LV1Villager_M_VSTakeExecution,
 		LV1Villager_M_WalkF,
 		LV1Villager_M_IdleGeneral,
+		LV1Villager_M_HurtS_FL,
+		LV1Villager_M_HurtS_FR,
+		LV1Villager_M_SP_Idle1123,
 		STATE_END
 	};
 private:

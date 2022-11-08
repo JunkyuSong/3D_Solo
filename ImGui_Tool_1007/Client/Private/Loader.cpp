@@ -39,6 +39,8 @@
 #include "MonsterAxe.h"
 #include "Extra01.h"
 #include "Extra02.h"
+#include "Extra01_Last.h"
+#include "Extra02_Last.h"
 #include "Stage_Test.h"
 #include "Puppet.h"
 #include "Lamp.h"
@@ -480,6 +482,13 @@ HRESULT CLoader::Loading_ForLevel_Stage02_1()
 		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster_List/Extra02/", "Extra2.dat", PivotMatrix))))
 		return E_FAIL;
 
+	/*if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Model_Monster_TEST01"),
+		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster_List/Extra01/", "Test1.fbx", PivotMatrix))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Model_Monster_TEST2"),
+		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster_List/Extra02/", "Test2.fbx", PivotMatrix))))
+		return E_FAIL;*/
+
 	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Model_Monster_anim"),
 	//	CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster_List/Extra02/", "anim.fbx", PivotMatrix))))
 	//	return E_FAIL;
@@ -519,6 +528,14 @@ HRESULT CLoader::Loading_ForLevel_Stage02()
 
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Bat"),
 		CBoss_Bat::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Extra01_Last"),
+		CExtra01_Last::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Extra02_Last"),
+		CExtra02_Last::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 
