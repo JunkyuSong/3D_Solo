@@ -22,12 +22,15 @@ public:
 	}
 
 public:
-	virtual HRESULT Initialize_Prototype(const aiMesh* pAIMesh, TCONTAINER*	_pOut, _uint iNumInstance);
-	virtual HRESULT Initialize_Prototype(TCONTAINER	tIn, _uint iNumInstance);
+	virtual HRESULT Initialize_Prototype(const aiMesh* pAIMesh, TCONTAINER*	_pOut, _uint iNumInstance, vector<_float4x4>* _matWorld);
+	virtual HRESULT Initialize_Prototype(TCONTAINER	tIn, _uint iNumInstance, vector<_float4x4>* _matWorld);
 	virtual HRESULT Initialize(void* pArg);
+
+	virtual HRESULT Render();
 
 	HRESULT			Ready_IndexBuffer(const aiMesh* pAIMesh, TCONTAINER* _pOut, _uint iNumInstance);
 	HRESULT			Ready_IndexBuffer(TCONTAINER _tIn, _uint iNumInstance);
+	HRESULT			Ready_InstancingBuffer(_uint iNumInstance, vector<_float4x4>* _WorldMatrix);
 
 	_bool			Picking(class CTransform* pTransform, _vector& pOut);
 
@@ -37,8 +40,8 @@ private:
 	ID3D11Buffer*			m_pVBInstance = nullptr;
 
 public:
-	static CInstancingMesh* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const aiMesh* pAIMesh, TCONTAINER*	_pOut, _uint iNumInstance);
-	static CInstancingMesh* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TCONTAINER	_tIn, _uint iNumInstance);
+	static CInstancingMesh* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const aiMesh* pAIMesh, TCONTAINER*	_pOut, _uint iNumInstance, vector<_float4x4>* matWorld);
+	static CInstancingMesh* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TCONTAINER	_tIn, _uint iNumInstance, vector<_float4x4>* matWorld);
 	virtual CComponent* Clone(void* pArg = nullptr) override;
 	virtual void Free() override;
 };

@@ -28,6 +28,7 @@ private:
 
 
 public:
+	
 	static CNonAnimModel * Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const char * pModelFilePath, const char * pModelFileName);
 	CComponent * CNonAnimModel::Clone(void * pArg);
 	virtual void Free() override;

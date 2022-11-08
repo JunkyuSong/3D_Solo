@@ -13,13 +13,13 @@ CInstancingMesh::CInstancingMesh(const CInstancingMesh & rhs)
 {
 }
 
-HRESULT CInstancingMesh::Initialize_Prototype(const aiMesh * pAIMesh, TCONTAINER* _pOut, _uint iNumInstance)
+HRESULT CInstancingMesh::Initialize_Prototype(const aiMesh * pAIMesh, TCONTAINER* _pOut, _uint iNumInstance, vector<_float4x4>* _matWorld)
 {
 	m_iMaterialIndex = pAIMesh->mMaterialIndex;
 	//해당 메쉬의 인덱스
 	_pOut->iIndex = m_iMaterialIndex;
 #pragma region VERTEXBUFFER
-	m_iNumVertexBuffers = 1;
+	m_iNumVertexBuffers = 2;
 	m_iNumVertices = pAIMesh->mNumVertices;
 	_pOut->NumVertices = m_iNumVertices;
 
@@ -55,22 +55,26 @@ HRESULT CInstancingMesh::Initialize_Prototype(const aiMesh * pAIMesh, TCONTAINER
 
 	Safe_Delete_Array(pVertices);
 
+
+
 #pragma endregion
 
 #pragma region INDEXBUFFER
 	Ready_IndexBuffer(pAIMesh, _pOut, iNumInstance);
 
+	if (FAILED(Ready_InstancingBuffer(iNumInstance, _matWorld)))
+		return E_FAIL;
 #pragma endregion
 
 	return S_OK;
 }
 
-HRESULT CInstancingMesh::Initialize_Prototype(TCONTAINER tIn, _uint iNumInstance)
+HRESULT CInstancingMesh::Initialize_Prototype(TCONTAINER tIn, _uint iNumInstance, vector<_float4x4>* _matWorld)
 {
 	m_in = tIn;
 	m_iMaterialIndex = tIn.iIndex;
 #pragma region VERTEXBUFFER
-	m_iNumVertexBuffers = 1;
+	m_iNumVertexBuffers = 2;
 	m_iNumVertices = tIn.NumVertices;
 
 	m_iStride = sizeof(VTXMODEL);
@@ -103,7 +107,8 @@ HRESULT CInstancingMesh::Initialize_Prototype(TCONTAINER tIn, _uint iNumInstance
 
 #pragma region INDEXBUFFER
 	Ready_IndexBuffer(tIn, iNumInstance);
-
+	if (FAILED(Ready_InstancingBuffer(iNumInstance, _matWorld)))
+		return E_FAIL;
 #pragma endregion
 
 	return S_OK;
@@ -111,6 +116,37 @@ HRESULT CInstancingMesh::Initialize_Prototype(TCONTAINER tIn, _uint iNumInstance
 
 HRESULT CInstancingMesh::Initialize(void * pArg)
 {
+	return S_OK;
+}
+
+HRESULT CInstancingMesh::Render()
+{
+	if (nullptr == m_pContext)
+		return E_FAIL;
+
+	ID3D11Buffer*		pVertexBuffers[] = {
+		m_pVB,
+		m_pVBInstance,
+	};
+
+	_uint			iStrides[] = {
+		m_iStride,
+		m_iInstanceStride
+	};
+
+	_uint			iOffsets[] = {
+		0,
+		0,
+	};
+
+	m_pContext->IASetVertexBuffers(0, m_iNumVertexBuffers, pVertexBuffers, iStrides, iOffsets);
+
+	m_pContext->IASetIndexBuffer(m_pIB, m_eIndexFormat, 0);
+
+	m_pContext->IASetPrimitiveTopology(m_eTopology);
+
+	m_pContext->DrawIndexedInstanced(m_iNumPrimitives * m_iNumIndicesofPrimitive, m_iNumInstance, 0, 0, 0);
+
 	return S_OK;
 }
 
@@ -151,6 +187,8 @@ HRESULT CInstancingMesh::Ready_IndexBuffer(const aiMesh* pAIMesh, TCONTAINER* _p
 
 	if (FAILED(__super::Create_IndexBuffer()))
 		return E_FAIL;
+
+	
 
 	Safe_Delete_Array(pIndices);
 	return S_OK;
@@ -197,6 +235,40 @@ HRESULT CInstancingMesh::Ready_IndexBuffer(TCONTAINER _tIn, _uint iNumInstance)
 	Safe_Delete_Array(pIndices);
 	return S_OK;
 }
+
+HRESULT CInstancingMesh::Ready_InstancingBuffer(_uint iNumInstance, vector<_float4x4>* _WorldMatrix)
+{
+	m_iInstanceStride = sizeof(VTXINSTANCE);
+
+	ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));
+	m_BufferDesc.ByteWidth = m_iInstanceStride * iNumInstance;
+	m_BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	m_BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	m_BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	m_BufferDesc.MiscFlags = 0;
+	m_BufferDesc.StructureByteStride = m_iInstanceStride;
+
+	VTXINSTANCE*		pInstanceVtx = new VTXINSTANCE[iNumInstance];
+	ZeroMemory(pInstanceVtx, sizeof(VTXINSTANCE) * iNumInstance);
+
+	for (_uint i = 0; i < iNumInstance; ++i)
+	{
+		memcpy(&(pInstanceVtx[i]), &((*_WorldMatrix)[i]), sizeof(_float4x4));
+
+	}
+
+	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
+	m_SubResourceData.pSysMem = pInstanceVtx;
+
+	if (FAILED(m_pDevice->CreateBuffer(&m_BufferDesc, &m_SubResourceData, &m_pVBInstance)))
+		return E_FAIL;
+
+	Safe_Delete_Array(pInstanceVtx);
+
+
+	return S_OK;
+}
+
 _bool CInstancingMesh::Picking(CTransform * pTransform, _vector & pOut)
 {
 	CPicking*		pPicking = CPicking::Get_Instance();
@@ -258,11 +330,11 @@ _bool CInstancingMesh::Picking(CTransform * pTransform, _vector & pOut)
 	return _bPicking;
 }
 
-CInstancingMesh * CInstancingMesh::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const aiMesh * pAIMesh, TCONTAINER*	_pOut, _uint iNumInstance)
+CInstancingMesh * CInstancingMesh::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const aiMesh * pAIMesh, TCONTAINER*	_pOut, _uint iNumInstance, vector<_float4x4>* matWorld)
 {
 	CInstancingMesh*			pInstance = new CInstancingMesh(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(pAIMesh, _pOut, iNumInstance)))
+	if (FAILED(pInstance->Initialize_Prototype(pAIMesh, _pOut, iNumInstance, matWorld)))
 	{
 		MSG_BOX(TEXT("Failed To Created : CInstancingMesh"));
 		Safe_Release(pInstance);
@@ -271,11 +343,11 @@ CInstancingMesh * CInstancingMesh::Create(ID3D11Device * pDevice, ID3D11DeviceCo
 	return pInstance;
 }
 
-CInstancingMesh * CInstancingMesh::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, TCONTAINER _tIn, _uint iNumInstance)
+CInstancingMesh * CInstancingMesh::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, TCONTAINER _tIn, _uint iNumInstance, vector<_float4x4>* matWorld)
 {
 	CInstancingMesh*			pInstance = new CInstancingMesh(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(_tIn, iNumInstance)))
+	if (FAILED(pInstance->Initialize_Prototype(_tIn, iNumInstance, matWorld)))
 	{
 		MSG_BOX(TEXT("Failed To Created : CInstancingMesh"));
 		Safe_Release(pInstance);

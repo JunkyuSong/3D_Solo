@@ -41,6 +41,7 @@ protected:
 public:
 	static CMeshContainer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const aiMesh* pAIMesh, TCONTAINER*	_pOut);
 	static CMeshContainer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TCONTAINER	_tIn);
+
 	virtual CComponent* Clone(void* pArg = nullptr) override;
 	virtual void Free() override;
 };

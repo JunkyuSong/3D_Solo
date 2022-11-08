@@ -1,6 +1,5 @@
-#include "..\Public\NonAnimModel.h"
+#include "InstancingModel.h"
 
-#include "MeshContainer.h"
 #include "InstancingMesh.h"
 
 #include "Texture.h"
@@ -10,12 +9,12 @@
 #include "Component_Manager.h"
 
 
-CNonAnimModel::CNonAnimModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CInstancingModel::CInstancingModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CModel(pDevice, pContext)
 {
 }
 
-CNonAnimModel::CNonAnimModel(const CNonAnimModel & rhs)
+CInstancingModel::CInstancingModel(const CInstancingModel & rhs)
 	: CModel(rhs)
 	, m_Meshes(rhs.m_Meshes)
 	, m_tModel(rhs.m_tModel)
@@ -24,7 +23,7 @@ CNonAnimModel::CNonAnimModel(const CNonAnimModel & rhs)
 		Safe_AddRef(pMeshContainer);
 }
 
-HRESULT CNonAnimModel::Initialize_Prototype(const char * pModelFilePath, const char * pModelFileName)
+HRESULT CInstancingModel::Initialize_Prototype(const char * pModelFilePath, const char * pModelFileName, _uint iNumInstance, vector<_float4x4>* matWorld)
 {
 	m_isCloned = false;
 
@@ -35,7 +34,7 @@ HRESULT CNonAnimModel::Initialize_Prototype(const char * pModelFilePath, const c
 	if (!strcmp(szExt, ".dat"))
 	{
 		m_datLoad = true;
-		return Load_Dat(pModelFilePath, pModelFileName);
+		return Load_Dat(pModelFilePath, pModelFileName, iNumInstance, matWorld);
 	}
 
 	ZeroMemory(&m_tModel, sizeof(TMODEL));
@@ -59,40 +58,30 @@ HRESULT CNonAnimModel::Initialize_Prototype(const char * pModelFilePath, const c
 		return E_FAIL;
 
 	/* 모델을 구성하는 메시들을 만든다. */
-	if (FAILED(Ready_MeshContainers()))
+	if (FAILED(Ready_MeshContainers(iNumInstance, matWorld)))
 		return E_FAIL;
 
 	// 텍스쳐들을 불러온다
 	if (FAILED(Ready_Materials(pModelFilePath, &(m_tModel.AllMaterials))))
 		return E_FAIL;
 
-	//if (!strcmp(m_tModel.Name, "GreenHouse.fbx"))
-	//{
-	//	m_tModel.tMeshes[24].iIndex = 20;
-
-	//	//CNonAnimModel* _Temp = static_cast<CNonAnimModel*>(CComponent_Manager::Get_Instance()->Clone_Component(5, TEXT("Prototype_Component_Model_Stage_GreenHouse_floor"), nullptr));
-	//	//TMODEL fd = _Temp->Get_ForSave();
-	//	//m_tModel.AllMaterials.tMaterial[20]
-	//	//fd.AllMaterials.tMaterial[0].szPath;
-	//}
 
 	return S_OK;
 }
 
-
-HRESULT CNonAnimModel::Initialize(void * pArg)
+HRESULT CInstancingModel::Initialize(void * pArg)
 {
 	m_isCloned = true;
 	return S_OK;
 }
 
-HRESULT CNonAnimModel::Render(_uint _iMeshIndex)
+HRESULT CInstancingModel::Render(_uint _iMeshIndex)
 {
 	m_Meshes[_iMeshIndex]->Render();
 	return S_OK;
 }
 
-_bool CNonAnimModel::Picking(CTransform * pTransform, _vector & pOut)
+_bool CInstancingModel::Picking(CTransform * pTransform, _vector & pOut)
 {
 	_vector	_vFinalPos{ 0.f,0.f,0.f,1.f };
 	_float	_vFinalDis = 10000.f;
@@ -121,7 +110,7 @@ _bool CNonAnimModel::Picking(CTransform * pTransform, _vector & pOut)
 	return _bPicking;
 }
 
-HRESULT CNonAnimModel::Ready_MeshContainers()
+HRESULT CInstancingModel::Ready_MeshContainers(_uint iNumInstance, vector<_float4x4>* matWorld)
 {
 	m_iNumMeshes = m_pAIScene->mNumMeshes;
 	m_tModel.NumMeshes = m_iNumMeshes;
@@ -129,31 +118,10 @@ HRESULT CNonAnimModel::Ready_MeshContainers()
 	m_tModel.tMeshes = new TCONTAINER[m_tModel.NumMeshes];
 
  
-	//if (!strcmp(m_tModel.Name, "GreenHouse.fbx"))
-	//{
-	//	for (_uint i = 0; i < m_iNumMeshes; ++i)
-	//	{
-	//		if (!strcmp(m_pAIScene->mMeshes[i]->mName.data, "Greenhouse_Floor01_05.md"))
-	//		{
-	//			CNonAnimModel* _Temp = static_cast<CNonAnimModel*>(CComponent_Manager::Get_Instance()->Clone_Component(5, TEXT("Prototype_Component_Model_Stage_GreenHouse_floor"),nullptr));
-	//			TMODEL fd = _Temp->Get_ForSave();
-	//			memcpy(&(m_tModel.tMeshes[i]), &(fd.tMeshes[0]),sizeof(TCONTAINER));
-	//			continue;
-	//		}
-	//		CMeshContainer*		pMeshContainer = CMeshContainer::Create(m_pDevice, m_pContext, m_pAIScene->mMeshes[i], &(m_tModel.tMeshes[i]));
-	//		if (nullptr == pMeshContainer)
-	//			return E_FAIL;
-
-	//		m_Meshes.push_back(pMeshContainer);
-	//		
-	//	}
-	//	--m_iNumMeshes;
-	//}
-	//else
 	{
 		for (_uint i = 0; i < m_iNumMeshes; ++i)
 		{
-			CMeshContainer*		pMeshContainer = CMeshContainer::Create(m_pDevice, m_pContext, m_pAIScene->mMeshes[i], &(m_tModel.tMeshes[i]));
+			CInstancingMesh*		pMeshContainer = CInstancingMesh::Create(m_pDevice, m_pContext, m_pAIScene->mMeshes[i], &(m_tModel.tMeshes[i]), iNumInstance, matWorld);
 			if (nullptr == pMeshContainer)
 				return E_FAIL;
 
@@ -166,7 +134,7 @@ HRESULT CNonAnimModel::Ready_MeshContainers()
 	return S_OK;
 }
 
-HRESULT CNonAnimModel::Load_Dat(const char * pModelFilePath, const char * pModelFileName)
+HRESULT CInstancingModel::Load_Dat(const char * pModelFilePath, const char * pModelFileName, _uint iNumInstance, vector<_float4x4>* matWorld)
 {
 	char szFullPath[MAX_PATH] = ""; //여기에 넣을 예정
 
@@ -234,7 +202,7 @@ HRESULT CNonAnimModel::Load_Dat(const char * pModelFilePath, const char * pModel
 	for (int i = 0; i < m_tModel.NumMeshes; ++i)
 	{
 		//ID3D11Device * pDevice, ID3D11DeviceContext * pContext, _fmatrix PivotMatrix, TANIMCONTAINER _tIn)
-		CMeshContainer*		pMeshContainer = CMeshContainer::Create(m_pDevice, m_pContext, m_tModel.tMeshes[i]);
+		CInstancingMesh*		pMeshContainer = CInstancingMesh::Create(m_pDevice, m_pContext, m_tModel.tMeshes[i], iNumInstance, matWorld);
 		if (nullptr == pMeshContainer)
 			return E_FAIL;
 
@@ -247,18 +215,18 @@ HRESULT CNonAnimModel::Load_Dat(const char * pModelFilePath, const char * pModel
 	return S_OK;
 }
 
-_uint CNonAnimModel::Get_MaterialIndex(_uint _iMeshIndex) const
+_uint CInstancingModel::Get_MaterialIndex(_uint _iMeshIndex) const
 {
 
 	return m_Meshes[_iMeshIndex]->Get_MaterialIndex();
 
 }
 
-CNonAnimModel * CNonAnimModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const char * pModelFilePath, const char * pModelFileName)
+CInstancingModel * CInstancingModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const char * pModelFilePath, const char * pModelFileName, _uint iNumInstance, vector<_float4x4>* matWorld)
 {
-	CNonAnimModel*			pInstance = new CNonAnimModel(pDevice, pContext);
+	CInstancingModel*			pInstance = new CInstancingModel(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(pModelFilePath, pModelFileName)))
+	if (FAILED(pInstance->Initialize_Prototype(pModelFilePath, pModelFileName, iNumInstance, matWorld)))
 	{
 		MSG_BOX(TEXT("Failed To Created : CTexture"));
 		Safe_Release(pInstance);
@@ -267,9 +235,9 @@ CNonAnimModel * CNonAnimModel::Create(ID3D11Device * pDevice, ID3D11DeviceContex
 	return pInstance;
 }
 
-CComponent * CNonAnimModel::Clone(void * pArg)
+CComponent * CInstancingModel::Clone(void * pArg)
 {
-	CModel*			pInstance = new CNonAnimModel(*this);
+	CModel*			pInstance = new CInstancingModel(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
@@ -280,7 +248,7 @@ CComponent * CNonAnimModel::Clone(void * pArg)
 	return pInstance;
 }
 
-void CNonAnimModel::Free()
+void CInstancingModel::Free()
 {
 	__super::Free();
 	for (auto& pMeshContainer : m_Meshes)
