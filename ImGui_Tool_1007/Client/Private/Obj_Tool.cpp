@@ -10,6 +10,7 @@
 #include "TerrainMgr.h"
 #include "ReleaseMgr.h"
 #include "Navigation_Tool.h"
+#include "InstancingObj.h"
 
 IMPLEMENT_SINGLETON(CObj_Tool)
 
@@ -187,13 +188,14 @@ void CObj_Tool::Load_Map()
 	lstrcat(szFullPath, TEXT(".dat"));
 	//경로 넣고
 
+	//맵에 경로 넣고 벡터 넣어서 만든다
 
 
 	HANDLE		hFile = CreateFile(szFullPath,
 		GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
 	DWORD		dwByte = 0;
-	_uint iasd = 0;
+	map<_tchar*, vector<_float4x4>> _Instancing;
 	CObj_Plus::OBJ_DESC	_tInfo;
 	ZeroMemory(&_tInfo, sizeof(CObj_Plus::OBJ_DESC));
 	while (true)
@@ -203,7 +205,7 @@ void CObj_Tool::Load_Map()
 		if (dwByte == 0)
 			break;
 
-		if (!lstrcmp(_tInfo.szModelTag, TEXT("Prototype_Component_Model_Light02")))
+		/*if (!lstrcmp(_tInfo.szModelTag, TEXT("Prototype_Component_Model_Light02")))
 		{
 			if (FAILED(_Instance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Map_StreetLight"), g_eCurLevel, TEXT("Layer_Map"), &_tInfo)))
 			{
@@ -212,18 +214,104 @@ void CObj_Tool::Load_Map()
 				return;
 			}
 		}
-
 		else if (FAILED(_Instance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Obj_NonAnim"), g_eCurLevel, TEXT("Layer_Map"), &_tInfo)))
 		{
 			MSG_BOX(TEXT("FAILED LOAD MAP"));
 			CloseHandle(hFile);
 			return;
+		}*/
+		
+		_bool	Is = true;
+		for (auto& iter = _Instancing.begin(); iter != _Instancing.end(); ++iter)
+		{
+			
+			if (!lstrcmp(iter->first, _tInfo.szModelTag))
+			{
+				iter->second.push_back(_tInfo.matWorld);
+				Is = false;
+				break;
+			}			
 		}
-		++iasd;
+		if (Is || _Instancing.size() == 0)
+		{
+			vector<_float4x4> Temp;
+			Temp.push_back(_tInfo.matWorld);
+			_tchar* szTemp = new _tchar[260];
+			//ZeroMemory(&szTemp,sizeof(_tchar)* 260);
+			lstrcpy(szTemp, _tInfo.szModelTag);
+			CReleaseMgr::Get_Instance()->Add_Tchar(szTemp);
+			
+			_Instancing.emplace(szTemp, Temp);
+		}
+	}
+	
+	for (map<_tchar*, vector<_float4x4>>::iterator iter = _Instancing.begin(); iter != _Instancing.end(); ++iter)
+	{
+		if (iter->second.size() < 2)
+		{
+			ZeroMemory(&_tInfo, sizeof(CObj_Plus::OBJ_DESC));
+			_tInfo.matWorld = iter->second[0];
+			for (int i = 0; (iter->first)[i] != NULL; ++i)
+			{
+				_tInfo.szModelTag[i] = (iter->first)[i];
+			}
+			if (FAILED(_Instance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Obj_NonAnim"), g_eCurLevel, TEXT("Layer_Map"), &_tInfo)))
+			{
+				MSG_BOX(TEXT("FAILED LOAD MAP"));
+				CloseHandle(hFile);
+				
+				return;
+			}
+		}
+		else if (!lstrcmp(iter->first, TEXT("Prototype_Component_Model_Light02")))
+		{
+
+			for (auto& streetlight : iter->second)
+			{
+				ZeroMemory(&_tInfo, sizeof(CObj_Plus::OBJ_DESC));
+				for (int i = 0; (iter->first)[i] != NULL; ++i)
+				{
+					_tInfo.szModelTag[i] = (iter->first)[i];
+				}
+				_tInfo.matWorld = streetlight;
+				if (FAILED(_Instance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Map_StreetLight"), g_eCurLevel, TEXT("Layer_Map"), &_tInfo)))
+				{
+					MSG_BOX(TEXT("FAILED LOAD MAP"));
+					CloseHandle(hFile);
+					
+					return;
+				}
+			}			
+		}
+		else
+		{
+			CGameObject* _pObj = nullptr;
+
+			if (FAILED(_Instance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Obj_Instancing"), g_eCurLevel, TEXT("Layer_Instancing"),nullptr, &_pObj)))
+			{
+				MSG_BOX(TEXT("FAILED LOAD MAP"));
+				CloseHandle(hFile);
+				
+				return;
+			}
+
+			static_cast<CInstancingObj*>(_pObj)->Set_Instancing(iter->first,&(iter->second));
+		}
 	}
 
-	CloseHandle(hFile);
+	/*if (!lstrcmp(_tInfo.szModelTag, TEXT("Prototype_Component_Model_Light02")))
+	{
+		if (FAILED(_Instance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Map_StreetLight"), g_eCurLevel, TEXT("Layer_Map"), &_tInfo)))
+		{
+			MSG_BOX(TEXT("FAILED LOAD MAP"));
+			CloseHandle(hFile);
+			
+			return;
+		}
+	}*/
 
+	CloseHandle(hFile);
+	
 }
 
 

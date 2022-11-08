@@ -32,11 +32,7 @@ HRESULT CNonAnimModel::Initialize_Prototype(const char * pModelFilePath, const c
 
 	_splitpath_s(pModelFileName, nullptr, 0, nullptr, 0, nullptr, 0, szExt, MAX_PATH);
 
-	if (!strcmp(szExt, ".dat"))
-	{
-		m_datLoad = true;
-		return Load_Dat(pModelFilePath, pModelFileName);
-	}
+
 
 	ZeroMemory(&m_tModel, sizeof(TMODEL));
 	m_tModel.bAnim = false;
@@ -45,10 +41,19 @@ HRESULT CNonAnimModel::Initialize_Prototype(const char * pModelFilePath, const c
 	char		szFullPath[MAX_PATH] = "";
 
 	strcpy_s(szFullPath, pModelFilePath);
+	strcpy_s(m_pModelFilePath, pModelFilePath);
 	strcat_s(szFullPath, pModelFileName);
+	strcpy_s(m_pModelFileName, pModelFileName);
+
+	if (!strcmp(szExt, ".dat"))
+	{
+		m_datLoad = true;
+		return Load_Dat(pModelFilePath, pModelFileName);
+	}
 
 	_uint		iFlag = 0;
 
+	
 
 	iFlag |= aiProcess_PreTransformVertices | aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace;
 	//	iFlag |= aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace;

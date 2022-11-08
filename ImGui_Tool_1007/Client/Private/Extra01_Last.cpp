@@ -37,6 +37,8 @@ HRESULT CExtra01_Last::Initialize_Prototype()
 
 HRESULT CExtra01_Last::Initialize(void * pArg)
 {
+	AUTOINSTANCE(CGameInstance, _pInstance);
+
 	m_eMonsterType = MONSTER_EXTRA01;
 
 	if (FAILED(Ready_Components()))
@@ -81,6 +83,8 @@ HRESULT CExtra01_Last::Initialize(void * pArg)
 
 	m_eCurState = LV1Villager_M_SP_Idle;
 	On_Collider(COLLIDERTYPE_BODY, true);
+	//m_fIdleTime = _pInstance->Rand_Float(20.f, 200.f);
+	m_pModelCom->DirectAnim(LV1Villager_M_SP_Idle);
 	return S_OK;
 }
 
@@ -131,13 +135,13 @@ void CExtra01_Last::LateTick(_float fTimeDelta)
 		return;
 	}
 	AUTOINSTANCE(CGameInstance, _pInstance);
-	if (m_eCurState == LV1Villager_M_SP_Idle)
+	/*if (m_eCurState == LV1Villager_M_SP_Idle)
 	{
 		_bool		isDraw = _pInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
 		if (isDraw)
 			RenderGroup();
 		return;
-	}
+	}*/
 	
 	if (Collision(fTimeDelta))
 	{
@@ -283,12 +287,12 @@ void CExtra01_Last::CheckState(_float fTimeDelta)
 		}
 		break;
 	case Client::CExtra01_Last::LV1Villager_M_IdleGeneral:
-		
+		m_eCurState = LV1Villager_M_WalkF;
 		break;
 	case Client::CExtra01_Last::LV1Villager_M_SP_Idle:
 	{
 		_vector _PlayerPos = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
-		if (fabs(XMVector3Length(_PlayerPos - m_pTransformCom->Get_State(CTransform::STATE_POSITION)).m128_f32[0]) > 5.f)
+		if (fabs(XMVector3Length(_PlayerPos - m_pTransformCom->Get_State(CTransform::STATE_POSITION)).m128_f32[0]) < 5.f)
 		{
 			m_eCurState = LV1Villager_M_WalkF;
 		}

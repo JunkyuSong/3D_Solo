@@ -42,7 +42,12 @@ void CObj_NonAnim::LateTick( _float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	AUTOINSTANCE(CGameInstance, _pInstance);
+	_bool		isDraw = _pInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 15.f);
+	if (isDraw)
+	{
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	}
 }
 
 HRESULT CObj_NonAnim::Render()
@@ -163,6 +168,19 @@ HRESULT CObj_NonAnim::SetUp_ShaderResources()
 }
 
 CObj_NonAnim * CObj_NonAnim::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+{
+	CObj_NonAnim*		pInstance = new CObj_NonAnim(pDevice, pContext);
+
+	if (FAILED(pInstance->Initialize_Prototype()))
+	{
+		MSG_BOX(TEXT("Failed To Created : CObj_NonAnim"));
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+CObj_NonAnim * CObj_NonAnim::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, vector<OBJ_DESC>* _tInfo)
 {
 	CObj_NonAnim*		pInstance = new CObj_NonAnim(pDevice, pContext);
 

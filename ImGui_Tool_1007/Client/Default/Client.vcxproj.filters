@@ -262,6 +262,12 @@
     <Filter Include="02.GameObjects\05. Monster\Extra\Extra02\Stage_Last">
       <UniqueIdentifier>{a93a19cd-0978-4ec1-bd00-717ef64dd4c5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\01. Obj\InstancingObj">
+      <UniqueIdentifier>{932bcd51-b658-44bc-86e0-cc04a76334e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\06. Map_Obj\Balloon">
+      <UniqueIdentifier>{fbfac892-e272-4b3f-a939-6c9591752884}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -504,6 +510,12 @@
     <ClInclude Include="..\Public\Extra02_Last.h">
       <Filter>02.GameObjects\05. Monster\Extra\Extra02\Stage_Last</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\InstancingObj.h">
+      <Filter>02.GameObjects\01. Obj\InstancingObj</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Balloon.h">
+      <Filter>02.GameObjects\06. Map_Obj\Balloon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -727,6 +739,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Extra02_Last.cpp">
       <Filter>02.GameObjects\05. Monster\Extra\Extra02\Stage_Last</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\InstancingObj.cpp">
+      <Filter>02.GameObjects\01. Obj\InstancingObj</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Balloon.cpp">
+      <Filter>02.GameObjects\06. Map_Obj\Balloon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

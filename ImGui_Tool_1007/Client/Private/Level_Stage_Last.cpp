@@ -41,10 +41,10 @@ HRESULT CLevel_Stage_Last::Initialize()
 		return E_FAIL;
 
 	CCameraMgr::Get_Instance()->Initialize();
-
+	CCameraMgr::Get_Instance()->Change_Camera(CCameraMgr::CAMERA_PLAYER);
 	AUTOINSTANCE(CGameInstance, _pInstance);
 	_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
-
+	
 	return S_OK;
 }
 

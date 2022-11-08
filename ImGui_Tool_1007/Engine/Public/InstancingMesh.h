@@ -34,10 +34,14 @@ public:
 
 	_bool			Picking(class CTransform* pTransform, _vector& pOut);
 
+	void			Culling(_float fSize);
+
 private:
 	_uint					m_iNumInstance = 0;
 	_uint					m_iInstanceStride = 0;
 	ID3D11Buffer*			m_pVBInstance = nullptr;
+	vector<_float4x4>		m_vecWorldMatrix;
+	_float4x4*				m_vecCullWorldMatrix;
 
 public:
 	static CInstancingMesh* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const aiMesh* pAIMesh, TCONTAINER*	_pOut, _uint iNumInstance, vector<_float4x4>* matWorld);

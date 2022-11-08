@@ -23,6 +23,12 @@ public:
 		return m_iNumMeshes;
 	}
 
+	void	Get_Path(char** _pModelFilePath, char** _pModelFileName) { 
+		*_pModelFilePath = m_pModelFilePath;
+		*_pModelFileName = m_pModelFileName;
+
+	}
+
 protected:
 	const aiScene*				m_pAIScene = nullptr; //정보를 담고 있는 객체
 	Assimp::Importer			m_Importer; // 씬 객체를 채워주는 구조체
@@ -31,6 +37,8 @@ protected:
 	_uint									m_iNumMeshes = 0;
 	_bool									m_datLoad = false;
 
+	char									m_pModelFilePath[260] = { NULL };
+	char									m_pModelFileName[260] = { NULL };
 
 protected:
 	HRESULT Ready_Materials(TMATERIALS _tIn);

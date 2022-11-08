@@ -17,6 +17,7 @@
 #include "UI_Plus.h"
 #include "Obj_Anim.h"
 #include "Obj_NonAnim.h"
+#include "InstancingObj.h"
 #include "Player.h"
 #include "Trail.h"
 #include "Magician.h"
@@ -690,6 +691,21 @@ HRESULT CLoader::Loading_ForLevel_StageLast()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Light02"),
 		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_Last/Light/", "Light02.fbx"))))
 		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Balloon01"),
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_Last/balloon/", "balloon01.fbx"))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Balloon02"),
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_Last/balloon/", "balloon02.fbx"))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_BalloonBranch01"),
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_Last/balloon/", "balloonBranch01.fbx"))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_balloonDamaged02"),
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_Last/balloon/", "balloonDamaged02.fbx"))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_balloonDamaged01"),
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_Last/balloon/", "balloonDamaged01.fbx"))))
+		return E_FAIL;
 
 	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Monster_Puppet"),
@@ -747,6 +763,10 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Obj_NonAnim"),
 		CObj_NonAnim::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Obj_Instancing"),
+		CInstancingObj::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	/* For.Prototype_GameObject_Player */
@@ -861,6 +881,10 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 	/* For.Prototype_Component_Shader_Point */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Point"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Point.hlsl"), VTXPOINT_DECLARATION::Elements, VTXPOINT_DECLARATION::iNumElements))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_InstancingModel"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxModelInstance.hlsl"), VTXMODELINTANCE_DECLARATION::Elements, VTXMODELINTANCE_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("충돌체를 로딩중입니다. "));

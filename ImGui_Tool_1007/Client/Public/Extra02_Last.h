@@ -84,7 +84,7 @@ private:
 	_bool InRange();
 	void Pattern();
 
-
+	_float	m_fIdleTime = 0.f;
 
 	_bool	m_bAgainAnim = false;
 

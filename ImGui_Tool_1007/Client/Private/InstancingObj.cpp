@@ -1,83 +1,59 @@
 #include "stdafx.h"
-#include "..\Public\StreetLight.h"
-#include "Obj_NonAnim.h"
-#include "Renderer.h"
-#include "Shader.h"
-#include "NonAnimModel.h"
-#include "Transform.h"
+#include "InstancingObj.h"
 #include "GameInstance.h"
 #include "ImGuiMgr.h"
 
-CStreetLight::CStreetLight(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
-	: CObj_NonAnim(pDevice, pContext)
+CInstancingObj::CInstancingObj(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+	: CObj_Plus(pDevice, pContext)
 {
 }
 
-CStreetLight::CStreetLight(const CStreetLight & rhs)
-	: CObj_NonAnim(rhs)
+CInstancingObj::CInstancingObj(const CInstancingObj & rhs)
+	: CObj_Plus(rhs)
 {
 }
 
-HRESULT CStreetLight::Initialize_Prototype()
+HRESULT CInstancingObj::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CStreetLight::Initialize(void * pArg)
+HRESULT CInstancingObj::Initialize(void * pArg)
 {
-
-	ZeroMemory(&m_tInfo, sizeof(OBJ_DESC));
-
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	if (pArg)
-	{
-		OBJ_DESC _tInfo = *static_cast<OBJ_DESC*>(pArg);
-		m_tInfo.matWorld = _tInfo.matWorld;
-		m_pTransformCom->Set_WorldFloat4x4(m_tInfo.matWorld);
-	}
-	
 
-	AUTOINSTANCE(CGameInstance, _pInstance);
-
-	_matrix _matStreetLight = (m_pTransformCom->Get_WorldMatrix());
-
-	m_pLamp = _pInstance->Clone_GameObject(TEXT("Prototype_GameObject_Map_Lamp"), &_matStreetLight);
-	if (m_pLamp == nullptr)
-		return E_FAIL;
 
 	return S_OK;
 }
 
-void CStreetLight::Tick( _float fTimeDelta)
+void CInstancingObj::Tick( _float fTimeDelta)
 {
 	ImGuiTick();
 
 }
 
-void CStreetLight::LateTick( _float fTimeDelta)
+void CInstancingObj::LateTick( _float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return;
-	AUTOINSTANCE(CGameInstance, _pInstance);
 
-	_bool		isDraw = _pInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.f);
-	if (isDraw)
-	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, m_pLamp);
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
-	}
-	
+	AUTOINSTANCE(CGameInstance, _pInstance);
+	//_bool		isDraw = _pInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.f);
+	//if (isDraw)
+	//{
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	//}
 }
 
-HRESULT CStreetLight::Render()
+HRESULT CInstancingObj::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
 		return E_FAIL;
 
-
+	m_pModelCom->Culling(5.f);
 
 	SetUp_ShaderResources();
 
@@ -97,13 +73,30 @@ HRESULT CStreetLight::Render()
 			return E_FAIL;
 	}
 
-	
 
 	return S_OK;
 }
 
+HRESULT CInstancingObj::Set_Info(OBJ_DESC _tInfo)
+{
+	
+	return S_OK;
+}
 
-HRESULT CStreetLight::Ready_Components()
+HRESULT CInstancingObj::Set_Instancing(_tchar * _szModelKey, vector<_float4x4>* _vecWorld)
+{
+	AUTOINSTANCE(CGameInstance, _pGameInstance);
+	char* _Path = nullptr;
+	char* _Name = nullptr;
+	
+	static_cast<CModel*>(_pGameInstance->Clone_Component(g_eCurLevel, _szModelKey))->Get_Path(&_Path, &_Name);
+
+	m_pModelCom = CInstancingModel::Create(m_pDevice, m_pContext, _Path, _Name, (*_vecWorld).size(), _vecWorld);
+
+	return S_OK;
+}
+
+HRESULT CInstancingObj::Ready_Components()
 {
 	/* For.Com_Transform */
 	CTransform::TRANSFORMDESC	_Desc;
@@ -118,18 +111,15 @@ HRESULT CStreetLight::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_InstancingModel"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Light02"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
-		return E_FAIL;
 
-	lstrcpy(m_tInfo.szModelTag, TEXT("Prototype_Component_Model_Light02"));
 
 	return S_OK;
 }
 
-HRESULT CStreetLight::SetUp_ShaderResources()
+HRESULT CInstancingObj::SetUp_ShaderResources()
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 	if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TP(), sizeof(_float4x4))))
@@ -146,35 +136,39 @@ HRESULT CStreetLight::SetUp_ShaderResources()
 	return S_OK;
 }
 
-CStreetLight * CStreetLight::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CInstancingObj * CInstancingObj::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CStreetLight*		pInstance = new CStreetLight(pDevice, pContext);
+	CInstancingObj*		pInstance = new CInstancingObj(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CStreetLight"));
+		MSG_BOX(TEXT("Failed To Created : CInstancingObj"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CStreetLight::Clone(void * pArg)
+CGameObject * CInstancingObj::Clone(void * pArg)
 {
-	CStreetLight*		pInstance = new CStreetLight(*this);
+	CInstancingObj*		pInstance = new CInstancingObj(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CStreetLight"));
+		MSG_BOX(TEXT("Failed To Cloned : CInstancingObj"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CStreetLight::Free()
+void CInstancingObj::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pLamp);
+	if (m_tInfo.szModelTag != nullptr)
+	{
+		//Safe_Delete_Array(m_tInfo.szModelTag);
+	}
+	Safe_Release(m_pModelCom);
 }

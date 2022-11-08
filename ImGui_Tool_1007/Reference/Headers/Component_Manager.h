@@ -2,6 +2,7 @@
 
 #include "NonAnimModel.h"
 #include "AnimModel.h"
+#include "InstancingModel.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "Renderer.h"

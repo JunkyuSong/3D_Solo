@@ -7,6 +7,7 @@
 #include "PipeLine.h"
 
 #include "Component_Manager.h"
+#include "Frustum.h"
 
 
 CInstancingModel::CInstancingModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -109,6 +110,15 @@ _bool CInstancingModel::Picking(CTransform * pTransform, _vector & pOut)
 	pOut = _vFinalPos;
 	return _bPicking;
 }
+
+void CInstancingModel::Culling(_float fSize)
+{
+	for (auto& iter : m_Meshes)
+	{
+		iter->Culling(fSize);
+	}
+}
+
 
 HRESULT CInstancingModel::Ready_MeshContainers(_uint iNumInstance, vector<_float4x4>* matWorld)
 {

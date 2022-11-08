@@ -2,6 +2,7 @@
 #include "Transform.h"
 #include "Picking.h"
 #include "PipeLine.h"
+#include "Frustum.h"
 
 CInstancingMesh::CInstancingMesh(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMeshContainer(pDevice, pContext)
@@ -15,6 +16,7 @@ CInstancingMesh::CInstancingMesh(const CInstancingMesh & rhs)
 
 HRESULT CInstancingMesh::Initialize_Prototype(const aiMesh * pAIMesh, TCONTAINER* _pOut, _uint iNumInstance, vector<_float4x4>* _matWorld)
 {
+	m_iNumInstance = iNumInstance;
 	m_iMaterialIndex = pAIMesh->mMaterialIndex;
 	//해당 메쉬의 인덱스
 	_pOut->iIndex = m_iMaterialIndex;
@@ -123,7 +125,7 @@ HRESULT CInstancingMesh::Render()
 {
 	if (nullptr == m_pContext)
 		return E_FAIL;
-
+	//m_pVBInstance 이거 맵언맵해서 순서대로 넣... 여기서 해주면 안된다-> 인스턴싱 쓰려는 객체에서 컬링해야함.
 	ID3D11Buffer*		pVertexBuffers[] = {
 		m_pVB,
 		m_pVBInstance,
@@ -144,7 +146,7 @@ HRESULT CInstancingMesh::Render()
 	m_pContext->IASetIndexBuffer(m_pIB, m_eIndexFormat, 0);
 
 	m_pContext->IASetPrimitiveTopology(m_eTopology);
-
+	//m_iNumInstance 컬링했을때 바뀌는 숫자임
 	m_pContext->DrawIndexedInstanced(m_iNumPrimitives * m_iNumIndicesofPrimitive, m_iNumInstance, 0, 0, 0);
 
 	return S_OK;
@@ -238,6 +240,10 @@ HRESULT CInstancingMesh::Ready_IndexBuffer(TCONTAINER _tIn, _uint iNumInstance)
 
 HRESULT CInstancingMesh::Ready_InstancingBuffer(_uint iNumInstance, vector<_float4x4>* _WorldMatrix)
 {
+	if (iNumInstance > 200)
+	{
+		return E_FAIL;
+	}
 	m_iInstanceStride = sizeof(VTXINSTANCE);
 
 	ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));
@@ -248,13 +254,13 @@ HRESULT CInstancingMesh::Ready_InstancingBuffer(_uint iNumInstance, vector<_floa
 	m_BufferDesc.MiscFlags = 0;
 	m_BufferDesc.StructureByteStride = m_iInstanceStride;
 
-	VTXINSTANCE*		pInstanceVtx = new VTXINSTANCE[iNumInstance];
-	ZeroMemory(pInstanceVtx, sizeof(VTXINSTANCE) * iNumInstance);
-
+	VTXINSTANCE*		pInstanceVtx = new VTXINSTANCE[200];
+	ZeroMemory(pInstanceVtx, sizeof(VTXINSTANCE) * 200);
+	m_vecCullWorldMatrix = new _float4x4[m_iNumInstance];
 	for (_uint i = 0; i < iNumInstance; ++i)
 	{
 		memcpy(&(pInstanceVtx[i]), &((*_WorldMatrix)[i]), sizeof(_float4x4));
-
+		m_vecWorldMatrix.push_back((*_WorldMatrix)[i]);
 	}
 
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
@@ -330,6 +336,31 @@ _bool CInstancingMesh::Picking(CTransform * pTransform, _vector & pOut)
 	return _bPicking;
 }
 
+void CInstancingMesh::Culling(_float fSize)
+{
+	
+	CFrustum* _pFrustum = CFrustum::Get_Instance();
+	m_iNumInstance = 0;
+	for (auto& _world : m_vecWorldMatrix)
+	{
+
+		_vector _vPos;
+		memcpy(&_vPos, _world.m[3], sizeof(_float4));
+		_vPos.m128_f32[3] = 1.f;
+		if (_pFrustum->isIn_WorldSpace(_vPos, fSize))
+		{
+			m_vecCullWorldMatrix[m_iNumInstance] = _world;
+			++m_iNumInstance;			
+		}
+	}
+	
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+	m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, m_vecCullWorldMatrix, sizeof(_float4x4) * m_iNumInstance);
+	m_pContext->Unmap(m_pVBInstance, 0);
+}
+
 CInstancingMesh * CInstancingMesh::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const aiMesh * pAIMesh, TCONTAINER*	_pOut, _uint iNumInstance, vector<_float4x4>* matWorld)
 {
 	CInstancingMesh*			pInstance = new CInstancingMesh(pDevice, pContext);
@@ -372,5 +403,7 @@ CComponent * CInstancingMesh::Clone(void * pArg)
 void CInstancingMesh::Free()
 {
 	__super::Free();
-
+	Safe_Delete_Array(m_pVBInstance);
+	Safe_Delete_Array(m_vecCullWorldMatrix);
+	m_vecWorldMatrix.clear();
 }

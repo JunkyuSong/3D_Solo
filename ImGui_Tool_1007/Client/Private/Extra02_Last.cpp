@@ -37,7 +37,7 @@ HRESULT CExtra02_Last::Initialize_Prototype()
 
 HRESULT CExtra02_Last::Initialize(void * pArg)
 {
-
+	AUTOINSTANCE(CGameInstance, _pInstance);
 
 	m_eMonsterType = MONSTER_EXTRA02;
 
@@ -83,7 +83,7 @@ HRESULT CExtra02_Last::Initialize(void * pArg)
 
 	m_eCurState = LV1Villager_M_SP_Idle;
 	On_Collider(COLLIDERTYPE_BODY, true);
-	
+	m_fIdleTime = _pInstance->Rand_Float(20.f, 200.f);
 	return S_OK;
 }
 
@@ -335,7 +335,7 @@ void CExtra02_Last::CheckState(_float fTimeDelta)
 		}
 		break;
 	case Client::CExtra02_Last::LV1Villager_M_IdleGeneral:
-		
+		m_eCurState = LV1Villager_M_WalkF;
 		break;
 	case LV1Villager_M_SP_Idle:
 		{

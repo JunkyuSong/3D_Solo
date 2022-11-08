@@ -16,7 +16,8 @@ CModel::CModel(const CModel & rhs)
 	, m_Materials(rhs.m_Materials)
 	, m_datLoad(rhs.m_datLoad)
 {
-
+	strcpy_s(m_pModelFilePath, rhs.m_pModelFilePath);
+	strcpy_s(m_pModelFileName, rhs.m_pModelFileName);
 
 	for (auto& Material : m_Materials)
 	{
@@ -125,32 +126,6 @@ HRESULT CModel::Ready_Materials(const char * pModelFilePath, TMATERIALS* _pOut)
 	}
 	return S_OK;
 }
-
-//CModel * CModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const char * pModelFilePath, const char * pModelFileName)
-//{
-//	CModel*			pInstance = new CModel(pDevice, pContext);
-//
-//	if (FAILED(pInstance->Initialize_Prototype(pModelFilePath, pModelFileName)))
-//	{
-//		MSG_BOX(TEXT("Failed To Created : CTexture"));
-//		Safe_Release(pInstance);
-//	}
-//
-//	return pInstance;
-//}
-//
-//CComponent * CModel::Clone(void * pArg)
-//{
-//	CModel*			pInstance = new CModel(*this);
-//
-//	if (FAILED(pInstance->Initialize(pArg)))
-//	{
-//		MSG_BOX(TEXT("Failed To Cloned : CModel"));
-//		Safe_Release(pInstance);
-//	}
-//
-//	return pInstance;
-//}
 
 void CModel::Free()
 {

@@ -22,6 +22,8 @@ public:
 
 	_bool Picking(class CTransform* pTransform, _vector& pOut);
 
+	void Culling(_float fSize);
+
 private:
 	HRESULT Ready_MeshContainers(_uint iNumInstance, vector<_float4x4>* matWorld);
 
@@ -34,9 +36,10 @@ public:
 	virtual void Free() override;
 
 private:
-	typedef vector<class CMeshContainer*>	MESHES;
-	vector<class CMeshContainer*>			m_Meshes;
+	typedef vector<class CInstancingMesh*>	MESHES;
+	vector<class CInstancingMesh*>			m_Meshes;
 	TMODEL									m_tModel;
+
 };
 
 END

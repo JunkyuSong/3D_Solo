@@ -284,7 +284,7 @@ _bool CAnimation::Play_Animation(_float fTimeDelta, CAnimation * pNextAnim, set<
 		{
 			Dest = NextAnimChannels[i]->Get_KeyFrame(0);
 		}
-
+		
 		Update_Transformation(Sour, Dest, i);
 	}
 	return false;
@@ -318,6 +318,8 @@ void CAnimation::Update_Transformation(KEYFRAME& Sour, KEYFRAME& Dest, const _ui
 
 	_matrix		TransformationMatrix = XMMatrixAffineTransformation(XMLoadFloat3(&vScale), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMLoadFloat4(&vRotation), XMVectorSetW(XMLoadFloat3(&vPosition), 1.f));
 
+	
+	
 	if (nullptr != pNode)
 		pNode->Set_Transformation(TransformationMatrix);
 }

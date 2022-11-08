@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "..\Public\StreetLight.h"
+#include "Balloon.h"
 #include "Obj_NonAnim.h"
 #include "Renderer.h"
 #include "Shader.h"
@@ -8,22 +8,22 @@
 #include "GameInstance.h"
 #include "ImGuiMgr.h"
 
-CStreetLight::CStreetLight(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CBalloon::CBalloon(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CObj_NonAnim(pDevice, pContext)
 {
 }
 
-CStreetLight::CStreetLight(const CStreetLight & rhs)
+CBalloon::CBalloon(const CBalloon & rhs)
 	: CObj_NonAnim(rhs)
 {
 }
 
-HRESULT CStreetLight::Initialize_Prototype()
+HRESULT CBalloon::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CStreetLight::Initialize(void * pArg)
+HRESULT CBalloon::Initialize(void * pArg)
 {
 
 	ZeroMemory(&m_tInfo, sizeof(OBJ_DESC));
@@ -41,22 +41,17 @@ HRESULT CStreetLight::Initialize(void * pArg)
 
 	AUTOINSTANCE(CGameInstance, _pInstance);
 
-	_matrix _matStreetLight = (m_pTransformCom->Get_WorldMatrix());
-
-	m_pLamp = _pInstance->Clone_GameObject(TEXT("Prototype_GameObject_Map_Lamp"), &_matStreetLight);
-	if (m_pLamp == nullptr)
-		return E_FAIL;
 
 	return S_OK;
 }
 
-void CStreetLight::Tick( _float fTimeDelta)
+void CBalloon::Tick( _float fTimeDelta)
 {
 	ImGuiTick();
 
 }
 
-void CStreetLight::LateTick( _float fTimeDelta)
+void CBalloon::LateTick( _float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return;
@@ -65,13 +60,12 @@ void CStreetLight::LateTick( _float fTimeDelta)
 	_bool		isDraw = _pInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.f);
 	if (isDraw)
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, m_pLamp);
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 	}
 	
 }
 
-HRESULT CStreetLight::Render()
+HRESULT CBalloon::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
@@ -103,7 +97,7 @@ HRESULT CStreetLight::Render()
 }
 
 
-HRESULT CStreetLight::Ready_Components()
+HRESULT CBalloon::Ready_Components()
 {
 	/* For.Com_Transform */
 	CTransform::TRANSFORMDESC	_Desc;
@@ -121,15 +115,27 @@ HRESULT CStreetLight::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Light02"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
-		return E_FAIL;
+	AUTOINSTANCE(CGameInstance, _pInstance);
+	if (_pInstance->Rand_Int(0, 1) == 1)
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Balloon01"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+			return E_FAIL;
 
-	lstrcpy(m_tInfo.szModelTag, TEXT("Prototype_Component_Model_Light02"));
+		lstrcpy(m_tInfo.szModelTag, TEXT("Prototype_Component_Model_Balloon01"));
+	}
+	else
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Balloon02"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+			return E_FAIL;
+
+		lstrcpy(m_tInfo.szModelTag, TEXT("Prototype_Component_Model_Balloon02"));
+	}
+
 
 	return S_OK;
 }
 
-HRESULT CStreetLight::SetUp_ShaderResources()
+HRESULT CBalloon::SetUp_ShaderResources()
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 	if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TP(), sizeof(_float4x4))))
@@ -146,35 +152,35 @@ HRESULT CStreetLight::SetUp_ShaderResources()
 	return S_OK;
 }
 
-CStreetLight * CStreetLight::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CBalloon * CBalloon::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CStreetLight*		pInstance = new CStreetLight(pDevice, pContext);
+	CBalloon*		pInstance = new CBalloon(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CStreetLight"));
+		MSG_BOX(TEXT("Failed To Created : CBalloon"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CStreetLight::Clone(void * pArg)
+CGameObject * CBalloon::Clone(void * pArg)
 {
-	CStreetLight*		pInstance = new CStreetLight(*this);
+	CBalloon*		pInstance = new CBalloon(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CStreetLight"));
+		MSG_BOX(TEXT("Failed To Cloned : CBalloon"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CStreetLight::Free()
+void CBalloon::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pLamp);
+	
 }

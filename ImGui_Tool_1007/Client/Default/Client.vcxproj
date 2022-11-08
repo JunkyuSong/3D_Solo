@@ -179,6 +179,7 @@
     <ClInclude Include="..\public\Anim_Tool.h" />
     <ClInclude Include="..\Public\Axe.h" />
     <ClInclude Include="..\public\BackGround.h" />
+    <ClInclude Include="..\Public\Balloon.h" />
     <ClInclude Include="..\Public\Boss_Bat.h" />
     <ClInclude Include="..\public\CameraMgr.h" />
     <ClInclude Include="..\Public\Camera_CutScene.h" />
@@ -197,6 +198,7 @@
     <ClInclude Include="..\Public\Extra02.h" />
     <ClInclude Include="..\Public\Extra02_Last.h" />
     <ClInclude Include="..\Public\ImGuiMgr.h" />
+    <ClInclude Include="..\Public\InstancingObj.h" />
     <ClInclude Include="..\Public\Knife.h" />
     <ClInclude Include="..\Public\Lamp.h" />
     <ClInclude Include="..\Public\Level_Client.h" />
@@ -258,6 +260,7 @@
     <ClCompile Include="..\private\Anim_Tool.cpp" />
     <ClCompile Include="..\Private\Axe.cpp" />
     <ClCompile Include="..\private\BackGround.cpp" />
+    <ClCompile Include="..\Private\Balloon.cpp" />
     <ClCompile Include="..\Private\Boss_Bat.cpp" />
     <ClCompile Include="..\private\CameraMgr.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene.cpp" />
@@ -275,6 +278,7 @@
     <ClCompile Include="..\Private\Extra02.cpp" />
     <ClCompile Include="..\Private\Extra02_Last.cpp" />
     <ClCompile Include="..\Private\ImGuiMgr.cpp" />
+    <ClCompile Include="..\Private\InstancingObj.cpp" />
     <ClCompile Include="..\Private\Knife.cpp" />
     <ClCompile Include="..\Private\Lamp.cpp" />
     <ClCompile Include="..\Private\Level_Client.cpp" />
