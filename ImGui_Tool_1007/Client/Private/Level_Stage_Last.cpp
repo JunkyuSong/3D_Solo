@@ -42,6 +42,9 @@ HRESULT CLevel_Stage_Last::Initialize()
 
 	CCameraMgr::Get_Instance()->Initialize();
 
+	AUTOINSTANCE(CGameInstance, _pInstance);
+	_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+
 	return S_OK;
 }
 
