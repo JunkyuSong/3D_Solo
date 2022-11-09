@@ -268,6 +268,9 @@
     <Filter Include="02.GameObjects\05. Monster\Puppet">
       <UniqueIdentifier>{e2bd935f-66ba-437d-a33f-0b0e75548e6d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03. UI\SkillSlot">
+      <UniqueIdentifier>{e77af0fc-d512-4047-9401-a2e95787c6b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

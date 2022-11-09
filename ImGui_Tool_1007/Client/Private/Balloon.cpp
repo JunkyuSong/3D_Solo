@@ -33,7 +33,8 @@ HRESULT CBalloon::Initialize(void * pArg)
 	AUTOINSTANCE(CGameInstance, _pInstance);
 
 	m_pTransformCom->Set_Scale(XMVectorSet(0.015f, 0.015f, 0.015f, 0.f));
-
+	//좌표에 따라서 인덱스 받고
+	// 그 인덱스에 따라서 파괴되었을때 저어기 몇몇개에 몬스터 생성
 	if (pArg)
 	{
 		MONSTERINFO _tInfo = *static_cast<MONSTERINFO*>(pArg);
@@ -222,7 +223,7 @@ HRESULT CBalloon::Ready_Components()
 
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
-	ColliderDesc.vSize = _float3(600.f, 300.f, 600.f);
+	ColliderDesc.vSize = _float3(550.f, 300.f, 550.f);
 	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f + 200.f, 0.f);
 	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom[COLLISION_BODY], &ColliderDesc)))
