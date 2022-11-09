@@ -37,6 +37,7 @@ CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 		m_pBones[i] = nullptr;
 		m_pHands[i] = nullptr;
 	}
+	m_eTypeObj = CGameObject::TYPE_PLAYER;
 }
 
 CPlayer::CPlayer(const CPlayer & rhs)

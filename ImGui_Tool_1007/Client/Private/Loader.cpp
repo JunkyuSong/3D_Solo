@@ -46,6 +46,7 @@
 #include "Puppet.h"
 #include "Lamp.h"
 #include "StreetLight.h"
+#include "Balloon.h"
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -100,7 +101,7 @@ HRESULT CLoader::Loading()
 		
 		break;
 	case LEVEL_GAMEPLAY:
-		if (m_bOneLoad[LEVEL_LOGO])
+		if (m_bOneLoad[LEVEL_GAMEPLAY])
 		{
 			m_isFinished = true;
 		}
@@ -111,7 +112,7 @@ HRESULT CLoader::Loading()
 		}
 		break;
 	case LEVEL_STAGE_02:
-		if (m_bOneLoad[LEVEL_LOGO])
+		if (m_bOneLoad[LEVEL_STAGE_02])
 		{
 			m_isFinished = true;
 		}
@@ -122,7 +123,7 @@ HRESULT CLoader::Loading()
 		}
 		break;
 	case LEVEL_STAGE_02_1:
-		if (m_bOneLoad[LEVEL_LOGO])
+		if (m_bOneLoad[LEVEL_STAGE_02_1])
 		{
 			m_isFinished = true;
 		}
@@ -133,7 +134,7 @@ HRESULT CLoader::Loading()
 		}
 		break;
 	case LEVEL_STAGE_LAST:
-		if (m_bOneLoad[LEVEL_LOGO])
+		if (m_bOneLoad[LEVEL_STAGE_LAST])
 		{
 			m_isFinished = true;
 		}
@@ -144,7 +145,7 @@ HRESULT CLoader::Loading()
 		}
 		break;
 	case LEVEL_STAGE_LOBBY:
-		if (m_bOneLoad[LEVEL_LOGO])
+		if (m_bOneLoad[LEVEL_STAGE_LOBBY])
 		{
 			m_isFinished = true;
 		}
@@ -626,6 +627,10 @@ HRESULT CLoader::Loading_ForLevel_StageLast()
 
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Map_Lamp"),
 		CLamp::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Balloon"),
+		CBalloon::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 

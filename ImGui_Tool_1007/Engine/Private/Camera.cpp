@@ -5,6 +5,7 @@
 CCamera::CCamera(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext)
 {
+	m_eTypeObj = CGameObject::TYPE_CAMERA;
 }
 
 CCamera::CCamera(const CCamera & rhs, CTransform::TRANSFORMDESC* pArg)

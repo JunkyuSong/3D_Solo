@@ -403,7 +403,11 @@ CComponent * CInstancingMesh::Clone(void * pArg)
 void CInstancingMesh::Free()
 {
 	__super::Free();
-	Safe_Delete_Array(m_pVBInstance);
-	Safe_Delete_Array(m_vecCullWorldMatrix);
-	m_vecWorldMatrix.clear();
+	if (!m_isCloned)
+	{
+		Safe_Release(m_pVBInstance);
+		Safe_Delete_Array(m_vecCullWorldMatrix);
+		m_vecWorldMatrix.clear();
+	}
+
 }

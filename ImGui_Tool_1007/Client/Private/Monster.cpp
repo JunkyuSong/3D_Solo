@@ -7,6 +7,7 @@
 CMonster::CMonster(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
+	m_eTypeObj = CGameObject::TYPE_MONSTER;
 }
 
 CMonster::CMonster(const CMonster & rhs)

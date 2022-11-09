@@ -97,12 +97,6 @@
     <Filter Include="96. ImGuiMgr\Tool\Texture_Tool">
       <UniqueIdentifier>{9bf2306d-ea80-428f-8811-72b99828ef89}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\05. Monster">
-      <UniqueIdentifier>{48b9ac98-5754-483c-866d-5c9c6265633b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Magician">
-      <UniqueIdentifier>{23791d6d-67dd-44db-9c65-42487fac2958}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\04. Weapon\00. Player">
       <UniqueIdentifier>{0c4af79c-8dfb-45e4-a74b-d8b0350b38ef}</UniqueIdentifier>
     </Filter>
@@ -193,12 +187,6 @@
     <Filter Include="01.Levels\04. Stage_Last">
       <UniqueIdentifier>{c6012804-ec5d-420f-8e5b-83f18ac28ec3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Bat">
-      <UniqueIdentifier>{28ca989f-433c-4241-ab7b-08493644137c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Extra">
-      <UniqueIdentifier>{947c455f-a3c1-45de-aa7c-98ad6bbede26}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Levels\03.Stage_02\Stage_02_01">
       <UniqueIdentifier>{511dec31-f2bb-414c-a097-d93a9cb2dfe2}</UniqueIdentifier>
     </Filter>
@@ -208,15 +196,6 @@
     <Filter Include="02.GameObjects\Map\Stage_02\Stage_02_1">
       <UniqueIdentifier>{236e3520-fa14-45d2-8bcc-e8b61b3e248d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Extra\Extra01">
-      <UniqueIdentifier>{94063005-27ec-4d29-a200-77550a44a563}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Extra\Extra02">
-      <UniqueIdentifier>{d5182fcf-ade3-4dd1-b9fb-1465d07563e5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Extra\ExtraWeapon">
-      <UniqueIdentifier>{f32d26e3-c853-4aa7-bf09-bc53ff4d4568}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\03. UI\HP_Bar\UI_PlayerHpBar">
       <UniqueIdentifier>{3916198e-8947-40e3-8608-385492e872ba}</UniqueIdentifier>
     </Filter>
@@ -225,9 +204,6 @@
     </Filter>
     <Filter Include="01.Levels\04. Stage_Last\Test">
       <UniqueIdentifier>{889f19f2-db93-4547-a5e3-0f83b94d3811}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Puppet">
-      <UniqueIdentifier>{e2bd935f-66ba-437d-a33f-0b0e75548e6d}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\Camera\Camera_CutScene">
       <UniqueIdentifier>{c0bc3b66-ff56-4495-be81-f0b62d156c89}</UniqueIdentifier>
@@ -250,11 +226,35 @@
     <Filter Include="02.GameObjects\06. Map_Obj\StreetLight\Lamp">
       <UniqueIdentifier>{0346bcda-a8c5-409d-925a-6b3df625c83a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\01. Obj\InstancingObj">
+      <UniqueIdentifier>{932bcd51-b658-44bc-86e0-cc04a76334e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\06. Map_Obj\Balloon">
+      <UniqueIdentifier>{fbfac892-e272-4b3f-a939-6c9591752884}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Monster">
+      <UniqueIdentifier>{48b9ac98-5754-483c-866d-5c9c6265633b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Monster\Magician">
+      <UniqueIdentifier>{23791d6d-67dd-44db-9c65-42487fac2958}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Monster\Bat">
+      <UniqueIdentifier>{28ca989f-433c-4241-ab7b-08493644137c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Monster\Extra">
+      <UniqueIdentifier>{947c455f-a3c1-45de-aa7c-98ad6bbede26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Monster\Extra\Extra01">
+      <UniqueIdentifier>{94063005-27ec-4d29-a200-77550a44a563}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\05. Monster\Extra\Extra01\Stage_2-1">
       <UniqueIdentifier>{83ba1027-a048-4c46-a9fb-b7dcd5ae6f3b}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\05. Monster\Extra\Extra01\Stage_Last">
       <UniqueIdentifier>{54a1c42c-066b-45ad-b2f2-9d571d05a5d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Monster\Extra\Extra02">
+      <UniqueIdentifier>{d5182fcf-ade3-4dd1-b9fb-1465d07563e5}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\05. Monster\Extra\Extra02\Stage_2-1">
       <UniqueIdentifier>{e3d997d8-04e5-4bb4-b9c4-02d6495c8a4c}</UniqueIdentifier>
@@ -262,11 +262,11 @@
     <Filter Include="02.GameObjects\05. Monster\Extra\Extra02\Stage_Last">
       <UniqueIdentifier>{a93a19cd-0978-4ec1-bd00-717ef64dd4c5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\01. Obj\InstancingObj">
-      <UniqueIdentifier>{932bcd51-b658-44bc-86e0-cc04a76334e1}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\05. Monster\Extra\ExtraWeapon">
+      <UniqueIdentifier>{f32d26e3-c853-4aa7-bf09-bc53ff4d4568}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\06. Map_Obj\Balloon">
-      <UniqueIdentifier>{fbfac892-e272-4b3f-a939-6c9591752884}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\05. Monster\Puppet">
+      <UniqueIdentifier>{e2bd935f-66ba-437d-a33f-0b0e75548e6d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

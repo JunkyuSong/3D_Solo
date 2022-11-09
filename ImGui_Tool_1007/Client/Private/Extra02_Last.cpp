@@ -485,24 +485,29 @@ void CExtra02_Last::RenderGroup()
 
 _bool CExtra02_Last::Collision(_float fTimeDelta)
 {
+	AUTOINSTANCE(CGameInstance, _instance);
+
 	CGameObject* _pTarget = nullptr;
 
 	if (_pTarget = m_pColliderCom[COLLIDERTYPE_PUSH]->Get_Target())
 	{
-		_vector _vDir = XMLoadFloat3(&(static_cast<CCapsule*>(m_pColliderCom[COLLIDERTYPE_PUSH])->Get_Dir()));
-		_float	_vDis = (static_cast<CCapsule*>(m_pColliderCom[COLLIDERTYPE_PUSH])->Get_Dis());
-		_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION) + XMVector3Normalize(_vDir) * _vDis;
-		_bool		isMove = true;
+		if (_pTarget->Get_ObjType() == TYPE_PLAYER)
+		{
+			_vector _vDir = XMLoadFloat3(&(static_cast<CCapsule*>(m_pColliderCom[COLLIDERTYPE_PUSH])->Get_Dir()));
+			_float	_vDis = (static_cast<CCapsule*>(m_pColliderCom[COLLIDERTYPE_PUSH])->Get_Dis());
+			_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION) + XMVector3Normalize(_vDir) * _vDis;
+			_bool		isMove = true;
 
-		_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
-		if (nullptr != m_pNavigationCom)
-			isMove = m_pNavigationCom->isMove(_vPos, &vNormal);
+			_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+			if (nullptr != m_pNavigationCom)
+				isMove = m_pNavigationCom->isMove(_vPos, &vNormal);
 
-		if (true == isMove)
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
+			if (true == isMove)
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
+		}
 
 	}
-	AUTOINSTANCE(CGameInstance, _instance);
+	
 
 
 

@@ -66,8 +66,21 @@ void CMainApp::Tick(const _float& fTimeDelta)
 
 #ifdef _DEBUG
 	m_fTimeAcc += fTimeDelta / m_pGameInstance->Get_TimeSpeed(TEXT("Timer_Main"));
+	++m_iNumDraw;
+	
+	if (m_fTimeAcc >= 1.f)
+	{
+		wsprintf(m_szFPS, TEXT("fps : %d"), m_iNumDraw);
+		m_iFps = m_iNumDraw;
+		m_iNumDraw = 0;
+		m_fTimeAcc = 0.f;
+	}
+	
 #endif // _DEBUG
 	CImGui::Get_Instance()->Tick();
+	CImGui::Get_Instance()->Begin("FPS : ");
+	CImGui::Get_Instance()->Intcheck(&m_iFps, "FPS");
+	CImGui::Get_Instance()->End();
 	m_pGameInstance->Tick_Engine(fTimeDelta);
 	CCameraMgr::Get_Instance()->Tick(fTimeDelta);
 	CPipeLine::Get_Instance()->Update();
@@ -86,19 +99,21 @@ HRESULT CMainApp::Render()
 	m_pRenderer->Draw();
 	m_pGameInstance->Render_Level();
 	CImGui::Get_Instance()->Render();
+
 	m_pGameInstance->Present();
 
 #ifdef _DEBUG
-	++m_iNumDraw;
+	/*++m_iNumDraw;
 
 	if (m_fTimeAcc >= 1.f)
 	{
 		wsprintf(m_szFPS, TEXT("fps : %d"), m_iNumDraw);
 		m_iNumDraw = 0;
 		m_fTimeAcc = 0.f;
-	}
+	}*/
 
-	SetWindowText(g_hWnd, m_szFPS);
+	//SetWindowText(g_hWnd, m_szFPS);
+	
 #endif // _DEBUG
 
 	

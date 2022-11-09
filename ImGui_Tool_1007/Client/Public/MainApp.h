@@ -34,7 +34,8 @@ private:
 private:
 	_float			m_fTimeAcc = 0.f;
 	_tchar			m_szFPS[MAX_PATH] = TEXT("");
-	_uint			m_iNumDraw = 0;
+	_int			m_iNumDraw = 0;
+	_int			m_iFps = 0;
 #endif // _DEBUG
 
 private:

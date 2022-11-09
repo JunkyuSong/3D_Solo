@@ -40,11 +40,9 @@ void CInstancingObj::LateTick( _float fTimeDelta)
 		return;
 
 	AUTOINSTANCE(CGameInstance, _pInstance);
-	//_bool		isDraw = _pInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.f);
-	//if (isDraw)
-	//{
+
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
-	//}
+
 }
 
 HRESULT CInstancingObj::Render()
@@ -89,10 +87,11 @@ HRESULT CInstancingObj::Set_Instancing(_tchar * _szModelKey, vector<_float4x4>* 
 	char* _Path = nullptr;
 	char* _Name = nullptr;
 	
-	static_cast<CModel*>(_pGameInstance->Clone_Component(g_eCurLevel, _szModelKey))->Get_Path(&_Path, &_Name);
+	CModel* _pModel = static_cast<CModel*>(_pGameInstance->Clone_Component(g_eCurLevel, _szModelKey));
+	_pModel->Get_Path(&_Path, &_Name);
 
 	m_pModelCom = CInstancingModel::Create(m_pDevice, m_pContext, _Path, _Name, (*_vecWorld).size(), _vecWorld);
-
+	Safe_Release(_pModel);
 	return S_OK;
 }
 

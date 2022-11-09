@@ -6,15 +6,17 @@
 #include "NonAnimModel.h"
 #include "Transform.h"
 #include "GameInstance.h"
+#include "Status.h"
+#include "CollisionMgr.h"
 #include "ImGuiMgr.h"
 
 CBalloon::CBalloon(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
-	: CObj_NonAnim(pDevice, pContext)
+	: CMonster(pDevice, pContext)
 {
 }
 
 CBalloon::CBalloon(const CBalloon & rhs)
-	: CObj_NonAnim(rhs)
+	: CMonster(rhs)
 {
 }
 
@@ -25,30 +27,60 @@ HRESULT CBalloon::Initialize_Prototype()
 
 HRESULT CBalloon::Initialize(void * pArg)
 {
-
-	ZeroMemory(&m_tInfo, sizeof(OBJ_DESC));
-
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	if (pArg)
-	{
-		OBJ_DESC _tInfo = *static_cast<OBJ_DESC*>(pArg);
-		m_tInfo.matWorld = _tInfo.matWorld;
-		m_pTransformCom->Set_WorldFloat4x4(m_tInfo.matWorld);
-	}
-	
-
 	AUTOINSTANCE(CGameInstance, _pInstance);
 
+	m_pTransformCom->Set_Scale(XMVectorSet(0.015f, 0.015f, 0.015f, 0.f));
+
+	if (pArg)
+	{
+		MONSTERINFO _tInfo = *static_cast<MONSTERINFO*>(pArg);
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _tInfo._vPos);
+		
+		memcpy(&m_vOriginPos, pArg, sizeof(_float4));
+	}
+
+	m_bCollision[COLLISION_PUSH] = true;
+	m_bCollision[COLLISION_BODY] = true;
 
 	return S_OK;
 }
 
 void CBalloon::Tick( _float fTimeDelta)
 {
-	ImGuiTick();
+	if (!m_bDead && m_bHit)
+	{
+		m_fShakeCurTime += fTimeDelta;
 
+		//흔들려
+		if (m_fShakeCurTime > m_fShakeTime)
+		{
+			m_bHit = false;
+			m_fShakeCurTime = 0.f;
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&m_vOriginPos));
+			m_bCollision[COLLISION_BODY] = true;
+		}
+		else
+		{
+			if ((_uint(m_fShakeCurTime*20.f) % 2) == 0)
+			{
+				_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+				_vPos -= XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT) + m_pTransformCom->Get_State(CTransform::STATE_LOOK)) * fTimeDelta;
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
+			}
+			else
+			{
+				_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+				_vPos += XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT) + m_pTransformCom->Get_State(CTransform::STATE_LOOK)) * fTimeDelta * 1.5f;
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
+			}		
+		}
+	}
+
+	Update_Collider();
 }
 
 void CBalloon::LateTick( _float fTimeDelta)
@@ -57,6 +89,53 @@ void CBalloon::LateTick( _float fTimeDelta)
 		return;
 	AUTOINSTANCE(CGameInstance, _pInstance);
 
+	CGameObject* _pTarget = nullptr;
+
+	if (_pTarget = m_pColliderCom[COLLISION_PUSH]->Get_Target())
+	{
+		_vector _vDir = XMLoadFloat3(&(static_cast<CCapsule*>(m_pColliderCom[COLLISION_PUSH])->Get_Dir()));
+		
+		_float	_vDis = (static_cast<CCapsule*>(m_pColliderCom[COLLISION_PUSH])->Get_Dis());
+		CTransform* _pTargetTrans = static_cast<CTransform*>(_pTarget->Get_ComponentPtr(TEXT("Com_Transform")));
+		//_vector _vDir = XMVector3Normalize(_pTargetTrans->Get_State(CTransform::STATE_LOOK));
+		_vector _vPos = _pTargetTrans->Get_State(CTransform::STATE_POSITION) - XMVector3Normalize(_vDir) */* fabs*/(_vDis);
+		_bool		isMove = true;
+
+		
+
+		isMove = static_cast<CNavigation*>(_pTarget->Get_ComponentPtr(TEXT("Com_Navigation")))->isMove(_vPos, nullptr);
+
+		if (true == isMove)
+			_pTargetTrans->Set_State(CTransform::STATE_POSITION, _vPos);
+		else
+		{
+			_vDir = XMVector3Normalize(_pTargetTrans->Get_State(CTransform::STATE_LOOK));
+			_vPos = _pTargetTrans->Get_State(CTransform::STATE_POSITION) - XMVector3Normalize(_vDir) * fabs(_vDis);
+			_pTargetTrans->Set_State(CTransform::STATE_POSITION, _vPos);
+		}
+	}
+	if (_pTarget = m_pColliderCom[COLLISION_BODY]->Get_Target())
+	{
+		//흔들리고
+		if (false == m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack()))
+		{
+			Safe_Release(m_pNonAnimModelCom);
+			Safe_Release(m_Components[TEXT("Com_Model")]);
+			m_pNonAnimModelCom = static_cast<CNonAnimModel*>(_pInstance->Clone_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_balloonDamaged01")));
+			m_Components[TEXT("Com_Model")] = m_pNonAnimModelCom;
+			Safe_AddRef(m_Components[TEXT("Com_Model")]);
+			m_bDead = true;
+			m_bCollision[COLLISION_PUSH] = false;
+			m_bCollision[COLLISION_BODY] = false;
+			_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+			_vPos .m128_f32[1] += 3.f;
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
+			m_iPass = 0;
+		}
+		m_bHit = true;
+		m_bCollision[COLLISION_BODY] = false;
+	}
+	
 	_bool		isDraw = _pInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.f);
 	if (isDraw)
 	{
@@ -67,7 +146,7 @@ void CBalloon::LateTick( _float fTimeDelta)
 
 HRESULT CBalloon::Render()
 {
-	if (nullptr == m_pModelCom ||
+	if (nullptr == m_pNonAnimModelCom ||
 		nullptr == m_pShaderCom)
 		return E_FAIL;
 
@@ -75,23 +154,28 @@ HRESULT CBalloon::Render()
 
 	SetUp_ShaderResources();
 
-	_uint		iNumMeshes = m_pModelCom->Get_NumMesh();//메쉬 갯수를 알고 메쉬 갯수만큼 렌더를 할 것임. 여기서!
+	_uint		iNumMeshes = m_pNonAnimModelCom->Get_NumMesh();//메쉬 갯수를 알고 메쉬 갯수만큼 렌더를 할 것임. 여기서!
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+		if (FAILED(m_pNonAnimModelCom->SetUp_OnShader(m_pShaderCom, m_pNonAnimModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-			return E_FAIL;
-
-		if (FAILED(m_pShaderCom->Begin(m_ePass)))
+		if (FAILED(m_pNonAnimModelCom->SetUp_OnShader(m_pShaderCom, m_pNonAnimModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(i)))
+		if (FAILED(m_pNonAnimModelCom->SetUp_OnShader(m_pShaderCom, m_pNonAnimModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+			return E_FAIL;
+		
+		if (FAILED(m_pShaderCom->Begin(m_iPass)))
+			return E_FAIL;
+
+		if (FAILED(m_pNonAnimModelCom->Render(i)))
 			return E_FAIL;
 	}
 
-	
+	//if (nullptr != m_pColliderCom[COLLISION_BODY])
+		m_pColliderCom[COLLISION_BODY]->Render();
+
 
 	return S_OK;
 }
@@ -103,7 +187,7 @@ HRESULT CBalloon::Ready_Components()
 	CTransform::TRANSFORMDESC	_Desc;
 	_Desc.fRotationPerSec = XMConvertToRadians(90.f);
 	//_Desc.fSpeedPerSec = 1.5f;
-	_Desc.fSpeedPerSec =2.5f;
+	_Desc.fSpeedPerSec =0.5f;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &_Desc)))
 		return E_FAIL;
 
@@ -118,18 +202,38 @@ HRESULT CBalloon::Ready_Components()
 	AUTOINSTANCE(CGameInstance, _pInstance);
 	if (_pInstance->Rand_Int(0, 1) == 1)
 	{
-		if (FAILED(__super::Add_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Balloon01"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Balloon01"), TEXT("Com_Model"), (CComponent**)&m_pNonAnimModelCom)))
 			return E_FAIL;
-
-		lstrcpy(m_tInfo.szModelTag, TEXT("Prototype_Component_Model_Balloon01"));
 	}
 	else
 	{
-		if (FAILED(__super::Add_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Balloon02"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Balloon02"), TEXT("Com_Model"), (CComponent**)&m_pNonAnimModelCom)))
 			return E_FAIL;
-
-		lstrcpy(m_tInfo.szModelTag, TEXT("Prototype_Component_Model_Balloon02"));
 	}
+
+	/* For.Com_Status */
+	CStatus::STATUS _tStatus;
+	_tStatus.fMaxHp = 100.f;
+	_tStatus.fAttack = 0.f;
+	_tStatus.fHp = _tStatus.fMaxHp;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Status"), TEXT("Com_Status"), (CComponent**)&m_pStatusCom, &_tStatus)))
+		return E_FAIL;
+
+
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+	ColliderDesc.vSize = _float3(600.f, 300.f, 600.f);
+	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f + 200.f, 0.f);
+	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom[COLLISION_BODY], &ColliderDesc)))
+		return E_FAIL;
+
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+	ColliderDesc.vSize = _float3(6.5f, 6.5f, 6.5f);
+	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f + 1.8f, 0.f);
+	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Capsule"), TEXT("Com_Capsule"), (CComponent**)&m_pColliderCom[COLLISION_PUSH], &ColliderDesc)))
+		return E_FAIL;
 
 
 	return S_OK;
@@ -147,9 +251,26 @@ HRESULT CBalloon::SetUp_ShaderResources()
 	if (FAILED(m_pShaderCom->Set_RawValue("g_CamPosition", &pGameInstance->Get_CamPosition(), sizeof(_float4))))
 		return E_FAIL;
 
+	if (FAILED(m_pShaderCom->Set_RawValue("g_fY", &(m_pTransformCom->Get_WorldMatrix().r[3].m128_f32[1]), sizeof(_float))))
+		return E_FAIL;
+
 	RELEASE_INSTANCE(CGameInstance);
 
 	return S_OK;
+}
+
+void CBalloon::Update_Collider()
+{
+	if (m_bCollision[COLLISION_PUSH])
+	{
+		m_pColliderCom[COLLISION_PUSH]->Update(m_pTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_PUSH, m_pColliderCom[COLLISION_PUSH], this);
+	}
+	if (m_bCollision[COLLISION_BODY])
+	{
+ 		m_pColliderCom[COLLISION_BODY]->Update(m_pTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_BODY, m_pColliderCom[COLLISION_BODY], this);
+	}
 }
 
 CBalloon * CBalloon::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -182,5 +303,8 @@ void CBalloon::Free()
 {
 	__super::Free();
 
-	
+	Safe_Release(m_pNonAnimModelCom);
+
+	Safe_Release(m_pColliderCom[COLLISION_BODY]);
+	Safe_Release(m_pColliderCom[COLLISION_PUSH]);
 }

@@ -130,9 +130,9 @@ HRESULT CLevel_Stage_Last::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_STAGE_LAST, pLayerTag)))
 		return E_FAIL;
 
-	/*if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_STAGE_LAST, pLayerTag)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_STAGE_LAST, pLayerTag)))
 		return E_FAIL;
-*/
+
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Stage_Last"), LEVEL_STAGE_LAST, TEXT("Layer_Stage"))))
 		return E_FAIL;
 
@@ -165,9 +165,14 @@ HRESULT CLevel_Stage_Last::Ready_Layer_Monster(const _tchar * pLayerTag)
 	CMonster::MONSTERINFO _tInfo;
 
 	ZeroMemory(&_tInfo, sizeof(CMonster::MONSTERINFO));
-	_tInfo._vPos = XMVectorSet(61.113f, 30.302f, 76.070f, 1.f);
+	/*_tInfo._vPos = XMVectorSet(61.113f, 30.302f, 76.070f, 1.f);
 	_tInfo._iIndex = 396;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+		return E_FAIL;*/
+
+	_tInfo._vPos = XMVectorSet(53.674f, 25.997f, 77.647f, 1.f);
+	_tInfo._iIndex = 389;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Balloon"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
 		return E_FAIL;
 
 
