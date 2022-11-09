@@ -331,59 +331,13 @@ HRESULT CRenderer::Render_AlphaBlend()
 
 HRESULT CRenderer::Render_Fog()
 {
-	/*if (nullptr == m_pTarget_Manager)
-		return E_FAIL;
-
-	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Fog"))))
-		return E_FAIL;
-
-	_float4x4			WorldMatrix;
-
-	_uint				iNumViewport = 1;
-	D3D11_VIEWPORT		ViewportDesc;
-
-	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
-
-	XMStoreFloat4x4(&WorldMatrix,
-		XMMatrixTranspose(XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 0.f) * XMMatrixTranslation(0.0f, 0.0f, 0.f)));
-
-	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4))))
-		return E_FAIL;
-
-	CPipeLine*			pPipeLine = GET_INSTANCE(CPipeLine);
-
-	_float4x4			ViewMatrixInv;
-	_float4x4			ProjMatrixInv;
-
-	XMStoreFloat4x4(&ViewMatrixInv, XMMatrixTranspose(XMMatrixInverse(nullptr, pPipeLine->Get_TransformMatrix(CPipeLine::D3DTS_VIEW))));
-	XMStoreFloat4x4(&ProjMatrixInv, XMMatrixTranspose(XMMatrixInverse(nullptr, pPipeLine->Get_TransformMatrix(CPipeLine::D3DTS_PROJ))));
-
-	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrixInv", &ViewMatrixInv, sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrixInv", &ProjMatrixInv, sizeof(_float4x4))))
-		return E_FAIL;
-
-	_vector _vPlayerPos = static_cast<CTransform*>(pPipeLine->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
-
-	if (FAILED(m_pShader->Set_RawValue("g_vPlayerPoition", &_vPlayerPos, sizeof(_vector))))
-		return E_FAIL;
-
-	RELEASE_INSTANCE(CPipeLine);
-
-	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
-		return E_FAIL;
-
-	m_pShader->Begin(4);
-
-	m_pVIBuffer->Render();
-
-	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
-		return E_FAIL;
-*/
+	/*
+	알파블렌딩까지 다 한 다음에 뎁스 타겟 갖고와서 현재 백버퍼에 안개깔면 되는데
+	1. 뎁스를 초기화를 안해야한다.
+	2. 백버퍼 가져올 수 있어야 한다.
+	3. 백버퍼에 뎁스 해서 픽셀세이더에서 카메라로부터 거리 체크해서 안개 넣고
+	4
+	*/
 	return S_OK;
 }
 
