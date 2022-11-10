@@ -42,10 +42,30 @@ HRESULT CBalloon::Initialize(void * pArg)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _tInfo._vPos);
 		
 		memcpy(&m_vOriginPos, pArg, sizeof(_float4));
+
+		if (XMVector3Equal(_tInfo._vPos, XMVectorSet(53.674f, 25.997f, 77.647f, 1.f)))
+		{
+			m_iPointIndex = 0;
+		}
+		else if (XMVector3Equal(_tInfo._vPos, XMVectorSet(88.44f, 32.59f - 4.f, 52.921f, 1.f)))
+		{
+			m_iPointIndex = 1;
+		}
+		else if (XMVector3Equal(_tInfo._vPos, XMVectorSet(51.764f, 35.997f - 4.f, 13.47f, 1.f)))
+		{
+			m_iPointIndex = 2;
+		}
+		else if (XMVector3Equal(_tInfo._vPos, XMVectorSet(1.025f, 38.967f - 4.f, 43.205f, 1.f)))
+		{
+			m_iPointIndex = 3;
+		}
 	}
 
 	m_bCollision[COLLISION_PUSH] = true;
 	m_bCollision[COLLISION_BODY] = true;
+
+	_float fRot = _pInstance->Rand_Float(0.f,359.f);
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(fRot));
 
 	return S_OK;
 }
@@ -99,7 +119,7 @@ void CBalloon::LateTick( _float fTimeDelta)
 		_float	_vDis = (static_cast<CCapsule*>(m_pColliderCom[COLLISION_PUSH])->Get_Dis());
 		CTransform* _pTargetTrans = static_cast<CTransform*>(_pTarget->Get_ComponentPtr(TEXT("Com_Transform")));
 		//_vector _vDir = XMVector3Normalize(_pTargetTrans->Get_State(CTransform::STATE_LOOK));
-		_vector _vPos = _pTargetTrans->Get_State(CTransform::STATE_POSITION) - XMVector3Normalize(_vDir) */* fabs*/(_vDis);
+		_vector _vPos = _pTargetTrans->Get_State(CTransform::STATE_POSITION) - XMVector3Normalize(_vDir) *(_vDis);
 		_bool		isMove = true;
 
 		
@@ -132,6 +152,7 @@ void CBalloon::LateTick( _float fTimeDelta)
 			_vPos .m128_f32[1] += 3.f;
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 			m_iPass = 0;
+			
 		}
 		m_bHit = true;
 		m_bCollision[COLLISION_BODY] = false;
@@ -223,8 +244,8 @@ HRESULT CBalloon::Ready_Components()
 
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
-	ColliderDesc.vSize = _float3(550.f, 300.f, 550.f);
-	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f + 200.f, 0.f);
+	ColliderDesc.vSize = _float3(450.f, 250.f, 450.f);
+	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f + 300.f, 0.f);
 	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom[COLLISION_BODY], &ColliderDesc)))
 		return E_FAIL;
@@ -271,6 +292,77 @@ void CBalloon::Update_Collider()
 	{
  		m_pColliderCom[COLLISION_BODY]->Update(m_pTransformCom->Get_WorldMatrix());
 		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_BODY, m_pColliderCom[COLLISION_BODY], this);
+	}
+}
+
+void CBalloon::Die()
+{
+	CMonster::MONSTERINFO _tInfo;
+	AUTOINSTANCE(CGameInstance, pGameInstance);
+	ZeroMemory(&_tInfo, sizeof(CMonster::MONSTERINFO));
+	_tchar* pLayerTag = TEXT("Layer_Monster");
+	
+	switch (m_iPointIndex)
+	{
+	case 0:
+		_tInfo._vPos = XMVectorSet(69.364f, 30.837f, 74.11f, 1.f);
+		_tInfo._iIndex = 413;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+			return;
+		_tInfo._vPos = XMVectorSet(79.457f, 31.437f, 70.647f, 1.f);
+		_tInfo._iIndex = 430;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+			return;
+		_tInfo._vPos = XMVectorSet(84.248f, 31.917f, 63.999f, 1.f);
+		_tInfo._iIndex = 446;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+			return;
+	case 1:
+		_tInfo._vPos = XMVectorSet(90.44f, 33.357f, 39.826f, 1.f);
+		_tInfo._iIndex = 489;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+			return;
+		_tInfo._vPos = XMVectorSet(84.067f, 34.077f, 28.841f, 1.f);
+		_tInfo._iIndex = 513;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra02"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+			return;
+		_tInfo._vPos = XMVectorSet(72.572f, 35.157f, 14.989f, 1.f);
+		_tInfo._iIndex = 549;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra02"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+			return;
+		break;
+	case 2:
+		_tInfo._vPos = XMVectorSet(37.136f, 35.997f, 11.874f, 1.f);
+		_tInfo._iIndex = 578;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+			return;
+		_tInfo._vPos = XMVectorSet(23.298f, 36.564f, 12.622f, 1.f);
+		_tInfo._iIndex = 594;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+			return;
+		_tInfo._vPos = XMVectorSet(10.544f, 37.557f, 22.196f, 1.f);
+		_tInfo._iIndex = 623;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra02"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+			return;
+		_tInfo._vPos = XMVectorSet(1.573f, 38.397f, 33.37f, 1.f);
+		_tInfo._iIndex = 659;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+			return;
+		break;
+	case 3:
+		_tInfo._vPos = XMVectorSet(1.753f, 39.717f, 56.157f, 1.f);
+		_tInfo._iIndex = 703;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+			return;
+		_tInfo._vPos = XMVectorSet(10.876f, 40.557f, 67.592f, 1.f);
+		_tInfo._iIndex = 728;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra02_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+			return;
+		_tInfo._vPos = XMVectorSet(14.003f, 40.910f, 71.534f, 1.f);
+		_tInfo._iIndex = 740;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+			return;
+		break;
 	}
 }
 

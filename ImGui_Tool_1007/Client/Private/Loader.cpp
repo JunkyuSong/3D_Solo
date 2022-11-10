@@ -532,13 +532,7 @@ HRESULT CLoader::Loading_ForLevel_Stage02()
 		CBoss_Bat::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Extra01_Last"),
-		CExtra01_Last::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
 
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Extra02_Last"),
-		CExtra02_Last::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
 
 
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
@@ -633,6 +627,13 @@ HRESULT CLoader::Loading_ForLevel_StageLast()
 		CBalloon::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Extra01_Last"),
+		CExtra01_Last::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Extra02_Last"),
+		CExtra02_Last::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 	/* 텍스쳐를 로드한다. */

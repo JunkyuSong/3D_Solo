@@ -80,6 +80,8 @@ HRESULT CExtra02_Last::Initialize(void * pArg)
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672f, 2.402f, 50.622f, 1.f));
 	}
 
+	_float fRot = _pInstance->Rand_Float(0.f, 359.f);
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(fRot));
 
 	m_eCurState = LV1Villager_M_SP_Idle;
 	On_Collider(COLLIDERTYPE_BODY, true);

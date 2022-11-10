@@ -79,7 +79,8 @@ HRESULT CExtra01_Last::Initialize(void * pArg)
 	}
 	
 
-
+	_float fRot = _pInstance->Rand_Float(0.f, 359.f);
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(fRot));
 
 	m_eCurState = LV1Villager_M_SP_Idle;
 	On_Collider(COLLIDERTYPE_BODY, true);

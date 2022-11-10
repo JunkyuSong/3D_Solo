@@ -191,8 +191,10 @@ HRESULT CLevel_Stage_Last::Ready_Layer_Monster(const _tchar * pLayerTag)
 		return E_FAIL;
 
 	
-
-
+	
+	
+	
+	
 	return S_OK;
 }
 

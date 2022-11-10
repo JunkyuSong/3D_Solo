@@ -33,6 +33,8 @@ private:
 
 	void Update_Collider();
 
+	void Die();
+
 private:
 	CCollider*		m_pColliderCom[COLLISION_END] = { nullptr };
 	_bool			m_bCollision[COLLISION_END] = { false };
@@ -48,6 +50,8 @@ private:
 	_bool			m_bDead = false;
 
 	_uint			m_iPass = 8;
+
+	_uint			m_iPointIndex = 0;
 
 public:
 	static CBalloon* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
