@@ -86,8 +86,8 @@ private:
 	void Slow_Look_Player();
 	void Look_Player();
 
-	_bool InRange();
-	void Pattern();
+
+	void Pattern(_float _fTimeDelta);
 
 	
 
@@ -125,6 +125,9 @@ private:
 	_float3					m_vAttPos;
 	_float3					m_vLocalPos;
 	_bool					m_bPreStateAtt = false;
+
+	_float					m_fPatternTime = 0.f;
+	_float					m_fPatternCurTime = 0.f;
 
 private:
 	HRESULT Ready_Components();

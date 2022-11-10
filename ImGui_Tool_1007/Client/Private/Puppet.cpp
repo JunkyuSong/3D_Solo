@@ -354,7 +354,7 @@ void CPuppet::CheckState(_float fTimeDelta)
 			{
 				////도착하면 플레이어 쪽 바라봄 -> 보간!
 				Slow_Look_Player();
-				
+				Pattern(fTimeDelta);
 				_float3 _vRot = m_pTransformCom->Get_Rotation();
 				_vRot.y = 0;
 				m_pTransformCom->Set_Rotation(XMLoadFloat3(&_vRot));
@@ -527,68 +527,55 @@ void CPuppet::Look_Player()
 	
 }
 
-_bool CPuppet::InRange()
-{
-
-	AUTOINSTANCE(CGameInstance, _pInstance);
-	CPlayer* _pPlayer = static_cast<CPlayer*>(_pInstance->Get_Player());
-	CTransform* _pTransform = static_cast<CTransform*>(_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")));
-	_vector _vToPlayer = _pTransform->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-	
-	_float _fLimitAngle = sqrtf(3.f) / 2.f;
-	_float _fLimitDis = 7.f;
-
-	if (m_bPreStateAtt)
-	{
-		_fLimitDis = 20.f;
-		if (XMVector3Length(_vToPlayer).m128_f32[0] > _fLimitDis)
-		{
-			return false;
-		}
-		_vector _vLook = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
-
-		_vector _vDestLook = XMVector3Normalize(_vToPlayer);
-
-		_float _fAngle = XMVector3Dot(_vLook, _vDestLook).m128_f32[0];
-
-		Pattern();
-
-		return true;
-	}
-	else
-	{
-		if (XMVector3Length(_vToPlayer).m128_f32[0] > _fLimitDis)
-		{
-			return false;
-		}
-
-		_vector _vLook = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
-
-		_vector _vDestLook = XMVector3Normalize(_vToPlayer);
-
-		_float _fAngle = XMVector3Dot(_vLook, _vDestLook).m128_f32[0];
-
-
-		if (_fAngle > _fLimitAngle)//안에 들어오면 그리로 ... 뛰어가야되는데?
-		{
-			Pattern();
-			return true;
-		}
-
-	}
-	return false;
-}
-
-void CPuppet::Pattern()
+void CPuppet::Pattern(_float _fTimeDelta)
 {
 	//거리에 따라 확률적으로 공격하고 날라댕기고
 	// 거리 짧으면 또 그러고 어키어키
+
+	//확률
+	// 10초~15초마다 공격
+	// 3패턴 중 하나 랜덤
+	// 손뼈 찾아야돼...
+	// 패턴부터 해놓고!
 	AUTOINSTANCE(CGameInstance, _pInstance);
 
-	CTransform* _pPlayerTransform = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
-	_vector		_pLook = _pPlayerTransform->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-	_float _fDistance = XMVector3Length(_pLook).m128_f32[0];
+	m_fPatternTime = _pInstance->Rand_Float(15.f, 25.f);
+	m_fPatternCurTime += _fTimeDelta;
+	if (m_fPatternCurTime > m_fPatternTime)
+	{
+		m_fPatternCurTime = 0.f;
+		STATE _eState;
+		switch (_pInstance->Rand_Int(0, 2))
+		{
+		case 0:
+			_eState = Puppet_AttackF_A;
+			break;
+		case 1:
+			_eState = Puppet_Combo_F_A_Start;
+			break;
+		case 2:
+			_eState = Puppet_Combo_R_Attack01;
+			break;
+		}
+		_matrix _RotMatrix = m_pTransformCom->Get_WorldMatrix();
+		_RotMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+		XMStoreFloat3(&m_vAttPos, XMVector3TransformCoord(
+			XMVectorSetW(XMLoadFloat4(&m_ListNextLook[_eState]), 1.f),
+			_RotMatrix)); //좌표
 
+		m_eReserveState = _eState;
+		m_eMonsterState = CMonster::ATTACK_ATTACK;
+
+		_vector _vPlayerPos = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+
+		XMStoreFloat3(&m_vAttPos, _vPlayerPos + XMLoadFloat3(&m_vAttPos));
+		XMStoreFloat3(&m_vNextLook, XMVector3Normalize(XMLoadFloat3(&m_vAttPos) - XMLoadFloat3(&m_vLocalPos)));
+		m_fPlaySpeed = 3.f;
+	}
+
+
+	
+	
 	
 
 	// 공격 패턴 짜기 시작
