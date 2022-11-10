@@ -114,10 +114,10 @@ void CExtra01_Last::Tick(_float fTimeDelta)
 	{
 		Check_Stun();
 		CheckAnim();
+		CheckState(fTimeDelta);
 
 		if (m_eCurState != LV1Villager_M_SP_Idle)
 			PlayAnimation(fTimeDelta);
-		CheckState(fTimeDelta);
 	}
 
 	Update_Weapon();
@@ -342,6 +342,8 @@ void CExtra01_Last::CheckLimit()
 		}
 		else if (m_vecLimitTime[LV1Villager_M_Attack01][1] < m_fPlayTime)
 		{
+			LookPlayerSlow(0.5f);
+
 			if (m_eReserveState == LV1Villager_M_Attack02)
 			{
 				m_eCurState = LV1Villager_M_Attack02;
@@ -355,6 +357,8 @@ void CExtra01_Last::CheckLimit()
 		else if (m_vecLimitTime[LV1Villager_M_Attack01][0] < m_fPlayTime)
 		{
 			m_pParts->Set_CollisionOn(true);
+			LookPlayerSlow(0.5f);
+
 		}
 		
 		break;
@@ -364,6 +368,10 @@ void CExtra01_Last::CheckLimit()
 		if (m_vecLimitTime[LV1Villager_M_Attack03][0] < m_fPlayTime)
 		{
 			m_pParts->Set_CollisionOn(false);
+		}
+		else
+		{
+			LookPlayerSlow(0.5f);
 		}
 		break;
 	case Client::CExtra01_Last::LV1Villager_M_Die01:

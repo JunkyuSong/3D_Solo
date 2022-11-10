@@ -29,12 +29,7 @@ public:
 		Puppet_Step0_FightStart,
 		Puppet_Step0_OffLineIdle,
 		Puppet_Step1_1F_Attack01,
-		Puppet_Step1_1F_Pose,
-		Puppet_Step2_1FTO1R,
-		Puppet_Step2_1R_Attack01,
-		Puppet_Step3_2R_Attack01,
-		Puppet_Step3_2R_Attack02,
-		Puppet_Step3_2R_Attack03,
+		a,b,c,d,e,f,g,h,i,
 		Puppet_Step3_2R_Attack04, // 쓰고싶은거
 		Puppet_Step3_2R_Pose1,
 		Puppet_Step4_2L_Attack01,
@@ -71,6 +66,8 @@ public:
 	STATE*		Get_AnimState() { return &m_eCurState; }
 	STATE*		Get_AnimReserveState() { return &m_eReserveState; }
 
+	void Set_PuppetEnd(_bool _bPuppetEnd) { m_bPuppetEnd = _bPuppetEnd; }
+
 private:
 	void CheckEndAnim();
 	void Set_Anim(STATE _eState);
@@ -92,11 +89,15 @@ private:
 	_bool InRange();
 	void Pattern();
 
+	
+
 
 
 	_bool	m_bAgainAnim = false;
 
 	_bool	m_bDead = false;
+
+	_bool	m_bPuppetEnd = false;
 
 private:
 	STATE					m_eReserveState = STATE_END;

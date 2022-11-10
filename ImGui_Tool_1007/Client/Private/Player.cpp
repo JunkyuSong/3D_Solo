@@ -17,6 +17,7 @@
 #include "CameraMgr.h"
 #include "Camera_Player.h"
 #include "Camera_CutScene_Enter.h"
+#include "Camera_CutScene.h"
 
 #include "Navigation.h"
 
@@ -28,6 +29,7 @@
 #include "Extra01_Last.h"
 #include "Extra02_Last.h"
 #include "Magician.h"
+#include "Puppet.h"
 
 #include "Timer_Manager.h"
 
@@ -508,7 +510,7 @@ void CPlayer::KeyInput_Idle(_float fTimeDelta)
 	{
 		Targeting();
 	}
-	if (g_eCurLevel == LEVEL_STAGE_02_1)
+	if (g_eCurLevel == LEVEL_STAGE_02_1 || g_eCurLevel == LEVEL_STAGE_LAST)
 	{
 		if (pGameInstance->KeyDown(DIK_Q))
 		{
@@ -948,7 +950,7 @@ void CPlayer::TargetCheck()
 void CPlayer::CutScene()
 {
 	AUTOINSTANCE(CGameInstance, _pInstance);
-
+	//388
 	if (g_eCurLevel == LEVEL_GAMEPLAY && !m_bCutScene[LEVEL_GAMEPLAY])
 	{
 		if (m_pNavigationCom->Get_Index() == 6)
@@ -983,6 +985,47 @@ void CPlayer::CutScene()
 			_pMagician->Set_Card(_pCard);
 			m_bCutScene[LEVEL_GAMEPLAY] = true;
 			m_bRender = false;
+		}
+	}
+	else if (g_eCurLevel == LEVEL_STAGE_LAST && !m_bCutScene[LEVEL_STAGE_LAST])
+	{
+		if (m_pNavigationCom->Get_Index() == 776)
+		{
+			AUTOINSTANCE(CGameInstance, pGameInstance);
+			AUTOINSTANCE(CCameraMgr, _pCamera);
+			_pCamera->Change_Camera(CCameraMgr::CAMERA_CUTSCENE);
+			m_eCurState = Corvus_VS_Puppet_Execution_Start;
+			m_pModelCom->DirectAnim(Corvus_VS_Puppet_Execution_Start);
+			_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE)->Set_FOV(60.f);
+			static_cast<CCamera_CutScene*>(_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE))->LookAt("Bip001-Pelvis");
+			m_bCutScene[LEVEL_STAGE_LAST] = true;
+			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.f);
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(48.768f, 41.997f, 83.445f, 1.f));
+			m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-104.f));
+
+			POINTLIGHTDESC			LightDesc;
+			ZeroMemory(&LightDesc, sizeof(DIRLIGHTDESC));
+
+			XMStoreFloat4(&LightDesc.vPosition, XMVectorSet(48.889f, 41.978f, 83.506f, 1.f));
+			LightDesc.fRange = 15.f;
+			LightDesc.vDiffuse = CLIENT_RGB(255.f, 255.f, 255.f);
+			LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.0f);
+			LightDesc.vSpecular = _float4(0.f, 0.f, 0.f, 1.f);
+
+
+			m_iLightIndex = pGameInstance->Add_Light(m_pDevice, m_pContext, LEVEL_STAGE_LAST, CLight_Manager::STATICPOINTLIHGT, LightDesc);
+
+			if (m_iLightIndex == -1)
+				return;
+
+
+			pGameInstance->Light_On(LEVEL_STAGE_LAST, CLight_Manager::STATICPOINTLIHGT, m_iLightIndex);
+			CTransform* _TargetTrans = static_cast<CTransform*>(m_MonsterLayer->Get_ObjFromLayer(0)->Get_ComponentPtr(TEXT("Com_Transform")));
+			m_pTransformCom->LookAt_ForLandObject(
+				XMVectorSet(45.f,-25.f,45.f, 1.f));
+			_TargetTrans->Set_State(CTransform::STATE_POSITION, XMVectorSet(55.528f, -23.2f, 56.937f, 1.f));
+			_TargetTrans->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(0.f));
+			static_cast<CPuppet*>(m_MonsterLayer->Get_ObjFromLayer(0))->Set_PuppetEnd(true);
 		}
 	}
 }
@@ -1192,7 +1235,7 @@ void CPlayer::CheckEndAnim()
 		{
 			Change_Hand();
 			m_bOneChange = false;
-			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), DEFAULTTIME);
 			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomOff(100.f);
 		}
 		m_eCurState = STATE_IDLE;
@@ -1201,7 +1244,7 @@ void CPlayer::CheckEndAnim()
 		if (m_bOneChange)
 		{
 			Change_Hand();
-			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), DEFAULTTIME);
 			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomOff(100.f);
 			m_bOneChange = false;
 		}
@@ -1209,7 +1252,7 @@ void CPlayer::CheckEndAnim()
 		break;
 	case Client::CPlayer::Corvus_VSMagician_Execution:
 		_pCamera->Change_Camera(CCameraMgr::CAMERA_PLAYER);
-		_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+		_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), DEFAULTTIME);
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::Corvus_VSBossBat_Execution01:
@@ -1222,7 +1265,7 @@ void CPlayer::CheckEndAnim()
 		m_eWeapon = WEAPON_NONE;
 		break;
 	case Client::CPlayer::Strong_Jump2:
-		_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+		_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), DEFAULTTIME);
 		static_cast<CCamera_CutScene_Enter*>(_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER))->Set_CutSceneNum(5);
 
 		m_eCurState = Corvus_SD_Fall_Loop;
@@ -1245,7 +1288,7 @@ void CPlayer::CheckEndAnim()
 			m_eCurState = STATE_IDLE;
 			static_cast<CCamera_CutScene_Enter*>(_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER))->Set_CutSceneNum(1);
 			m_eWeapon = WEAPON_BASE;
-			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), DEFAULTTIME);
 		}
 		
 		break;
@@ -1255,6 +1298,37 @@ void CPlayer::CheckEndAnim()
 		m_pTransformCom->Turn_Angle(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
 		m_pModelCom->DirectAnim(STATE_IDLE);
 		
+		break;
+	case Client::CPlayer::Corvus_VS_Puppet_Execution_Start:
+		m_eCurState = Corvus_VS_Puppet_Execution_Attack;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(56.234f, 37.997f, 54.109f, 1.f));
+		m_pTransformCom->Turn_Angle(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
+		static_cast<CPuppet*>(m_MonsterLayer->Get_ObjFromLayer(0))->Set_AnimState(CPuppet::Puppet_Idle_F);
+		static_cast<CPuppet*>(m_MonsterLayer->Get_ObjFromLayer(0))->Set_PuppetEnd(true);
+		static_cast<CTransform*>(m_MonsterLayer->Get_ObjFromLayer(0)->Get_ComponentPtr(TEXT("Com_Transform")))->Set_State(CTransform::STATE_POSITION, XMVectorSet(55.f, -48.f, 57.f, 1.f));
+
+		static_cast<CAnimModel*>(m_MonsterLayer->Get_ObjFromLayer(0)->Get_ComponentPtr(TEXT("Com_Model")))->DirectAnim(CPuppet::Puppet_Idle_F);
+
+		break;
+	case Client::CPlayer::Corvus_VS_Puppet_Execution_Attack:
+	{
+		m_eCurState = Corvus_VS_Puppet_Execution_End;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(46.269, 41.978f, 77.663, 1.f));
+		static_cast<CPuppet*>(m_MonsterLayer->Get_ObjFromLayer(0))->Set_PuppetEnd(false);
+		m_pTransformCom->Turn_Angle(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
+		static_cast<CPuppet*>(m_MonsterLayer->Get_ObjFromLayer(0))->Set_AnimState(CPuppet::Puppet_VS_TakeExecution_End);
+		static_cast<CTransform*>(m_MonsterLayer->Get_ObjFromLayer(0)->Get_ComponentPtr(TEXT("Com_Transform")))->Set_State(CTransform::STATE_POSITION, XMVectorSet(48.f, -23.f, 17.f, 1.f));
+
+		
+		static_cast<CAnimModel*>(m_MonsterLayer->Get_ObjFromLayer(0)->Get_ComponentPtr(TEXT("Com_Model")))->DirectAnim(CPuppet::Puppet_VS_TakeExecution_End);
+		
+	}
+		
+		break;
+	case Client::CPlayer::Corvus_VS_Puppet_Execution_End:
+		_pCamera->Change_Camera(CCameraMgr::CAMERA_PLAYER);
+		//_pInstance->Light_Off(LEVEL_STAGE_LAST, CLight_Manager::STATICPOINTLIHGT, m_iLightIndex);
+		m_eCurState = STATE_IDLE;
 		break;
 	}
 	
@@ -1312,7 +1386,7 @@ void CPlayer::CheckLimit()
 			m_eWeapon = WEAPON_BASE;
 			m_eCurSkill = SKILL_END;
 			AUTOINSTANCE(CGameInstance, pGame);
-			pGame->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+			pGame->Set_TimeSpeed(TEXT("Timer_Main"), DEFAULTTIME);
 		}
 		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][3])//다시 무기 스왑 및 타이머 정상화
 		{
@@ -1732,6 +1806,55 @@ void CPlayer::AfterAnim(_float fTimeDelta)
 		}
 		
 
+		break;
+
+	case Corvus_VS_Puppet_Execution_Start:
+	{
+		//90도? ㄴㄴ 퍼펫 바라보자 퍼펫쪽으로 향하면서 뛰면 되니까 열심히 뛰어보자
+		
+		/*CTransform* _Trans =
+			static_cast<CTransform*>(m_MonsterLayer->Get_ObjFromLayer(0)->Get_ComponentPtr(TEXT("Com_Transform")));
+
+		_vector _vLookStart = m_pTransformCom->Get_State(CTransform::STATE_LOOK);
+		_vector _vLookEnd = XMVector3Normalize((_Trans->Get_State(CTransform::STATE_POSITION)) - (m_pTransformCom->Get_State(CTransform::STATE_POSITION)));
+
+		if (XMVector3Length(_vLookStart - _vLookEnd).m128_f32[0] < 0.03f)
+		{
+			m_pTransformCom->LookAt_ForLandObject(_Trans->Get_State(CTransform::STATE_POSITION));
+		}
+		else
+		{
+			m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_LOOK), _vLookEnd, 0.99f);
+		}*/
+
+		AUTOINSTANCE(CGameInstance, _pGameInstance);
+		POINTLIGHTDESC*			LightDesc = nullptr;
+		LightDesc = (_pGameInstance->Get_PointLightDesc(LEVEL_STAGE_LAST, CLight_Manager::STATICPOINTLIHGT, m_iLightIndex));
+		_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		_vPos.m128_f32[1] += 0.5f;
+		XMStoreFloat4(&(LightDesc->vPosition), _vPos);
+	}
+		break;
+
+	case Corvus_VS_Puppet_Execution_Attack:
+	{
+		AUTOINSTANCE(CGameInstance, _pGameInstance);
+		POINTLIGHTDESC*			LightDesc = nullptr;
+		LightDesc = (_pGameInstance->Get_PointLightDesc(LEVEL_STAGE_LAST, CLight_Manager::STATICPOINTLIHGT, m_iLightIndex));
+		_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		_vPos.m128_f32[1] += 0.5f;
+		XMStoreFloat4(&(LightDesc->vPosition), _vPos);
+	}
+		break;
+	case Corvus_VS_Puppet_Execution_End:
+	{
+		AUTOINSTANCE(CGameInstance, _pGameInstance);
+		POINTLIGHTDESC*			LightDesc = nullptr;
+		LightDesc = (_pGameInstance->Get_PointLightDesc(LEVEL_STAGE_LAST, CLight_Manager::STATICPOINTLIHGT, m_iLightIndex));
+		_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		_vPos.m128_f32[1] += 0.5f;
+		XMStoreFloat4(&(LightDesc->vPosition), _vPos);
+	}
 		break;
 	}
 	Get_AnimMat();

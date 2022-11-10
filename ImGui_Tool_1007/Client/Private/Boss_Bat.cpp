@@ -94,7 +94,8 @@ void CBoss_Bat::Tick(_float fTimeDelta)
 		m_eMonsterState = ATTACK_DEAD;
 	}
 
-	m_fHitCurTime += fTimeDelta;
+	
+
 	if (_Instance->KeyDown(DIK_NUMPAD1))
 	{
 		m_eCurState = BossBat_JumpSmash_Chest;
@@ -120,6 +121,12 @@ void CBoss_Bat::Tick(_float fTimeDelta)
 		
 		PlayAnimation(fTimeDelta);
 		CheckState(fTimeDelta);
+	}
+
+	m_fHitCurTime += fTimeDelta;
+	if (m_fHitMaxTime <= m_fHitCurTime)
+	{
+		On_Collider(COLLIDERTYPE_BODY, false);
 	}
 
 	Update_Collider();
@@ -693,9 +700,7 @@ _bool CBoss_Bat::Collision(_float fTimeDelta)
 			m_eMonsterState = ATTACK_IDLE;
 			return true;
 		}
-		if (m_fHitMaxTime > m_fHitCurTime)
-			return false;
-		m_fHitCurTime = 0.f;
+	
 
 		//문제 : 어느 각도에서 맞았냐에 따라!
 		// 라이트와 내적하자.

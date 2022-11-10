@@ -67,8 +67,8 @@ HRESULT CPuppet::Initialize(void * pArg)
 	//로컬의 룩방향 -> 이걸 현재의 회전행렬과 곱해서 월드방향벡터를 만들어준다.
 	//쿠드로 하면 현재 가야할 좌표가 나오고
 
-	m_eCurState = Puppet_Idle_F;;
-
+	m_eCurState = Puppet_Idle_F;
+	//m_pModelCom->DirectAnim(Puppet_Idle_F);
 	return S_OK;
 }
 
@@ -77,6 +77,10 @@ void CPuppet::Tick(_float fTimeDelta)
 	if (m_bDead)
 	{
 		m_eMonsterState = ATTACK_DEAD;
+		return;
+	}
+	if (m_bPuppetEnd)
+	{
 		return;
 	}
 	AUTOINSTANCE(CGameInstance, _Instance);
@@ -109,17 +113,11 @@ void CPuppet::Tick(_float fTimeDelta)
 		CheckState(fTimeDelta);
 	}
 
-	//Update_Weapon();
-
-	if (m_pParts != nullptr)
-		m_pParts->Tick(fTimeDelta, this);
-	
-	//Update_Collider();
 }
 
 void CPuppet::LateTick(_float fTimeDelta)
 {
-	if (m_bDead)
+	if (m_bDead || m_eCurState == Puppet_VS_TakeExecution_Attack)
 	{
 		RenderGroup();
 		return;
@@ -226,28 +224,6 @@ void CPuppet::CheckEndAnim()
 		m_eMonsterState = CMonster::ATTACK_IDLE;
 		m_eCurState = Puppet_Idle_F;
 		break;
-	case Client::CPuppet::Puppet_Step1_1F_Pose:
-		break;
-	case Client::CPuppet::Puppet_Step2_1FTO1R:
-		m_eMonsterState = CMonster::ATTACK_IDLE;
-		m_eCurState = Puppet_Idle_F;
-		break;
-	case Client::CPuppet::Puppet_Step2_1R_Attack01:
-		m_eMonsterState = CMonster::ATTACK_IDLE;
-		m_eCurState = Puppet_Idle_F;
-		break;
-	case Client::CPuppet::Puppet_Step3_2R_Attack01:
-		m_eMonsterState = CMonster::ATTACK_IDLE;
-		m_eCurState = Puppet_Idle_F;
-		break;
-	case Client::CPuppet::Puppet_Step3_2R_Attack02:
-		m_eMonsterState = CMonster::ATTACK_IDLE;
-		m_eCurState = Puppet_Idle_F;
-		break;
-	case Client::CPuppet::Puppet_Step3_2R_Attack03:
-		m_eMonsterState = CMonster::ATTACK_IDLE;
-		m_eCurState = Puppet_Idle_F;
-		break;
 	case Client::CPuppet::Puppet_Step3_2R_Attack04:
 		m_eMonsterState = CMonster::ATTACK_IDLE;
 		m_eCurState = Puppet_Idle_F;
@@ -283,8 +259,8 @@ void CPuppet::CheckEndAnim()
 		m_eCurState = Puppet_Idle_F;
 		break;
 	case Client::CPuppet::Puppet_VS_TakeExecution_End:
-		m_eMonsterState = CMonster::ATTACK_IDLE;
-		m_eCurState = Puppet_Idle_F;
+		m_eMonsterState = CMonster::ATTACK_DEAD;
+		m_bDead = true;
 		break;
 	}
 
@@ -408,24 +384,6 @@ void CPuppet::CheckState(_float fTimeDelta)
 
 		break;
 	case Client::CPuppet::Puppet_Step1_1F_Attack01:
-
-		break;
-	case Client::CPuppet::Puppet_Step1_1F_Pose:
-
-		break;
-	case Client::CPuppet::Puppet_Step2_1FTO1R:
-
-		break;
-	case Client::CPuppet::Puppet_Step2_1R_Attack01:
-
-		break;
-	case Client::CPuppet::Puppet_Step3_2R_Attack01:
-
-		break;
-	case Client::CPuppet::Puppet_Step3_2R_Attack02:
-
-		break;
-	case Client::CPuppet::Puppet_Step3_2R_Attack03:
 
 		break;
 	case Client::CPuppet::Puppet_Step3_2R_Attack04:
@@ -752,11 +710,11 @@ void CPuppet::Tick_Imgui()
 	if (_pInstance->KeyPressing(DIK_NUMPAD7))
 		_vPos.m128_f32[1] -= 0.1f;
 
-	int _iState = int(m_eCurState);
-	CImGui::Get_Instance()->Intcheck(&(_iState), "state");
-	m_eCurState = (STATE)_iState;
+	//int _iState = int(m_eCurState);
+	//CImGui::Get_Instance()->Intcheck(&(_iState), "state");
+	//m_eCurState = (STATE)_iState;
 
-	//각도는 w에 들어가있고 턴을 그만큼 시키면서 
+
 
 	//CImGui::Get_Instance()->floatcheck(&(_vPos.m128_f32[0]), "X");
 	//CImGui::Get_Instance()->floatcheck(&(_vPos.m128_f32[1]), "Y");

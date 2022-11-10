@@ -216,6 +216,8 @@ private:
 
 	_float					m_fAddSpeed = 1.f;
 
+	_int					m_iLightIndex = -1;
+
 private:
 	HRESULT	Check_MotionTrail(_float fTimeDelta);
 

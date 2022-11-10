@@ -73,7 +73,7 @@ void CSaber::Tick(_float fTimeDelta, CGameObject * _pUser)
 		m_fCurStopTime += fTimeDelta / CGameInstance::Get_Instance()->Get_TimeSpeed(TEXT("Timer_Main"));
 		if (m_fCurStopTime > m_fStopTime)
 		{
-			CGameInstance::Get_Instance()->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+			CGameInstance::Get_Instance()->Set_TimeSpeed(TEXT("Timer_Main"), DEFAULTTIME);
 			m_bHitTime = false;
 			m_fCurStopTime = 0.f;
 		}

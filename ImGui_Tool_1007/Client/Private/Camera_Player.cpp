@@ -82,6 +82,8 @@ HRESULT CCamera_Player::Initialize(void * pArg)
 void CCamera_Player::Tick(_float fTimeDelta)
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
+	_float _fTimeDelta = fTimeDelta / pGameInstance->Get_TimeSpeed(TEXT("Timer_Main"));
+
 	_vector _vPos = static_cast<CTransform*>(m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE::STATE_POSITION);
 	if (m_pTarget)
 	{
@@ -99,12 +101,12 @@ void CCamera_Player::Tick(_float fTimeDelta)
 		if ((MouseMove = pGameInstance->Get_DIMMoveState(DIMM_X))/* && CGameInstance::Get_Instance()->MousePressing(DIMK_RBUTTON)*/)
 		{
 
-			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), MouseMove * fTimeDelta * 0.05f);
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), MouseMove * _fTimeDelta * 0.05f);
 		}
 
 		if ((MouseMove = pGameInstance->Get_DIMMoveState(DIMM_Y))/* && CGameInstance::Get_Instance()->MousePressing(DIMK_RBUTTON)*/)
 		{
-			m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), MouseMove * fTimeDelta * 0.05f);
+			m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), MouseMove * _fTimeDelta * 0.05f);
 			/*if (m_fAngleY <= XMConvertToDegrees(60.f) && m_fAngleY >= XMConvertToDegrees(-60.f))
 			{
 			m_fAngleY += MouseMove * fTimeDelta * 0.05f;

@@ -218,7 +218,7 @@ void CExtra01::CheckEndAnim()
 			_pPlayerTrans->LookAt_ForLandObject(XMVectorSet(72.055f, 0.122f, 25.819f, 1.f));
 			CPlayer* _Player = static_cast<CPlayer*>(_pInstance->Get_Player());
 			_Player->Set_AnimState(CPlayer::STATE_APPROACH2);
-			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), DEFAULTTIME);
 			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Set_FOV(60.f);
 
 			_pCamera->Change_Camera(CCameraMgr::CAMERA_CUTSCENE_ENTER);
@@ -251,8 +251,13 @@ void CExtra01::CheckEndAnim()
 			_pPlayerTrans->LookAt_ForLandObject(XMVectorSet(72.055f, 0.122f, 25.819f, 1.f));
 			CPlayer* _Player = static_cast<CPlayer*>(_pInstance->Get_Player());
 			_Player->Set_AnimState(CPlayer::STATE_APPROACH2);
-			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), DEFAULTTIME);
 			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Set_FOV(60.f);
+
+			_pCamera->Change_Camera(CCameraMgr::CAMERA_CUTSCENE_ENTER);
+			CCamera_CutScene_Enter* _pCutSceneCam = static_cast<CCamera_CutScene_Enter*> (_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER));
+			_pCutSceneCam->Tick(0.f);
+			_pCutSceneCam->Set_CutSceneNum(1);
 		}
 		//m_eCurState = LV1Villager_M_IdleGeneral;
 		break;
@@ -412,10 +417,14 @@ void CExtra01::CheckLimit()
 				m_eCurState = LV1Villager_M_Attack03;
 				m_eReserveState = STATE_END;
 			}
+			LookPlayerSlow(0.5f);
+
 		}
 		else if (m_vecLimitTime[LV1Villager_M_Attack01][0] < m_fPlayTime)
 		{
 			m_pParts->Set_CollisionOn(true);
+			LookPlayerSlow(0.5f);
+
 		}
 		
 		break;
@@ -425,6 +434,10 @@ void CExtra01::CheckLimit()
 		if (m_vecLimitTime[LV1Villager_M_Attack03][0] < m_fPlayTime)
 		{
 			m_pParts->Set_CollisionOn(false);
+		}
+		else
+		{
+			LookPlayerSlow(0.5f);
 		}
 		break;
 	case Client::CExtra01::LV1Villager_M_Die01:

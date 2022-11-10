@@ -43,7 +43,7 @@ HRESULT CLevel_Stage_Last::Initialize()
 	CCameraMgr::Get_Instance()->Initialize();
 	CCameraMgr::Get_Instance()->Change_Camera(CCameraMgr::CAMERA_PLAYER);
 	AUTOINSTANCE(CGameInstance, _pInstance);
-	_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
+	_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), DEFAULTTIME);
 	
 	return S_OK;
 }
@@ -170,25 +170,25 @@ HRESULT CLevel_Stage_Last::Ready_Layer_Monster(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
 		return E_FAIL;*/
 
-	_tInfo._vPos = XMVectorSet(53.674f, 25.997f, 77.647f, 1.f);
-	_tInfo._iIndex = 389;
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Balloon"), LEVEL_STAGE_LAST, TEXT("Layer_Balloon"), &_tInfo)))
-		return E_FAIL;
+	//_tInfo._vPos = XMVectorSet(53.674f, 25.997f, 77.647f, 1.f);
+	//_tInfo._iIndex = 389;
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Balloon"), LEVEL_STAGE_LAST, TEXT("Layer_Balloon"), &_tInfo)))
+	//	return E_FAIL;
 
-	_tInfo._vPos = XMVectorSet(88.44f, 32.59f - 4.f, 52.921f, 1.f);
-	_tInfo._iIndex = 464;
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Balloon"), LEVEL_STAGE_LAST, TEXT("Layer_Balloon"), &_tInfo)))
-		return E_FAIL;
+	//_tInfo._vPos = XMVectorSet(88.44f, 32.59f - 4.f, 52.921f, 1.f);
+	//_tInfo._iIndex = 464;
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Balloon"), LEVEL_STAGE_LAST, TEXT("Layer_Balloon"), &_tInfo)))
+	//	return E_FAIL;
 
-	_tInfo._vPos = XMVectorSet(51.764f, 35.997f - 4.f, 13.47f, 1.f);
-	_tInfo._iIndex = 577;
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Balloon"), LEVEL_STAGE_LAST, TEXT("Layer_Balloon"), &_tInfo)))
-		return E_FAIL;
+	//_tInfo._vPos = XMVectorSet(51.764f, 35.997f - 4.f, 13.47f, 1.f);
+	//_tInfo._iIndex = 577;
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Balloon"), LEVEL_STAGE_LAST, TEXT("Layer_Balloon"), &_tInfo)))
+	//	return E_FAIL;
 
-	_tInfo._vPos = XMVectorSet(1.025f, 38.967f - 4.f, 43.205f, 1.f);
-	_tInfo._iIndex = 678;
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Balloon"), LEVEL_STAGE_LAST, TEXT("Layer_Balloon"), &_tInfo)))
-		return E_FAIL;
+	//_tInfo._vPos = XMVectorSet(1.025f, 38.967f - 4.f, 43.205f, 1.f);
+	//_tInfo._iIndex = 678;
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Balloon"), LEVEL_STAGE_LAST, TEXT("Layer_Balloon"), &_tInfo)))
+	//	return E_FAIL;
 
 	
 	

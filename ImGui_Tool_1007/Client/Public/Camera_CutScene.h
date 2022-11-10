@@ -27,6 +27,7 @@ public:
 
 public:
 	void Get_Target(CTransform* _pTarget) { m_pTarget = _pTarget; }
+	HRESULT	LookAt(char* _szBone);
 
 
 public:
@@ -38,6 +39,7 @@ private:
 	CTransform*			m_pTarget = nullptr;
 	CAnimModel*			m_pModel = nullptr;
 	CHierarchyNode*		m_pCameraBone = nullptr;
+	CHierarchyNode*		m_pLookAtBone = nullptr;
 
 };
 

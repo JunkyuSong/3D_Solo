@@ -49,10 +49,20 @@ void CCamera_CutScene::Tick(_float fTimeDelta)
 	_float4x4	_matWorld;
 	XMStoreFloat4x4(&_matWorld, m_pCameraBone->Get_OffSetMatrix()* m_pCameraBone->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModel->Get_PivotMatrix())*m_pTarget->Get_WorldMatrix());
 	m_pTransformCom->Set_WorldFloat4x4(_matWorld);
-	_vector _vTargetPos = m_pTarget->Get_State(CTransform::STATE_POSITION);
-	_vTargetPos.m128_f32[1] += 1.f;
-	XMStoreFloat4(& m_CameraDesc.vAt, _vTargetPos);
-	m_pTransformCom->LookAt(_vTargetPos);
+	if (m_pLookAtBone)
+	{
+		_matrix _LookWorld = m_pLookAtBone->Get_OffSetMatrix()* m_pLookAtBone->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModel->Get_PivotMatrix())*m_pTarget->Get_WorldMatrix();
+		_LookWorld.r[3].m128_f32[1] += 0.7f;
+		m_pTransformCom->LookAt(_LookWorld.r[3]);
+		//_vector 
+	}
+	else
+	{
+		_vector _vTargetPos = m_pTarget->Get_State(CTransform::STATE_POSITION);
+		_vTargetPos.m128_f32[1] += 1.f;
+		XMStoreFloat4(&m_CameraDesc.vAt, _vTargetPos);
+		m_pTransformCom->LookAt(_vTargetPos);
+	}
 	__super::Tick(fTimeDelta);
 }
 
@@ -63,6 +73,20 @@ void CCamera_CutScene::LateTick(_float fTimeDelta)
 
 HRESULT CCamera_CutScene::Render()
 {
+	return S_OK;
+}
+
+HRESULT CCamera_CutScene::LookAt(char * _szBone)
+{
+	Safe_Release(m_pLookAtBone);
+
+	m_pLookAtBone = m_pModel->Get_HierarchyNode(_szBone);
+
+	if (m_pLookAtBone == nullptr)
+	{
+		return E_FAIL;
+	}
+	Safe_AddRef(m_pLookAtBone);
 	return S_OK;
 }
 
@@ -101,4 +125,5 @@ void CCamera_CutScene::Free()
 	Safe_Release(m_pTarget);
 	Safe_Release(m_pModel);
 	Safe_Release(m_pCameraBone);
+	Safe_Release(m_pLookAtBone);
 }
