@@ -496,6 +496,8 @@ HRESULT CLoader::Loading_ForLevel_Stage02_1()
 	//	return E_FAIL;
 
 
+
+
 	/* For.Prototype_Component_Shader_Cube */
 	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Sky"),
 	//	CShader::Create(m_pGraphic_Device, TEXT("../Bin/ShaderFiles/Shader_Sky.hlsl")))))
@@ -863,6 +865,13 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Sky"),
 		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Sky/", "Sky.fbx"))))
 		return E_FAIL;
+
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Model_Monster_asb01"),
+	//	CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster_List/Extra01/", "asb01.fbx", PivotMatrix))))
+	//	return E_FAIL;
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Model_Monster_asb02"),
+	//	CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster_List/Extra02/", "asb02.fbx", PivotMatrix))))
+	//	return E_FAIL;
 
 
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Terrain"),

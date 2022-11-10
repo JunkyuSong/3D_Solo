@@ -36,7 +36,11 @@ public:
 		LV2Villager01_M_Walk,
 		LV1Villager_M_IdleGeneral,
 		LV1Villager_M_SP_Idle,
-
+		LV1Villager_M_HurtS_FL,
+		LV1Villager_M_HurtS_FR,
+		LV1Villager_M_HurtStunStart,
+		LV1Villager_M_HurtStunLoop,
+		LV1Villager_M_HurtStunEnd,
 		STATE_END
 	};
 private:

@@ -140,12 +140,6 @@ void CExtra02::LateTick(_float fTimeDelta)
 		return;
 	}
 		
-	if (Collision(fTimeDelta))
-	{
-		CheckAnim();
-		CheckState(fTimeDelta);
-		PlayAnimation(fTimeDelta);
-	}
 
 	AUTOINSTANCE(CGameInstance, _pInstance);
 	if (Collision(fTimeDelta))
@@ -281,9 +275,25 @@ void CExtra02::CheckEndAnim()
 	case Client::CExtra02::LV2Villager01_M_ComboA02:
 		m_eCurState = LV1Villager_M_IdleGeneral;
 		break;
+	case Client::CExtra02::LV1Villager_M_HurtS_FL:
+		m_eCurState = LV1Villager_M_IdleGeneral;
+		break;
+	case Client::CExtra02::LV1Villager_M_HurtS_FR:
+		m_eCurState = LV1Villager_M_IdleGeneral;
+		break;
+
 	case Client::CExtra02::LV1Villager_M_IdleGeneral:
 		
 		//m_eCurState = LV1Villager_M_IdleGeneral;
+		break;
+	case Client::CExtra02::LV1Villager_M_HurtStunStart:
+		m_eCurState = LV1Villager_M_HurtStunLoop;
+		break;
+	case Client::CExtra02::LV1Villager_M_HurtStunLoop:
+		m_eCurState = LV1Villager_M_HurtStunEnd;
+		break;
+	case Client::CExtra02::LV1Villager_M_HurtStunEnd:
+		m_eCurState = LV1Villager_M_IdleGeneral;
 		break;
 	}
 
@@ -383,6 +393,23 @@ void CExtra02::CheckState(_float fTimeDelta)
 		}
 
 		break;
+	case Client::CExtra02::LV1Villager_M_HurtS_FL:
+		break;
+	case Client::CExtra02::LV1Villager_M_HurtS_FR:
+		break;
+
+	case Client::CExtra02::LV1Villager_M_HurtStunStart:
+
+		break;
+
+	case Client::CExtra02::LV1Villager_M_HurtStunLoop:
+		m_eMonsterState = CMonster::ATTACK_GROGGY;
+
+		break;
+
+	case Client::CExtra02::LV1Villager_M_HurtStunEnd:
+
+		break;
 	}
 	Get_AnimMat();
 }
@@ -466,6 +493,39 @@ void CExtra02::CheckLimit()
 		break;
 	case Client::CExtra02::LV1Villager_M_IdleGeneral:
 		break;
+	case Client::CExtra02::LV1Villager_M_HurtS_FL:
+		if (m_fPlayTime > 10.f)
+		{
+			On_Collider(COLLIDERTYPE_BODY, true);
+		}
+		break;
+	case Client::CExtra02::LV1Villager_M_HurtS_FR:
+		if (m_fPlayTime > 10.f)
+		{
+			On_Collider(COLLIDERTYPE_BODY, true);
+		}
+		break;
+	case Client::CExtra02::LV1Villager_M_HurtStunStart:
+		if (m_fPlayTime > 10.f)
+		{
+			m_eMonsterState = CMonster::ATTACK_GROGGY;
+
+			On_Collider(COLLIDERTYPE_BODY, true);
+		}
+		break;
+
+	case Client::CExtra02::LV1Villager_M_HurtStunLoop:
+		
+
+		break;
+
+	case Client::CExtra02::LV1Villager_M_HurtStunEnd:
+		if (m_fPlayTime > 90.f)
+		{
+			m_eMonsterState = CMonster::ATTACK_IDLE;
+			On_Collider(COLLIDERTYPE_BODY, true);
+		}
+		break;
 	}
 }
 
@@ -528,7 +588,7 @@ _bool CExtra02::Collision(_float fTimeDelta)
 	{
 		_vector _vDir = XMLoadFloat3(&(static_cast<CCapsule*>(m_pColliderCom[COLLIDERTYPE_PUSH])->Get_Dir()));
 		_float	_vDis = (static_cast<CCapsule*>(m_pColliderCom[COLLIDERTYPE_PUSH])->Get_Dis());
-		_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION) + XMVector3Normalize(_vDir) * _vDis;
+		_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION) + XMVector3Normalize(_vDir) * _vDis * 0.f;
 		_bool		isMove = true;
 
 		_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
@@ -538,6 +598,16 @@ _bool CExtra02::Collision(_float fTimeDelta)
 		if (true == isMove)
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 
+		CTransform* _pTrans = static_cast<CTransform*>(_pTarget->Get_ComponentPtr(TEXT("Com_Transform")));
+		_vPos = _pTrans->Get_State(CTransform::STATE_POSITION) - XMVector3Normalize(_vDir) * _vDis * 1.f;
+		isMove = true;
+
+		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+		if (nullptr != m_pNavigationCom)
+			isMove = m_pNavigationCom->isMove(_vPos, &vNormal);
+
+		if (true == isMove)
+			_pTrans->Set_State(CTransform::STATE_POSITION, _vPos);
 	}
 	AUTOINSTANCE(CGameInstance, _instance);
 
@@ -550,17 +620,18 @@ _bool CExtra02::Collision(_float fTimeDelta)
 		CTransform* _Trans = static_cast<CTransform*>(_instance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
 		m_pTransformCom->LookAt_ForLandObject(_Trans->Get_State(CTransform::STATE_POSITION));
 
-		if (m_eCurState == LV1Villager_M_HurtL_F)
+		if (m_eCurState == LV1Villager_M_HurtS_FL)
 		{
-			if (m_bAgainAnim == false)
+			/*if (m_bAgainAnim == false)
 			{
 				m_bAgainAnim = true;
 				Set_Anim(m_eCurState);
-			}
+			}*/
+			m_eCurState = LV1Villager_M_HurtS_FR;
 		}
 		else
 		{
-			m_eCurState = LV1Villager_M_HurtL_F;
+			m_eCurState = LV1Villager_M_HurtS_FL;
 		}
 		On_Collider(COLLIDERTYPE_BODY, false);
 		m_bPreStateAtt = true;
@@ -633,7 +704,7 @@ _bool CExtra02::InRange()
 	CTransform* _pTransform = static_cast<CTransform*>(_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")));
 	_vector _vToPlayer = _pTransform->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 
-	_float _fLimitAngle = sqrtf(3.f) / 2.f;
+	_float _fLimitAngle = 0.5f;
 	_float _fLimitDis = 7.f;
 
 	if (m_bPreStateAtt)
@@ -878,8 +949,9 @@ void CExtra02::Check_Stun()
 {
 	if (m_eMonsterState == CMonster::ATTACK_STUN)
 	{
-		m_eCurState = LV1Villager_M_HurtCounter;
-		m_eMonsterState = CMonster::ATTACK_IDLE;
+		m_pParts->Set_CollisionOn(false);
+		m_eCurState = LV1Villager_M_HurtStunStart;
+		m_eMonsterState = CMonster::ATTACK_GROGGY;
 	}
 }
 

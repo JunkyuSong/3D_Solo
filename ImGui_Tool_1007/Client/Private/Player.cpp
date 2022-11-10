@@ -25,6 +25,8 @@
 
 #include "Extra01.h"
 #include "Extra02.h"
+#include "Extra01_Last.h"
+#include "Extra02_Last.h"
 #include "Magician.h"
 
 #include "Timer_Manager.h"
@@ -37,7 +39,7 @@ CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 		m_pBones[i] = nullptr;
 		m_pHands[i] = nullptr;
 	}
-	m_eTypeObj = CGameObject::TYPE_PLAYER;
+	
 }
 
 CPlayer::CPlayer(const CPlayer & rhs)
@@ -136,7 +138,7 @@ HRESULT CPlayer::Initialize(void * pArg)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(34.491f, 0.165f, 44.676f, 1.f));
 		break;
 	}
-
+	m_eTypeObj = CGameObject::TYPE_PLAYER;
 	return S_OK;
 }
 
@@ -510,6 +512,7 @@ void CPlayer::KeyInput_Idle(_float fTimeDelta)
 	{
 		if (pGameInstance->KeyDown(DIK_Q))
 		{
+			
 			Execution();
 		}
 	}
@@ -1811,7 +1814,7 @@ void CPlayer::Execution()
 		switch (_pMonster->Get_Type())
 		{
 		case CMonster::MONSTER_EXTRA01:
-			if (false == static_cast<CExtra01*>(_pMonster)->Get_Battle())
+			if (false == static_cast<CExtra01*>(_pMonster)->Get_Battle() || _pMonster->Get_MonsterState() == CMonster::ATTACK_GROGGY)
 			{
 				AUTOINSTANCE(CCameraMgr, _pCamera);
 
@@ -1828,10 +1831,11 @@ void CPlayer::Execution()
 				_TargetTrans->LookAt_ForLandObject(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 				_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 0.5f);
 				_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomIn(40.f, 80.f);
+				m_bCollision[COLLIDERTYPE_BODY] = false;
 			}
 			break;
 		case CMonster::MONSTER_EXTRA02:
-			if (false == static_cast<CExtra02*>(_pMonster)->Get_Battle())
+			if (false == static_cast<CExtra02*>(_pMonster)->Get_Battle() || _pMonster->Get_MonsterState() == CMonster::ATTACK_GROGGY)
 			{
 				AUTOINSTANCE(CCameraMgr, _pCamera);
 
@@ -1848,6 +1852,49 @@ void CPlayer::Execution()
 				_TargetTrans->LookAt_ForLandObject(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 				_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 0.3f);
 				_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomIn(40.f, 80.f);
+				m_bCollision[COLLIDERTYPE_BODY] = false;
+			}
+			break;
+		case CMonster::MONSTER_EXTRA01_LAST:
+			if (false == static_cast<CExtra01_Last*>(_pMonster)->Get_Battle() || _pMonster->Get_MonsterState() == CMonster::ATTACK_GROGGY)
+			{
+				AUTOINSTANCE(CCameraMgr, _pCamera);
+
+				static_cast<CExtra01_Last*>(_pMonster)->Set_AnimState(CExtra01_Last::LV1Villager_M_VSTakeExecution);
+				m_eCurState = Corvus_VSLV1Villager_M_Execution;
+				m_pModelCom->DirectAnim(Corvus_VSLV1Villager_M_Execution);
+				_pModel->DirectAnim(CExtra01_Last::LV1Villager_M_VSTakeExecution);
+				CTransform* _TargetTrans = static_cast<CTransform*>(_pMonster->Get_ComponentPtr(TEXT("Com_Transform")));
+
+				m_pTransformCom->LookAt_ForLandObject(_TargetTrans->Get_State(CTransform::STATE_POSITION));
+				_vector vTargetPos = (m_pModelCom->Get_HierarchyNode("AnimTargetPoint")->Get_CombinedTransformation()
+					*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix()).r[3];
+				_TargetTrans->Set_State(CTransform::STATE_POSITION, vTargetPos);
+				_TargetTrans->LookAt_ForLandObject(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+				_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 0.5f);
+				_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomIn(40.f, 80.f);
+				m_bCollision[COLLIDERTYPE_BODY] = false;
+			}
+			break;
+		case CMonster::MONSTER_EXTRA02_LAST:
+			if (false == static_cast<CExtra02_Last*>(_pMonster)->Get_Battle() || _pMonster->Get_MonsterState() == CMonster::ATTACK_GROGGY)
+			{
+				AUTOINSTANCE(CCameraMgr, _pCamera);
+
+				static_cast<CExtra02_Last*>(_pMonster)->Set_AnimState(CExtra02_Last::LV2Villager01_M_VS_TakeExecution_01);
+				m_eCurState = Corvus_VSLV2Villager_M_Execution;
+				m_pModelCom->DirectAnim(Corvus_VSLV2Villager_M_Execution);
+				_pModel->DirectAnim(CExtra02_Last::LV2Villager01_M_VS_TakeExecution_01);
+				CTransform* _TargetTrans = static_cast<CTransform*>(_pMonster->Get_ComponentPtr(TEXT("Com_Transform")));
+
+				m_pTransformCom->LookAt_ForLandObject(_TargetTrans->Get_State(CTransform::STATE_POSITION));
+				_vector vTargetPos = (m_pModelCom->Get_HierarchyNode("AnimTargetPoint")->Get_CombinedTransformation()
+					*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix()).r[3];
+				_TargetTrans->Set_State(CTransform::STATE_POSITION, vTargetPos);
+				_TargetTrans->LookAt_ForLandObject(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+				_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 0.3f);
+				_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomIn(40.f, 80.f);
+				m_bCollision[COLLIDERTYPE_BODY] = false;
 			}
 			break;
 		}

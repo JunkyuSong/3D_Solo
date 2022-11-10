@@ -1108,7 +1108,7 @@ _bool CMagician::Collision(_float fTimeDelta)
 	{
 		_vector _vDir =	XMLoadFloat3(&(static_cast<CCapsule*>(m_pColliderCom[COLLIDERTYPE_PUSH])->Get_Dir()));
 		_float	_vDis = (static_cast<CCapsule*>(m_pColliderCom[COLLIDERTYPE_PUSH])->Get_Dis());
-		_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION) + XMVector3Normalize(_vDir) * _vDis;
+		_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION) + XMVector3Normalize(_vDir) * _vDis * 0.5f;
 		_bool		isMove = true;
 
 		_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
@@ -1118,6 +1118,16 @@ _bool CMagician::Collision(_float fTimeDelta)
 		if (true == isMove)
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 
+		CTransform* _pTrans = static_cast<CTransform*>(_pTarget->Get_ComponentPtr(TEXT("Com_Transform")));
+		_vPos = _pTrans->Get_State(CTransform::STATE_POSITION) - XMVector3Normalize(_vDir) * _vDis * 0.5f;
+		isMove = true;
+
+		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+		if (nullptr != m_pNavigationCom)
+			isMove = m_pNavigationCom->isMove(_vPos, &vNormal);
+
+		if (true == isMove)
+			_pTrans->Set_State(CTransform::STATE_POSITION, _vPos);
 	}
 
 	AUTOINSTANCE(CGameInstance, _instance);
