@@ -85,7 +85,8 @@ HRESULT CExtra02_Last::Initialize(void * pArg)
 
 	m_eCurState = LV1Villager_M_SP_Idle;
 	On_Collider(COLLIDERTYPE_BODY, true);
-	m_fIdleTime = _pInstance->Rand_Float(20.f, 200.f);
+	//m_fIdleTime = _pInstance->Rand_Float(20.f, 200.f);
+	m_pModelCom->DirectAnim(LV1Villager_M_SP_Idle);
 	return S_OK;
 }
 
@@ -98,13 +99,7 @@ void CExtra02_Last::Tick(_float fTimeDelta)
 	}
 		
 	AUTOINSTANCE(CGameInstance, _Instance);
-	if (m_eCurState == LV1Villager_M_SP_Idle)
-	{
-		_bool		isDraw = _Instance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
-		if (isDraw)
-			RenderGroup();
-		return;
-	}
+	
 	if (m_Coll_Target == true)
 	{
 		m_Coll_Target = false;
@@ -236,23 +231,6 @@ void CExtra02_Last::CheckEndAnim()
 		break;
 	case Client::CExtra02_Last::LV1Villager_M_Die01:		
 		m_bDead = true;
-		if (CStageMgr::Get_Instance()->Add_Mob() >= 8)
-		{
-			AUTOINSTANCE(CCameraMgr, _pCamera);
-			CTransform* _pPlayerTrans = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
-			_pPlayerTrans->Set_State(CTransform::STATE_POSITION, XMVectorSet(54.446f, 0.115f, 29.388f, 1.f));
-
-			_pPlayerTrans->LookAt_ForLandObject(XMVectorSet(72.055f, 0.122f, 25.819f, 1.f));
-			CPlayer* _Player = static_cast<CPlayer*>(_pInstance->Get_Player());
-			_Player->Set_AnimState(CPlayer::STATE_APPROACH2);
-			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
-			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Set_FOV(60.f);
-
-			_pCamera->Change_Camera(CCameraMgr::CAMERA_CUTSCENE_ENTER);
-			CCamera_CutScene_Enter* _pCutSceneCam = static_cast<CCamera_CutScene_Enter*> (_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER));
-			_pCutSceneCam->Tick(0.f);
-			_pCutSceneCam->Set_CutSceneNum(1);
-		}
 		m_eMonsterState = ATTACK_DEAD;
 		break;
 	case Client::CExtra02_Last::LV1Villager_M_HurtCounter:
@@ -263,23 +241,6 @@ void CExtra02_Last::CheckEndAnim()
 		break;
 	case Client::CExtra02_Last::LV2Villager01_M_VS_TakeExecution_01:
 		m_bDead = true;
-		if (CStageMgr::Get_Instance()->Add_Mob() >= 8)
-		{
-			AUTOINSTANCE(CCameraMgr, _pCamera);
-			CTransform* _pPlayerTrans = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
-			_pPlayerTrans->Set_State(CTransform::STATE_POSITION, XMVectorSet(54.446f, 0.115f, 29.388f, 1.f));
-			_pPlayerTrans->LookAt_ForLandObject(XMVectorSet(72.055f, 0.122f, 25.819f,1.f));
-			CPlayer* _Player = static_cast<CPlayer*>(_pInstance->Get_Player());
-			_Player->Set_AnimState(CPlayer::STATE_APPROACH2);
-			_pInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
-			_pCamera->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Set_FOV(60.f);
-
-			_pCamera->Change_Camera(CCameraMgr::CAMERA_CUTSCENE_ENTER);
-			CCamera_CutScene_Enter* _pCutSceneCam = static_cast<CCamera_CutScene_Enter*> (_pCamera->Get_Cam(CCameraMgr::CAMERA_CUTSCENE_ENTER));
-			_pCutSceneCam->Tick(0.f);
-			_pCutSceneCam->Set_CutSceneNum(1);
-		}
-		//m_eCurState = LV1Villager_M_IdleGeneral;
 		break;
 	case Client::CExtra02_Last::LV1Villager_M_WalkF:
 		m_eCurState = LV1Villager_M_WalkF;
@@ -293,7 +254,9 @@ void CExtra02_Last::CheckEndAnim()
 	case Client::CExtra02_Last::LV1Villager_M_IdleGeneral:
 		
 		//m_eCurState = LV1Villager_M_IdleGeneral;
+
 		break;
+
 	}
 
 	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));

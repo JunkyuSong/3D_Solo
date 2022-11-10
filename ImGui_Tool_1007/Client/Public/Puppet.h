@@ -86,7 +86,7 @@ private:
 
 	void On_Collider(EXTRA01COLLIDER _eCollider, _bool _bCollision);
 
-	void Look_Move_Player(_float _fPosX, _float _fPosZ);
+	void Slow_Look_Player();
 	void Look_Player();
 
 	_bool InRange();
@@ -120,7 +120,7 @@ private:
 	_bool					m_bLine = false;
 
 	_float3					m_vNextLook;
-	_float3					m_ListNextLook[STATE_END];
+	_float4					m_ListNextLook[STATE_END];
 	_float3					m_vAttPos;
 	_float3					m_vLocalPos;
 	_bool					m_bPreStateAtt = false;

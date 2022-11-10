@@ -152,7 +152,7 @@ void CBalloon::LateTick( _float fTimeDelta)
 			_vPos .m128_f32[1] += 3.f;
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 			m_iPass = 0;
-			
+			Die();
 		}
 		m_bHit = true;
 		m_bCollision[COLLISION_BODY] = false;
@@ -324,11 +324,11 @@ void CBalloon::Die()
 			return;
 		_tInfo._vPos = XMVectorSet(84.067f, 34.077f, 28.841f, 1.f);
 		_tInfo._iIndex = 513;
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra02"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra02_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
 			return;
 		_tInfo._vPos = XMVectorSet(72.572f, 35.157f, 14.989f, 1.f);
 		_tInfo._iIndex = 549;
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra02"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra02_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
 			return;
 		break;
 	case 2:
@@ -342,7 +342,7 @@ void CBalloon::Die()
 			return;
 		_tInfo._vPos = XMVectorSet(10.544f, 37.557f, 22.196f, 1.f);
 		_tInfo._iIndex = 623;
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra02"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra02_Last"), LEVEL_STAGE_LAST, pLayerTag, &_tInfo)))
 			return;
 		_tInfo._vPos = XMVectorSet(1.573f, 38.397f, 33.37f, 1.f);
 		_tInfo._iIndex = 659;
