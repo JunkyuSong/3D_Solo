@@ -215,7 +215,7 @@ void CTrail::Tick(const _float& _fTimeDelta, _matrix _matWeapon)
 		}
 		m_iVtxCount += 2;
 	}
-
+	Spline(_matWeapon);
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -244,19 +244,65 @@ void CTrail::TrailOn(_matrix _matWeapon)
 }
 
 
-void CTrail::Spline()
+void CTrail::Spline(_matrix _matWeapon)
 {
-	//이전 프레임 -> 없으면 현재꺼 가져오고? 맨 뒤와 맨 처음꺼는 안그린다? -> 처음에 찍힌 점 보류
-	// 마지막꺼 없으면... 
+	////이전 프레임 -> 없으면 현재꺼 가져오고? 맨 뒤와 맨 처음꺼는 안그린다? -> 처음에 찍힌 점 보류
+	//// 마지막꺼 없으면... 
 
-	/*if (m_iVtxCount <= 8)
-	{
-		return;
-	}
-	m_iCatmullRomIndex[0] = m_iVtxCount
-	for ()
-	XMVectorCatmullRom(m_iCatmullRomIndex[0], m_iCatmullRomIndex[1], m_iCatmullRomIndex[2], m_iCatmullRomIndex[3],)*/
-	
+	///*if (m_iVtxCount <= 8)
+	//{
+	//	return;
+	//}
+	//m_iCatmullRomIndex[0] = m_iVtxCount
+	//for ()
+	//XMVectorCatmullRom(m_iCatmullRomIndex[0], m_iCatmullRomIndex[1], m_iCatmullRomIndex[2], m_iCatmullRomIndex[3],)*/
+
+	//if (m_iVtxCount != 2 && m_iVtxCount != 22)//처음 정점이 없을때
+	//{
+	//	m_iEndIndex = m_iCatmullRomCount * 2 + m_iVtxCount;
+	//	m_iCatmullRomIndex[2] = m_iEndIndex - 2;
+	//	m_iCatmullRomIndex[3] = m_iEndIndex;
+
+	//	m_RealData[m_iEndIndex - 2].vPosition = m_RealData[m_iVtxCount - 2].vPosition;
+	//	m_RealData[m_iEndIndex - 1].vPosition = m_RealData[m_iVtxCount - 1].vPosition;
+
+
+
+	//	XMStoreFloat3(&(m_RealData[m_iEndIndex].vPosition), XMVector3TransformCoord(XMLoadFloat3(&(m_HighAndLow.vHigh)), _matWeapon));
+	//	XMStoreFloat3(&(m_RealData[m_iEndIndex + 1].vPosition), XMVector3TransformCoord(XMLoadFloat3(&(m_HighAndLow.vLow)), _matWeapon));
+
+
+	//	for (_uint i = 0; i < m_iCatmullRomCount; ++i)
+	//	{
+	//		_uint Index = i * 2 + m_iVtxCount - 2;
+	//		_float fWeight = _float(i + 1) / (m_iCatmullRomCount + 1);
+
+	//		XMStoreFloat3(&(m_RealData[Index].vPosition),
+	//			XMVectorCatmullRom(
+	//				XMLoadFloat3(&(m_RealData[m_iCatmullRomIndex[0]].vPosition)),
+	//				XMLoadFloat3(&(m_RealData[m_iCatmullRomIndex[1]].vPosition)),
+	//				XMLoadFloat3(&(m_RealData[m_iCatmullRomIndex[2]].vPosition)),
+	//				XMLoadFloat3(&(m_RealData[m_iCatmullRomIndex[3]].vPosition)),
+	//				fWeight
+	//			));
+
+	//		XMStoreFloat3(&(m_RealData[Index + 1].vPosition),
+	//			XMVectorCatmullRom(
+	//				XMLoadFloat3(&(m_RealData[m_iCatmullRomIndex[0] + 1].vPosition)),
+	//				XMLoadFloat3(&(m_RealData[m_iCatmullRomIndex[1] + 1].vPosition)),
+	//				XMLoadFloat3(&(m_RealData[m_iCatmullRomIndex[2] + 1].vPosition)),
+	//				XMLoadFloat3(&(m_RealData[m_iCatmullRomIndex[3] + 1].vPosition)),
+	//				fWeight
+	//			));
+	//	}
+
+	//	m_iVtxCount = m_iEndIndex + 2;
+	//	m_iCatmullRomIndex[0] = m_iCatmullRomIndex[1];
+	//	m_iCatmullRomIndex[1] = m_iCatmullRomIndex[2];
+	//}
+
+	//
+
 }
 
 CTrail * CTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

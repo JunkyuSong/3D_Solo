@@ -43,7 +43,7 @@ public:
 	
 	void			Set_Color(_float4 _Color) { m_Color = _Color; }
 
-	void			Spline();
+	void			Spline(_matrix _matWeapon);
 
 public:
 	static	CTrail*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -70,7 +70,7 @@ private:
 	_int					m_iVtxCount;
 
 	_uint					m_iEndIndex;
-	_uint					m_iCatmullRomCount;
-	_uint					m_iCatmullRomIndex[4];
+	_uint					m_iCatmullRomCount = 4;
+	_uint					m_iCatmullRomIndex[4] = { NULL };
 };
 END

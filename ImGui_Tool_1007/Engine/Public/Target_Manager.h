@@ -30,6 +30,9 @@ public:
 	HRESULT Render_Debug(const _tchar* pMRTTag, class CVIBuffer* pVIBuffer, class CShader* pShader);
 #endif // _DEBUG
 
+private: // 이번 프레임에 사용한 렌더타겟들 : 프레임의 시작에서 비운다
+	list<class CRenderTarget*>							m_UsingTargets;
+
 
 private: /* 생성한 렌더타겟들을 전체 다 모아놓는다. */
 	map<const _tchar*, class CRenderTarget*>			m_RenderTargets;
