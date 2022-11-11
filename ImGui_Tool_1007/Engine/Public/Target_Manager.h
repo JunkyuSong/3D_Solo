@@ -24,6 +24,14 @@ public:
 	/* 원래 상태로 복구한다.(BackBuffer를 장치에 셋한다.) */
 	HRESULT End_MRT(ID3D11DeviceContext* pContext);
 
+	HRESULT	AddBinding_RTV(ID3D11DeviceContext* pContext, const _tchar* pRTVTag, _uint _iIndex);
+
+	HRESULT	Clear_RTVs();
+
+	HRESULT	BackBuffer_Start(ID3D11DeviceContext * pContext, const _tchar * pBackBufferTag, ID3D11RenderTargetView** _pBackBuffer);
+
+	HRESULT	BackBuffer_End(ID3D11DeviceContext * pContext, ID3D11RenderTargetView** _pBackBuffer);
+
 #ifdef _DEBUG
 public:	
 	HRESULT Initialize_Debug(const _tchar* pTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);

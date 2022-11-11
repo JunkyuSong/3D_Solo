@@ -42,7 +42,8 @@ private:
 	ID3D11RenderTargetView*		m_pRTV = nullptr;
 	ID3D11ShaderResourceView*	m_pSRV = nullptr;
 
-	_float4						m_vClearColor = _float4(0.f, 0.f, 0.f, 1.f);	
+	_float4						m_vClearColor = _float4(0.f, 0.f, 0.f, 1.f);
+	
 
 #ifdef _DEBUG
 private:

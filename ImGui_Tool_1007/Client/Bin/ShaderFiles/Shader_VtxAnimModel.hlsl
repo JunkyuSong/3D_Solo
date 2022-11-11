@@ -94,6 +94,12 @@ struct PS_OUT
 	float4		vDepth : SV_TARGET2;
 };
 
+struct PS_OUT_NONLIGHT
+{
+	float4		vDiffuse : SV_TARGET0;
+	float4		vDepth : SV_TARGET1;
+};
+
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
@@ -106,7 +112,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	vNormal = normalize(mul(vNormal, WorldMatrix));
 
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
-	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 300.0f, 0.0f, 0.0f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w , 0.0f, 0.0f);
 	if (0.f >= Out.vDiffuse.a)
 		discard;
 
@@ -128,28 +134,34 @@ PS_OUT PS_MAIN2(PS_IN In)
 
 	return Out;
 }
-PS_OUT PS_MAIN3(PS_IN In)
+PS_OUT_NONLIGHT PS_MAIN3(PS_IN In)
 {
-	PS_OUT		Out = (PS_OUT)0;
+	PS_OUT_NONLIGHT		Out = (PS_OUT_NONLIGHT)0;
 
 	Out.vDiffuse = (vector)1.f;
 
 	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
+
 
 	if (0.f >= Out.vDiffuse.a)
 		discard;
 
 	return Out;
 }
-PS_OUT PS_MAIN_TRAIL(PS_IN In)
+PS_OUT_NONLIGHT PS_MAIN_TRAIL(PS_IN In)
 {
-	PS_OUT		Out = (PS_OUT)0;
+	PS_OUT_NONLIGHT		Out = (PS_OUT_NONLIGHT)0;
 
 	//Out.vColor = (vector)1.f;
 
 	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 
 	Out.vDiffuse *= vector(0.5f, 0.2f, 0.8f, g_fAlpha);
+
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
+
 
 	if (0 >= Out.vDiffuse.a)
 		discard;
@@ -199,4 +211,14 @@ technique11 DefaultTechnique
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN3();
 	}
+
+	/*pass NONLIGHT
+	{
+		SetRasterizerState(RS_CullNone);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_NONLIGHT();
+	}*/
 }

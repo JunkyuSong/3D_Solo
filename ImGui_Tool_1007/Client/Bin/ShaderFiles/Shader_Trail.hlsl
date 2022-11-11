@@ -23,12 +23,16 @@ float4		g_Color;
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D	g_DiffuseTexture;
 
+float		g_fTick;
+
 sampler DefaultSampler = sampler_state {
 
 	filter = min_mag_mip_linear;
 	/*minfilter = linear;
 	magfilter = linear;
 	mipfilter = linear;*/
+	AddressU = WRAP;
+	AddressV = WRAP;
 };
 
 struct VS_IN
@@ -42,6 +46,7 @@ struct VS_OUT
 {
 	float4		vPosition : SV_POSITION;
 	float2		vTexUV : TEXCOORD0;
+	float4		vProjPos : TEXCOORD1;
 };
 
 
@@ -59,6 +64,10 @@ VS_OUT VS_MAIN(VS_IN In)
 
 	Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
 	Out.vTexUV = In.vTexUV;
+
+	Out.vProjPos = Out.vPosition;
+	
+
 	return Out;
 }
 
@@ -66,24 +75,34 @@ struct PS_IN
 {
 	float4		vPosition : SV_POSITION;
 	float2		vTexUV : TEXCOORD0;
+	float4		vProjPos : TEXCOORD1;
 };
 
 struct PS_OUT
 {
 	float4		vColor : SV_TARGET0;
+	//float4		vDepth : SV_TARGET1;
+	float4		vDistortion : SV_TARGET3;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	//Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-
-	Out.vColor.a = (1.f - In.vTexUV.y) * 0.5f + In.vTexUV.x * 0.5f;
+	float4 Diffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV + g_fTick);
+	Out.vColor.a = Diffuse.x;
+	//Out.vDistortion.a = /*(1.f - In.vTexUV.y) * 0.5f + In.vTexUV.x * 0.5f*/0.5f;
 
 	Out.vColor.x = g_Color.x;
 	Out.vColor.y = g_Color.y;
 	Out.vColor.z = g_Color.z;
+
+	//Out.vDistortion.x = 1.f;
+	//Out.vDistortion.y = 1.f;
+	//Out.vDistortion.z = 1.f;
+
+	
+	//Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
 
 	/*if (In.vTexUV.y > 0.3f)
 	{

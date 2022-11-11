@@ -24,10 +24,17 @@ texture2D	g_NormalTexture;
 texture2D	g_ShadeTexture;
 texture2D	g_DepthTexture;
 texture2D	g_SpecularTexture;
+texture2D	g_DistortionTexture;
+texture2D	g_DistortionTexture_Bump;
+
+
+float		g_fTick;
 
 sampler DefaultSampler = sampler_state {
 
 	filter = min_mag_mip_linear;
+	AddressU = WRAP;
+	AddressV = WRAP;
 };
 
 struct VS_IN
@@ -91,7 +98,7 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 	vector			vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexUV);
 	vector			vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexUV);
 
-	float			fViewZ = vDepthDesc.y * 300.f;
+	float			fViewZ = vDepthDesc.y;
 
 	float4			vNormal = float4(vNormalDesc.xyz * 2.f - 1.f, 0.f);
 
@@ -129,7 +136,7 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
 	vector			vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexUV);
 	vector			vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexUV);
 
-	float			fViewZ = vDepthDesc.y * 300.f;
+	float			fViewZ = vDepthDesc.y;
 
 	float4			vNormal = float4(vNormalDesc.xyz * 2.f - 1.f, 0.f);
 
@@ -182,9 +189,54 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_MAIN_BackBuffer(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	return Out;
+}
+
+PS_OUT PS_MAIN_Distortion(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+	float2		Trans = In.vTexUV + g_fTick;
+	float4		Noise = g_DistortionTexture_Bump.Sample(DefaultSampler, Trans);
+
+	float4		Distortion = g_DistortionTexture.Sample(DefaultSampler, In.vTexUV);
+
+	Distortion *= Noise.x;
+
+	float2		UV = In.vTexUV + Noise.xy * 0.05f;
+
+	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, UV);
+
+	Out.vColor *= Distortion;
+
+	if (Out.vColor.a == 0)
+		discard;
+
+	return		Out;
+}
+
 //PS_OUT PS_MAIN_FOG(PS_IN In)
 //{
 //	PS_OUT			Out = (PS_OUT)0;
+//
+//	vector			vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+//	vector			vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexUV);
+//
+//	vector			vProjPos;
+//	vProjPos.x = In.vTexUV.x * 2.f - 1.f;
+//	vProjPos.y = In.vTexUV.y * -2.f + 1.f;
+//	vProjPos.z = vDepthDesc.x;
+//	vProjPos.w = 1.f;
+//
+//	vProjPos = vProjPos * fViewZ;
+//
+//	vector			vViewPos = mul(vProjPos, g_ProjMatrixInv);
+//	vector			vWorldPos = mul(vViewPos, g_ViewMatrixInv);
 //
 //	float		fDistance = length(g_vCamPosition - In.vWorldPos);
 //
@@ -283,16 +335,38 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN_BLEND();
 	}
 
-	//pass Fog
-	//{
-	//	SetRasterizerState(RS_Default);
-	//	SetDepthStencilState(DSS_Skip_ZTest_ZWrite, 0);
-	//	SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+	pass BackBuffer
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Skip_ZTest_ZWrite, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-	//	VertexShader = compile vs_5_0 VS_MAIN();
-	//	GeometryShader = NULL;
-	//	PixelShader = compile ps_5_0 PS_MAIN_FOG();
-	//}
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_BackBuffer();
+	}
 
+	pass Distortion
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_Distortion();
+	}
+
+	/*pass Fog
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Skip_ZTest_ZWrite, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_FOG();
+	}
+*/
 
 }

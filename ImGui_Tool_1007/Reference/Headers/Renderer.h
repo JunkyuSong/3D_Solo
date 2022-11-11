@@ -45,6 +45,10 @@ private:
 private:
 	class CTarget_Manager*					m_pTarget_Manager = nullptr;
 	class CLight_Manager*					m_pLight_Manager = nullptr;
+	ID3D11RenderTargetView*					m_pBackBuffer = nullptr;
+	_float									m_fTick = 0.f;
+
+	class CTexture*							m_pTextureCom = nullptr;
 
 #ifdef _DEBUG
 private:
@@ -61,7 +65,10 @@ private:
 	HRESULT Render_Blend();
 	HRESULT Render_NonLight();
 	HRESULT Render_AlphaBlend();
+	HRESULT Render_Distortion();
 	HRESULT Render_UI();
+
+	HRESULT Render_BackBuffer();
 
 #ifdef _DEBUG
 	HRESULT Render_Debug();

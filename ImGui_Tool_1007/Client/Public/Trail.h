@@ -5,6 +5,7 @@
 
 BEGIN(Engine)
 class CTransform;
+class CTexture;
 class CShader;
 END
 
@@ -72,5 +73,7 @@ private:
 	_uint					m_iEndIndex;
 	_uint					m_iCatmullRomCount = 4;
 	_uint					m_iCatmullRomIndex[4] = { NULL };
+
+	CTexture*				m_pTextureCom = nullptr;
 };
 END

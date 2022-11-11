@@ -215,9 +215,7 @@ HRESULT CLoader::Loading_ForLogoLevel()
 		return E_FAIL;
 
 	//실제 UI 텍스쳐
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Dialog"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/GameUI/Dialog.png")))))
-		return E_FAIL;
+
 
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_ItemBackground"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/GameUI/TexUI_ItemBackground.png")))))

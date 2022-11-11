@@ -179,6 +179,7 @@ HRESULT CMainApp::Ready_Prototype_Component()
 {
 	if (nullptr == m_pGameInstance)
 		return E_FAIL;
+	
 
 	/* For.Prototype_Component_Renderer */
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"),

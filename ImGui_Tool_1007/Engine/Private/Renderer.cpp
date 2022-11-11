@@ -6,6 +6,7 @@
 #include "Light_Manager.h"
 #include "PipeLine.h"
 #include "Transform.h"
+#include "GameInstance.h"
 
 CRenderer::CRenderer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent(pDevice, pContext)
@@ -26,8 +27,16 @@ HRESULT CRenderer::Initialize_Prototype()
 
 	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
 
+	/* For.Target_BackBuffer */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_BackBuffer"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 1.f, 1.f))))
+		return E_FAIL;
+
 	/* For.Target_Diffuse */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Diffuse"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+	/* For.Target_Distortion */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Distortion"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
 	/* For.Target_Normal */
@@ -47,8 +56,12 @@ HRESULT CRenderer::Initialize_Prototype()
 		return E_FAIL;
 
 	/* For.Target_Fog */
-	//if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Fog"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, &_float4(0.0f, 0.f, 0.f, 1.f))))
-	//	return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Fog"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, &_float4(0.0f, 0.f, 0.f, 1.f))))
+		return E_FAIL;
+
+	/* For.MRT_Back */
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Back"), TEXT("Target_BackBuffer"))))
+		return E_FAIL;
 
 	/* For.MRT_Deferred */
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Diffuse"))))
@@ -57,6 +70,8 @@ HRESULT CRenderer::Initialize_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Depth"))))
 		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Distortion"))))
+		return E_FAIL;
 
 	/* For.MRT_LightAcc */
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Shade"))))
@@ -64,13 +79,14 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Specular"))))
 		return E_FAIL;
 
+
 	/* For.MRT_Technic */
-	//if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Technic"), TEXT("Target_Fog"))))
-	//	return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Technic"), TEXT("Target_Fog"))))
+		return E_FAIL;
 
 
 #ifdef _DEBUG
-
+	
 	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Diffuse"), 70.f, 70.f, 140.f, 140.f)))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Normal"), 70.f, 210.f, 140.f, 140.f)))
@@ -81,8 +97,12 @@ HRESULT CRenderer::Initialize_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Specular"), 210.f, 210.f, 140.f, 140.f)))
 		return E_FAIL;
-	//if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Fog"), 350.f, 70.f, 140.f, 140.f)))
-	//	return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_BackBuffer"), 350.f, 70.f, 140.f, 140.f)))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Distortion"), 70.f, 490.f, 140.f, 140.f)))
+		return E_FAIL;
 
 	m_pShader = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Deferred.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements);
 	if (nullptr == m_pShader)
@@ -96,8 +116,11 @@ HRESULT CRenderer::Initialize_Prototype()
 	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixTranspose(XMMatrixOrthographicLH(ViewportDesc.Width, ViewportDesc.Height, 0.f, 1.f)));
 
 #endif // _DEBUG
-
-
+	m_pTextureCom = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/TFX_Noise_01.dds"));
+	if (nullptr == m_pTextureCom)
+		return E_FAIL;
+	//static_cast<CTexture*>(pGameInstance->Clone_Component(0, TEXT("Prototype_Component_Texture_Distortion")));
+	
 	return S_OK;
 }
 
@@ -121,6 +144,13 @@ HRESULT CRenderer::Add_RenderGroup(RENDERGROUP eRenderGroup, CGameObject * pGame
 
 HRESULT CRenderer::Draw()
 {
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	m_pTarget_Manager->Clear_RTVs();
+
+	m_pTarget_Manager->BackBuffer_Start(m_pContext, TEXT("Target_BackBuffer"),&m_pBackBuffer);
+
 	if (FAILED(Render_Priority()))
 		return E_FAIL;
 
@@ -135,16 +165,17 @@ HRESULT CRenderer::Draw()
 
 	if (FAILED(Render_NonLight()))
 		return E_FAIL;
-
+	
 	if (FAILED(Render_AlphaBlend()))
 		return E_FAIL;
-
-	//if (FAILED(Render_Fog()))
-	//	return E_FAIL;
+	Render_BackBuffer();
+	if (FAILED(Render_Distortion()))
+		return E_FAIL;
 
 	if (FAILED(Render_UI()))
 		return E_FAIL;
 
+	
 
 #ifdef _DEBUG
 
@@ -298,6 +329,12 @@ HRESULT CRenderer::Render_Blend()
 
 HRESULT CRenderer::Render_NonLight()
 {
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->AddBinding_RTV(m_pContext, TEXT("Target_Depth"), 1)))
+		return E_FAIL;
+	
 	for (auto& pRenderObject : m_RenderObjects[RENDER_NONLIGHT])
 	{
 		if (nullptr != pRenderObject)
@@ -307,11 +344,20 @@ HRESULT CRenderer::Render_NonLight()
 	}
 	m_RenderObjects[RENDER_NONLIGHT].clear();
 
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
 HRESULT CRenderer::Render_AlphaBlend()
 {
+	//if (nullptr == m_pTarget_Manager)
+	//	return E_FAIL;
+
+	//if (FAILED(m_pTarget_Manager->AddBinding_RTV(m_pContext, TEXT("Target_Depth"), 1)))
+	//	return E_FAIL;
+
 	m_RenderObjects[RENDER_ALPHABLEND].sort([](CGameObject* pSour, CGameObject* pDest)
 	{
 		return pSour->Get_CamDistance() > pDest->Get_CamDistance();
@@ -326,11 +372,54 @@ HRESULT CRenderer::Render_AlphaBlend()
 	}
 	m_RenderObjects[RENDER_ALPHABLEND].clear();
 
+	//if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+	//	return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_Distortion()
+{
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BackBuffer"), m_pShader, "g_DiffuseTexture")))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Distortion"), m_pShader, "g_DistortionTexture")))
+		return E_FAIL;
+	if (FAILED(m_pTextureCom->Set_SRV(m_pShader, "g_DistortionTexture_Bump")))
+		return E_FAIL;
+	m_fTick += CGameInstance::Get_Instance()->Get_TimeDelta(TEXT("Timer_Main")) / CGameInstance::Get_Instance()->Get_TimeSpeed(TEXT("Timer_Main"));
+	if (FAILED(m_pShader->Set_RawValue("g_fTick", &m_fTick, sizeof(_float))))
+		return E_FAIL;
+
+	_float4x4			WorldMatrix;
+
+	_uint				iNumViewport = 1;
+	D3D11_VIEWPORT		ViewportDesc;
+
+	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
+
+	XMStoreFloat4x4(&WorldMatrix,
+		XMMatrixTranspose(XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 0.f) * XMMatrixTranslation(0.0f, 0.0f, 0.f)));
+
+	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+
+	m_pShader->Begin(5);
+
+	m_pVIBuffer->Render();
+
 	return S_OK;
 }
 
 HRESULT CRenderer::Render_Fog()
 {
+	//백버퍼를 텍스쳐마냥 바인딩한다 -> 유브이 좌표는'
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
+		return E_FAIL;
+
 	/*
 	알파블렌딩까지 다 한 다음에 뎁스 타겟 갖고와서 현재 백버퍼에 안개깔면 되는데
 	1. 뎁스를 초기화를 안해야한다.
@@ -351,6 +440,39 @@ HRESULT CRenderer::Render_UI()
 		Safe_Release(pRenderObject);
 	}
 	m_RenderObjects[RENDER_UI].clear();
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_BackBuffer()
+{
+
+	m_pTarget_Manager->BackBuffer_End(m_pContext, &m_pBackBuffer);
+
+	//디퓨즈로 넣고 그걸 그대로 그리면 됨
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BackBuffer"), m_pShader, "g_DiffuseTexture")))
+		return E_FAIL;
+
+	_float4x4			WorldMatrix;
+
+	_uint				iNumViewport = 1;
+	D3D11_VIEWPORT		ViewportDesc;
+
+	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
+
+	XMStoreFloat4x4(&WorldMatrix,
+		XMMatrixTranspose(XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 0.f) * XMMatrixTranslation(0.0f, 0.0f, 0.f)));
+
+	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+
+	m_pShader->Begin(4);
+
+	m_pVIBuffer->Render();
 
 	return S_OK;
 }
@@ -408,7 +530,7 @@ void CRenderer::Free()
 		}
 		List.clear();
 	}
-
+	Safe_Release(m_pBackBuffer);
 #ifdef _DEBUG
 	Safe_Release(m_pShader);
 	Safe_Release(m_pVIBuffer);
@@ -416,4 +538,5 @@ void CRenderer::Free()
 
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pTarget_Manager);
+	Safe_Release(m_pTextureCom);
 }

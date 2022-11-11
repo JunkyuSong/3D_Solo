@@ -121,7 +121,8 @@ HRESULT CTrail::Initialize(void * pArg)
 
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 	m_pShaderCom = static_cast<CShader*>(pGameInstance->Clone_Component(LEVEL_GAMEPLAY,TEXT("Prototype_Component_Shader_Trail")));
-	
+	//m_pTextureCom = static_cast<CTexture*>(pGameInstance->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Distortion")));
+	m_pTextureCom = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/TFX_Noise_01.dds"));
 	if (m_pShaderCom == nullptr)
 	{
 		MSG_BOX(TEXT("Clone Trail Shader"));
@@ -138,11 +139,15 @@ HRESULT CTrail::Render()
 		return S_OK;
 	}
 	AUTOINSTANCE(CGameInstance, pGameInstance);
+	if (FAILED(m_pTextureCom->Set_SRV(m_pShaderCom, "g_DiffuseTexture")))
+		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_Color", &m_Color, sizeof(_float4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_fTick", &m_fCurTime, sizeof(_float))))
 		return E_FAIL;
 	/*if (FAILED(m_pShaderCom->Set_RawValue("g_vPosition", m_RealData, sizeof(REALDATA) * 22)))
 		return E_FAIL;*/
@@ -172,7 +177,7 @@ void CTrail::Tick(const _float& _fTimeDelta, _matrix _matWeapon)
 
 	//if (m_fCurTime > m_fMaxTIme)
 	{
-		m_fCurTime -= 0.01f;
+		//m_fCurTime -= 0.01f;
 		if (m_iVtxCount >= m_iNumVertices)
 		{
 			m_iVtxCount = 20;
@@ -334,5 +339,6 @@ CComponent * CTrail::Clone(void * pArg)
 void CTrail::Free()
 {
 	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pTextureCom);
 	__super::Free();
 }

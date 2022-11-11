@@ -87,6 +87,12 @@ struct PS_OUT
 	float4		vDepth : SV_TARGET2;
 };
 
+struct PS_OUT_NONLIGHT
+{
+	float4		vDiffuse : SV_TARGET0;
+	float4		vDepth : SV_TARGET1;
+};
+
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
@@ -109,7 +115,26 @@ PS_OUT PS_MAIN(PS_IN In)
 	// -1 ~ 1
 	//  0 ~ 1
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
-	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 300.0f, 0.0f, 0.0f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
+
+	return Out;
+}
+
+PS_OUT_NONLIGHT PS_NONLIGHT(PS_IN In)
+{
+	PS_OUT_NONLIGHT		Out = (PS_OUT_NONLIGHT)0;
+
+	Out.vDiffuse = (vector)1.f;
+
+	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+
+	if (0 >= Out.vDiffuse.a)
+		discard;
+
+	// -1 ~ 1
+	//  0 ~ 1
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
 
 	return Out;
 }
@@ -139,7 +164,7 @@ PS_OUT PS_BALLOON(PS_IN In)
 	// -1 ~ 1
 	//  0 ~ 1
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
-	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 300.0f, 0.0f, 0.0f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
 
 	return Out;
 }
@@ -204,7 +229,7 @@ PS_OUT PS_Stage(PS_IN In)
 	// -1 ~ 1
 	//  0 ~ 1
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
-	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 300.0f, 0.0f, 0.0f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
 
 	return Out;
 }
@@ -401,5 +426,15 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_BALLOON();
+	}
+
+	pass NONLIGHT
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_NONLIGHT();
 	}
 }

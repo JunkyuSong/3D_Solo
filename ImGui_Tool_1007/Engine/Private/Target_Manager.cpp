@@ -54,7 +54,7 @@ HRESULT CTarget_Manager::Bind_SRV(const _tchar * pTargetTag, CShader * pShader, 
 	if (nullptr == pRenderTarget)
 		return E_FAIL;
 
-	return pRenderTarget->Bind_SRV(pShader, pConstantName);	
+	return pRenderTarget->Bind_SRV(pShader, pConstantName);
 }
 
 HRESULT CTarget_Manager::Begin_MRT(ID3D11DeviceContext * pContext, const _tchar * pMRTTag)
@@ -72,7 +72,9 @@ HRESULT CTarget_Manager::Begin_MRT(ID3D11DeviceContext * pContext, const _tchar 
 
 	for (auto& pRenderTarget : *pMRTList)
 	{		
-		pRenderTarget->Clear();
+		//pRenderTarget->Clear();
+		m_UsingTargets.push_back(pRenderTarget);
+		Safe_AddRef(pRenderTarget);
 		RTVs[iNumRTVs++] = pRenderTarget->Get_RTV();
 	}
 
@@ -88,6 +90,97 @@ HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext * pContext)
 	_uint		iNumRTVs = 8;	
 
 	pContext->OMSetRenderTargets(iNumRTVs, m_pOldRenderTargets, m_pOldDepthStencil);
+
+	for (_uint i = 0; i < 8; ++i)
+		Safe_Release(m_pOldRenderTargets[i]);
+
+	Safe_Release(m_pOldDepthStencil);
+
+	return S_OK;
+}
+
+HRESULT CTarget_Manager::AddBinding_RTV(ID3D11DeviceContext * pContext, const _tchar * pRTVTag, _uint _iIndex)
+{
+	CRenderTarget*		pRTV = Find_RenderTarget(pRTVTag);
+	if (nullptr == pRTV)
+		return E_FAIL;
+
+	_uint		iNumViews = 8;
+	pContext->OMGetRenderTargets(iNumViews, m_pOldRenderTargets, &m_pOldDepthStencil);
+
+	_uint			iNumRTVs = 0;
+	
+	ID3D11RenderTargetView*			RTVs[8] = { nullptr };
+
+	for (_uint i = 0 ; i < 8 ; ++i)
+	{
+		RTVs[i] = m_pOldRenderTargets[i];
+		if (m_pOldRenderTargets[i] != nullptr)
+			++iNumRTVs;
+	}
+	if(RTVs[_iIndex] == nullptr)
+		++iNumRTVs;
+	m_UsingTargets.push_back(pRTV);
+	Safe_AddRef(pRTV);
+	RTVs[_iIndex] = pRTV->Get_RTV();
+
+
+
+
+	pContext->OMSetRenderTargets(iNumRTVs, RTVs, m_pOldDepthStencil);
+
+	return S_OK;
+}
+
+HRESULT CTarget_Manager::Clear_RTVs()
+{
+	for (auto& _RTV : m_UsingTargets)
+	{
+		_RTV->Clear();
+		Safe_Release(_RTV);
+	}
+	m_UsingTargets.clear();
+	return S_OK;
+}
+
+HRESULT CTarget_Manager::BackBuffer_Start(ID3D11DeviceContext * pContext, const _tchar * pBackBufferTag, ID3D11RenderTargetView ** _pBackBuffer)
+{
+	CRenderTarget*		pRTV = Find_RenderTarget(pBackBufferTag);
+	if (nullptr == pRTV)
+		return E_FAIL;
+
+	_uint		iNumViews = 8;
+	pContext->OMGetRenderTargets(iNumViews, m_pOldRenderTargets, &m_pOldDepthStencil);
+
+	*_pBackBuffer = m_pOldRenderTargets[0];
+	
+	Safe_AddRef(*_pBackBuffer);
+
+	m_UsingTargets.push_back(pRTV);
+	Safe_AddRef(pRTV);
+
+	m_pOldRenderTargets[0] = pRTV->Get_RTV();
+
+	pContext->OMSetRenderTargets(1, m_pOldRenderTargets, m_pOldDepthStencil);
+
+	Safe_Release(m_pOldDepthStencil);
+
+	return S_OK;
+}
+
+HRESULT CTarget_Manager::BackBuffer_End(ID3D11DeviceContext * pContext, ID3D11RenderTargetView ** _pBackBuffer)
+{
+	_uint		iNumViews = 8;
+
+	pContext->OMGetRenderTargets(iNumViews, m_pOldRenderTargets, &m_pOldDepthStencil);
+
+	Safe_Release(m_pOldRenderTargets[0]);
+
+	m_pOldRenderTargets[0] = *_pBackBuffer;
+
+	Safe_Release(*_pBackBuffer);
+
+	pContext->OMSetRenderTargets(1, m_pOldRenderTargets, m_pOldDepthStencil);
 
 	for (_uint i = 0; i < 8; ++i)
 		Safe_Release(m_pOldRenderTargets[i]);
@@ -156,6 +249,9 @@ void CTarget_Manager::Free()
 
 		Pair.second.clear();
 	}
+
+	for (auto& iter : m_UsingTargets)
+		Safe_Release(iter);
 
 	m_MRTs.clear();
 
