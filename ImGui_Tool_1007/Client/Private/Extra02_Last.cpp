@@ -115,7 +115,8 @@ void CExtra02_Last::Tick(_float fTimeDelta)
 
 	if (m_bDead)
 		return;
-
+	if (_Instance->KeyDown(DIK_DELETE))
+		m_eCurState = LV1Villager_M_Die01;
 	if (m_pModelCom != nullptr)
 	{
 		Check_Stun();

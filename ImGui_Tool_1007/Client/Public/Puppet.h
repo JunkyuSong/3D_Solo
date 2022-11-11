@@ -17,7 +17,7 @@ BEGIN(Client)
 class CPuppet final : public CMonster
 {
 public:
-	enum EXTRA01COLLIDER { COLLILDERTYPE_END = 1 };
+	enum EXTRA01COLLIDER { COLLILDERTYPE_RIGHT, COLLILDERTYPE_LEFT, COLLILDERTYPE_END };
 	enum STATE {
 		Puppet_AttackF_A,
 		Puppet_Combo_F2R,
@@ -137,14 +137,7 @@ private:
 
 	void	Update_Collider();
 
-	void	Check_Stun();
-
 private:
-	HRESULT Ready_Weapon();
-
-	HRESULT Update_Weapon();
-
-	class CWeapon*				m_pParts = nullptr;
 	class CHierarchyNode*		m_pSockets = nullptr;
 
 
@@ -153,9 +146,6 @@ public:
 	static CPuppet* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CMonster* Clone(void* pArg);
 	virtual void Free() override;
-
-private:
-	void Tick_Imgui();
 };
 
 END

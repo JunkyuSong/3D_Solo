@@ -124,7 +124,7 @@ void CBoss_Bat::Tick(_float fTimeDelta)
 	}
 
 	m_fHitCurTime += fTimeDelta;
-	if (m_fHitMaxTime <= m_fHitCurTime)
+	if (m_fHitMaxTime >= m_fHitCurTime)
 	{
 		On_Collider(COLLIDERTYPE_BODY, false);
 	}
@@ -750,6 +750,7 @@ _bool CBoss_Bat::Collision(_float fTimeDelta)
 			On_Collider((MAGICIANCOLLIDER)i, false);
 		}*/
 		m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack());
+		m_fHitCurTime = 0.f;
 		//return true;
 	}
 	return false;

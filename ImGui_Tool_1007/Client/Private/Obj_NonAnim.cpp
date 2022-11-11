@@ -42,9 +42,9 @@ void CObj_NonAnim::LateTick( _float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	AUTOINSTANCE(CGameInstance, _pInstance);
-	_bool		isDraw = _pInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 15.f);
-	if (isDraw)
+	//AUTOINSTANCE(CGameInstance, _pInstance);
+	//_bool		isDraw = _pInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 15.f);
+	//if (isDraw)
 	{
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 	}

@@ -9,6 +9,8 @@
 #include "Status.h"
 #include "Animation.h"
 #include "ImGuiMgr.h"
+#include "CameraMgr.h"
+#include "Camera.h"
 
 CPuppet::CPuppet(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
@@ -67,6 +69,9 @@ HRESULT CPuppet::Initialize(void * pArg)
 	//로컬의 룩방향 -> 이걸 현재의 회전행렬과 곱해서 월드방향벡터를 만들어준다.
 	//쿠드로 하면 현재 가야할 좌표가 나오고
 
+	m_bCollision[COLLILDERTYPE_RIGHT] = true;
+	m_bCollision[COLLILDERTYPE_LEFT] = true;
+
 	m_eCurState = Puppet_Idle_F;
 	//m_pModelCom->DirectAnim(Puppet_Idle_F);
 	return S_OK;
@@ -81,6 +86,8 @@ void CPuppet::Tick(_float fTimeDelta)
 	}
 	if (m_bPuppetEnd)
 	{
+		m_bCollision[COLLILDERTYPE_RIGHT] = false;
+		m_bCollision[COLLILDERTYPE_LEFT] = false;
 		return;
 	}
 	AUTOINSTANCE(CGameInstance, _Instance);
@@ -89,46 +96,25 @@ void CPuppet::Tick(_float fTimeDelta)
 	if (m_bDead)
 		return;
 
-	if (_Instance->KeyDown(DIK_NUMPAD1))
-	{
-		//증가
-		if (m_eCurState + 1 < STATE_END)
-			m_eCurState = STATE(m_eCurState + 1);
-	}
-	else if (_Instance->KeyDown(DIK_NUMPAD2))
-	{
-		if (m_eCurState - 1 >= 0)
-		m_eCurState = STATE(m_eCurState - 1);
-	}
-	
-	Tick_Imgui();
-
 	if (m_pModelCom != nullptr)
 	{
-		//Check_Stun();
 		CheckAnim();
 
 		
 		PlayAnimation(fTimeDelta);
 		CheckState(fTimeDelta);
 	}
-
+	Update_Collider();
 }
 
 void CPuppet::LateTick(_float fTimeDelta)
 {
-	if (m_bDead || m_eCurState == Puppet_VS_TakeExecution_Attack)
+	if (m_bDead)
 	{
 		RenderGroup();
 		return;
 	}
-	AUTOINSTANCE(CGameInstance, _pInstance);
-	if (Collision(fTimeDelta))
-	{
-		CheckAnim();
-		CheckState(fTimeDelta);
-		PlayAnimation(fTimeDelta);
-	}
+
 
 	RenderGroup();
 }
@@ -275,17 +261,17 @@ void CPuppet::CheckState(_float fTimeDelta)
 	switch (m_eCurState)
 	{
 	case Client::CPuppet::Puppet_AttackF_A:
-		m_fPlaySpeed = 3.f;
+		m_fPlaySpeed = 2.f;
 		break;
 	case Client::CPuppet::Puppet_Combo_F2R:
 
 		break;
 	case Client::CPuppet::Puppet_Combo_F_A_Start:
-		m_fPlaySpeed = 2.f;
+		m_fPlaySpeed = 1.5f;
 		break;
 	case Client::CPuppet::Puppet_Combo_R_Attack01:
 	{
-		m_fPlaySpeed = 2.f;
+		m_fPlaySpeed = 1.5f;
 		_float3 _vRot = m_pTransformCom->Get_Rotation();
 		_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 		if (_vRot.y != m_ListNextLook[Puppet_Combo_R_Attack01].w)
@@ -329,13 +315,14 @@ void CPuppet::CheckState(_float fTimeDelta)
 	case Client::CPuppet::Puppet_Idle_F:
 		if (m_eMonsterState == CMonster::ATTACK_ATTACK)
 		{
+			
 			_float3 _vRot = m_pTransformCom->Get_Rotation();
 			_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 			if (XMVector3Equal(XMLoadFloat3(&m_vAttPos), _vPos)/* && _vRot.y == m_ListNextLook[m_eReserveState].w*/)
 			{
 				// 그 이후 상태를 바꿔줌
 				m_eCurState = m_eReserveState;
-				
+				CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_Off();
 			}
 			else
 			{
@@ -543,6 +530,7 @@ void CPuppet::Pattern(_float _fTimeDelta)
 	m_fPatternCurTime += _fTimeDelta;
 	if (m_fPatternCurTime > m_fPatternTime)
 	{
+		CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(5.f, 1.f);
 		m_fPatternCurTime = 0.f;
 		STATE _eState;
 		switch (_pInstance->Rand_Int(0, 2))
@@ -608,10 +596,30 @@ HRESULT CPuppet::Ready_Components()
 	/* For.Com_Status */
 	CStatus::STATUS _tStatus;
 	_tStatus.fMaxHp = 80.f;
-	_tStatus.fAttack = 7.f;
+	_tStatus.fAttack = 50.f;
 	_tStatus.fHp = _tStatus.fMaxHp;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Status"), TEXT("Com_Status"), (CComponent**)&m_pStatusCom, &_tStatus)))
 		return E_FAIL;
+
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+	ColliderDesc.vSize = _float3(10.f, 10.f, 10.f);
+	ColliderDesc.vCenter = _float3(m_pModelCom->Get_HierarchyNode("thumb_01_r")->Get_Trans()._41,
+		m_pModelCom->Get_HierarchyNode("thumb_01_r")->Get_Trans()._42,
+		m_pModelCom->Get_HierarchyNode("thumb_01_r")->Get_Trans()._43);
+	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB_Hand_L"), (CComponent**)&m_pColliderCom[COLLILDERTYPE_LEFT], &ColliderDesc)))
+		return E_FAIL;
+
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+	ColliderDesc.vSize = _float3(10.f, 10.f, 10.f);
+	ColliderDesc.vCenter = _float3(m_pModelCom->Get_HierarchyNode("thumb_01_l")->Get_Trans()._41,
+		m_pModelCom->Get_HierarchyNode("thumb_01_l")->Get_Trans()._42,
+		m_pModelCom->Get_HierarchyNode("thumb_01_l")->Get_Trans()._43);
+	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB_Hand_R"), (CComponent**)&m_pColliderCom[COLLILDERTYPE_RIGHT], &ColliderDesc)))
+		return E_FAIL;
+
 
 
 	return S_OK;
@@ -673,165 +681,22 @@ void CPuppet::Free()
 		if (_Collider)
 			Safe_Release(_Collider);
 	}
-	Safe_Release(m_pParts);
 	Safe_Release(m_pSockets);
-}
-
-void CPuppet::Tick_Imgui()
-{
-	AUTOINSTANCE(CGameInstance, _pInstance);
-	_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-	CImGui::Get_Instance()->Begin("Puppet");
-	if (_pInstance->KeyPressing(DIK_NUMPAD8))
-		_vPos.m128_f32[2] += 0.1f;
-	if (_pInstance->KeyPressing(DIK_NUMPAD5))
-		_vPos.m128_f32[2] -= 0.1f;
-
-	if (_pInstance->KeyPressing(DIK_NUMPAD4))
-		_vPos.m128_f32[0] -= 0.1f;
-	if (_pInstance->KeyPressing(DIK_NUMPAD6))
-		_vPos.m128_f32[0] += 0.1f;
-
-	if (_pInstance->KeyPressing(DIK_NUMPAD9))
-		_vPos.m128_f32[1] += 0.1f;
-	if (_pInstance->KeyPressing(DIK_NUMPAD7))
-		_vPos.m128_f32[1] -= 0.1f;
-
-	//int _iState = int(m_eCurState);
-	//CImGui::Get_Instance()->Intcheck(&(_iState), "state");
-	//m_eCurState = (STATE)_iState;
-
-
-
-	//CImGui::Get_Instance()->floatcheck(&(_vPos.m128_f32[0]), "X");
-	//CImGui::Get_Instance()->floatcheck(&(_vPos.m128_f32[1]), "Y");
-	//CImGui::Get_Instance()->floatcheck(&(_vPos.m128_f32[2]), "Z");
-
-	//_float3 vRot = m_pTransformCom->Get_Rotation();
-
-	//CImGui::Get_Instance()->floatcheck(&(vRot.y), "Angle");
-
-	if (CImGui::Get_Instance()->Button("pattern1"))
-	{		
-		_matrix _RotMatrix = m_pTransformCom->Get_WorldMatrix();
-		_RotMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-		XMStoreFloat3(&m_vAttPos, XMVector3TransformCoord(
-			XMVectorSetW( XMLoadFloat4(&m_ListNextLook[Puppet_Combo_F_A_Start]), 1.f),
-			_RotMatrix)); //좌표
-		
-		m_eReserveState = Puppet_Combo_F_A_Start;
-		m_eMonsterState = CMonster::ATTACK_ATTACK;
-
-		_vector _vPlayerPos = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
-		
-		XMStoreFloat3(&m_vAttPos, _vPlayerPos + XMLoadFloat3(&m_vAttPos));
-		XMStoreFloat3(&m_vNextLook, XMVector3Normalize( XMLoadFloat3(&m_vAttPos) - XMLoadFloat3(&m_vLocalPos)));
-		m_fPlaySpeed = 3.f;
-	}
-	
-	if (CImGui::Get_Instance()->Button("pattern2"))
-	{
-		_matrix _RotMatrix = m_pTransformCom->Get_WorldMatrix();
-		_RotMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-
-		XMStoreFloat3(&m_vAttPos, XMVector3TransformCoord(
-			XMVectorSetW(XMLoadFloat4(&m_ListNextLook[Puppet_AttackF_A]), 1.f),
-			_RotMatrix)); //좌표
-
-		m_eReserveState = Puppet_AttackF_A;
-		m_eMonsterState = CMonster::ATTACK_ATTACK;
-
-		_vector _vPlayerPos = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
-
-		XMStoreFloat3(&m_vAttPos, _vPlayerPos + XMLoadFloat3(&m_vAttPos));
-		XMStoreFloat3(&m_vNextLook, XMVector3Normalize(XMLoadFloat3(&m_vAttPos) - XMLoadFloat3(&m_vLocalPos)));
-		m_fPlaySpeed = 3.f;
-	}
-
-	if (CImGui::Get_Instance()->Button("pattern3"))
-	{
-		_matrix _RotMatrix = m_pTransformCom->Get_WorldMatrix();
-		_RotMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-
-		XMStoreFloat3(&m_vAttPos, XMVector3TransformCoord(
-			XMVectorSetW(XMLoadFloat4(&m_ListNextLook[Puppet_Combo_R_Attack01]), 1.f),
-			_RotMatrix)); //좌표
-
-		m_eReserveState = Puppet_Combo_R_Attack01;
-		m_eMonsterState = CMonster::ATTACK_ATTACK;
-
-		_vector _vPlayerPos = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
-
-		XMStoreFloat3(&m_vAttPos, _vPlayerPos + XMLoadFloat3(&m_vAttPos));
-		XMStoreFloat3(&m_vNextLook, XMVector3Normalize(XMLoadFloat3(&m_vAttPos) - XMLoadFloat3(&m_vLocalPos)));
-		m_fPlaySpeed = 3.f;
-	}
-
-	/*m_pTransformCom->Set_Rotation(XMLoadFloat3(& vRot));
-	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(vRot.y));*/
-	CImGui::Get_Instance()->End();
-	
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 }
 
 void CPuppet::Update_Collider()
 {
 	//if (m_bCollision[COLLIDERTYPE_BODY])
-	
-
-}
-
-void CPuppet::Check_Stun()
-{
-	if (m_eMonsterState == CMonster::ATTACK_STUN)
+	if (m_bCollision[COLLILDERTYPE_RIGHT])
 	{
-		//m_eCurState = LV1Villager_M_HurtCounter;
-		m_eMonsterState = CMonster::ATTACK_IDLE;
+		m_pColliderCom[COLLILDERTYPE_RIGHT]->Update(m_pModelCom->Get_HierarchyNode("middle_01_r")->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_WEAPON, m_pColliderCom[COLLILDERTYPE_RIGHT], this);
 	}
-}
 
-HRESULT CPuppet::Ready_Weapon()
-{
-	AUTOINSTANCE(CGameInstance, pGameInstance);
+	if (m_bCollision[COLLILDERTYPE_LEFT])
+	{
+		m_pColliderCom[COLLILDERTYPE_LEFT]->Update(m_pModelCom->Get_HierarchyNode("middle_01_l")->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_WEAPON, m_pColliderCom[COLLILDERTYPE_LEFT], this);
+	}
 
-	CHierarchyNode*		pWeaponSocket = m_pModelCom->Get_HierarchyNode("weapon_r_IK");
-	if (nullptr == pWeaponSocket)
-		return E_FAIL;
-	m_pSockets = pWeaponSocket;
-	Safe_AddRef(m_pSockets);
-
-
-
-	/* For.Sword */
-	CWeapon*		pGameObject = static_cast<CWeapon*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Weapon_MonsterAxe"), this));
-
-	if (nullptr == pGameObject)
-		return E_FAIL;
-
-	m_pParts = pGameObject;
-
-	return S_OK;
-}
-
-HRESULT CPuppet::Update_Weapon()
-{
-	if (nullptr == m_pSockets)
-		return E_FAIL;
-
-	/* 행렬. */
-	/*_matrix			WeaponMatrix = 뼈의 스페이스 변환(OffsetMatrix)
-	* 뼈의 행렬(CombinedTransformation)
-	* 모델의 PivotMatrix * 프렐이어의월드행렬. ;*/
-	_matrix		PivotMatrix = XMMatrixIdentity();
-
-	/* For.Prototype_Component_Model_Player */
-	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
-	_matrix WeaponMatrix = /*m_pSockets[PART_CANE]->Get_OffSetMatrix()**/
-		m_pSockets->Get_CombinedTransformation()
-		* XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())
-		* m_pTransformCom->Get_WorldMatrix();
-
-	m_pParts->SetUp_State(WeaponMatrix);
-
-	return S_OK;
 }
