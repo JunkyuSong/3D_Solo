@@ -401,7 +401,6 @@ void CPuppet::CheckState(_float fTimeDelta)
 
 		break;
 	case Client::CPuppet::Puppet_VS_TakeExecution_End:
-
 		break;
 	}
 
@@ -530,7 +529,7 @@ void CPuppet::Pattern(_float _fTimeDelta)
 	m_fPatternCurTime += _fTimeDelta;
 	if (m_fPatternCurTime > m_fPatternTime)
 	{
-		CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(5.f, 1.f);
+		CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(5.f, 3.f);
 		m_fPatternCurTime = 0.f;
 		STATE _eState;
 		switch (_pInstance->Rand_Int(0, 2))

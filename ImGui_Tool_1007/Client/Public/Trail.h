@@ -71,5 +71,6 @@ private:
 
 	_uint					m_iEndIndex;
 	_uint					m_iCatmullRomCount;
+	_uint					m_iCatmullRomIndex[4];
 };
 END

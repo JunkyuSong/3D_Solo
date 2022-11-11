@@ -93,7 +93,7 @@ void CBoss_Bat::Tick(_float fTimeDelta)
 		_pPlayer->Set_Stage(2);
 		m_eMonsterState = ATTACK_DEAD;
 	}
-
+	
 	
 
 	if (_Instance->KeyDown(DIK_NUMPAD1))
@@ -128,6 +128,11 @@ void CBoss_Bat::Tick(_float fTimeDelta)
 	{
 		On_Collider(COLLIDERTYPE_BODY, false);
 	}
+	else
+	{
+		On_Collider(COLLIDERTYPE_BODY, true);
+	}
+	
 
 	Update_Collider();
 }

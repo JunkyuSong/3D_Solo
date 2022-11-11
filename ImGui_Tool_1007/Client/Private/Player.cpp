@@ -1327,6 +1327,8 @@ void CPlayer::CheckEndAnim()
 		break;
 	case Client::CPlayer::Corvus_VS_Puppet_Execution_End:
 		_pCamera->Change_Camera(CCameraMgr::CAMERA_PLAYER);
+		//CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(3.f, 2.f);
+
 		//_pInstance->Light_Off(LEVEL_STAGE_LAST, CLight_Manager::STATICPOINTLIHGT, m_iLightIndex);
 		m_eCurState = STATE_IDLE;
 		break;
