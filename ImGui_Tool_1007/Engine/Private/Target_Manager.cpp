@@ -85,16 +85,17 @@ HRESULT CTarget_Manager::Begin_MRT(ID3D11DeviceContext * pContext, const _tchar 
 	return S_OK;
 }
 
-HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext * pContext)
+HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext * pContext, _uint iDepthStencil)
 {
 	_uint		iNumRTVs = 8;	
 
 	pContext->OMSetRenderTargets(iNumRTVs, m_pOldRenderTargets, m_pOldDepthStencil);
 
 	for (_uint i = 0; i < 8; ++i)
-		Safe_Release(m_pOldRenderTargets[i]);
+		Safe_Release(m_pOldRenderTargets[i]);//릭나는거 구조 잘 생각해보자
 
-	Safe_Release(m_pOldDepthStencil);
+	for (_uint i = 0; i < iDepthStencil; ++i)
+		m_pOldDepthStencil->Release();
 
 	return S_OK;
 }

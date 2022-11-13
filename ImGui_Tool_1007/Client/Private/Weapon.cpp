@@ -3,7 +3,7 @@
 
 #include "GameInstance.h"
 
-#include "Trail.h"
+#include "Trail_Obj.h"
 #include "Transform.h"
 
 CWeapon::CWeapon(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)

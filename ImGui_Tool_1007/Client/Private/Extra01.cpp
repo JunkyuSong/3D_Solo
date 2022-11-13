@@ -88,6 +88,7 @@ void CExtra01::Tick(_float fTimeDelta)
 {
 	if (m_bDead)
 	{
+		m_fDissolveTime += fTimeDelta * 0.3f;
 		m_eMonsterState = ATTACK_DEAD;
 		return;
 	}
@@ -153,6 +154,15 @@ HRESULT CExtra01::Render()
 
 	SetUp_ShaderResources();
 
+	if (m_bDead)
+	{
+		if (FAILED(m_pShaderCom->Set_RawValue("g_fTime", &m_fDissolveTime, sizeof(_float))))
+			return E_FAIL;
+		if (FAILED(m_pDissolveTexture->Set_SRV(m_pShaderCom, "g_DissolveTexture")))
+			return E_FAIL;
+		m_iPass = 4;
+	}
+
 	_uint		iNumMeshes = m_pModelCom->Get_NumMesh();//메쉬 갯수를 알고 메쉬 갯수만큼 렌더를 할 것임. 여기서!
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
@@ -163,7 +173,7 @@ HRESULT CExtra01::Render()
 			return E_FAIL;
 
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, 0, i)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, m_iPass, i)))
 			return E_FAIL;
 	}
 
@@ -750,6 +760,9 @@ HRESULT CExtra01::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &_Desc)))
 		return E_FAIL;
 
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), TEXT("Com_Noise"), (CComponent**)&m_pDissolveTexture)))
+		return E_FAIL;
+
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 		return E_FAIL;
@@ -860,6 +873,7 @@ void CExtra01::Free()
 	}
 	Safe_Release(m_pParts);
 	Safe_Release(m_pSockets);
+	Safe_Release(m_pDissolveTexture);
 }
 
 void CExtra01::Update_Collider()

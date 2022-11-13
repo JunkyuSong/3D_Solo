@@ -5,6 +5,7 @@
 
 BEGIN(Engine)
 class CHierarchyNode;
+class CTexture;
 END
 
 BEGIN(Client)
@@ -89,6 +90,9 @@ private:
 
 	_bool	m_bDead = false;
 
+	_float	m_fDissolveTime = 0.f;
+	CTexture*	m_pDissolveTexture = nullptr;
+
 private:
 	STATE					m_eReserveState = STATE_END;
 	STATE					m_eCurState = LV1Villager_M_SP_Idle1;
@@ -113,6 +117,7 @@ private:
 	_float3					m_vNextLook;
 	_bool					m_bPreStateAtt = false;
 
+	_uint					m_iPass = 0;
 
 private:
 	HRESULT Ready_Components();

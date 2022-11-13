@@ -3,7 +3,7 @@
 #include "GameInstance.h"
 
 
-#include "Trail.h"
+#include "Trail_Obj.h"
 
 CKnife::CKnife(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CWeapon(pDevice, pContext)
@@ -100,7 +100,7 @@ HRESULT CKnife::Render()
 		if (FAILED(m_pModelCom->Render(i)))
 			return E_FAIL;
 	}
-	m_pTrailCom->Render();
+	//m_pTrailCom->Render();
 
 #ifdef _DEBUG
 	if (nullptr != m_pColliderCom && m_bColliderOn)
@@ -146,11 +146,11 @@ HRESULT CKnife::Ready_Components()
 	_tInfo._Color = _float4(1.f, 0.f, 1.f, 1.f);
 	_tInfo._HighAndLow.vHigh = _float3(60.0f, 0.f, 0.f);
 	_tInfo._HighAndLow.vLow = _float3(20.f, 0.f, 0.f);
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Trail"), TEXT("Com_Trail"), (CComponent**)&m_pTrailCom, &_tInfo)))
-	{
-		MSG_BOX(TEXT("fail to trail in saber"));
+	AUTOINSTANCE(CGameInstance, _pInstance);
+	m_pTrailCom = static_cast<CTrail_Obj*>(_pInstance->Clone_GameObject(TEXT("Prototype_GameObject_Trail"), &_tInfo));
+	if (m_pTrailCom == nullptr)
 		return E_FAIL;
-	}
+
 
 	/* For.Com_OBB */
 	CCollider::COLLIDERDESC		ColliderDesc;

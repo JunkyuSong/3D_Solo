@@ -1,6 +1,7 @@
 #include "Client_Shader_Defines.hpp"
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 float		g_fAlpha;
+float		g_fTime;
 
 float4			g_vCamPosition;
 float			g_fFogRange = 10.f;
@@ -14,6 +15,8 @@ tagBoneMatrices		g_BoneMatrices;
 
 texture2D	g_DiffuseTexture;
 texture2D	g_NormalTexture;
+
+texture2D	g_DissolveTexture;
 
 sampler DefaultSampler = sampler_state {
 
@@ -103,8 +106,13 @@ struct PS_OUT_NONLIGHT
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
+	
+	
 
 	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	
+	if (0 == Out.vDiffuse.a)
+		discard;
 
 	vector		vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexUV);
 	float3		vNormal = vNormalDesc.xyz * 2.f - 1.f;
@@ -113,8 +121,8 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w , 0.0f, 0.0f);
-	if (0.f >= Out.vDiffuse.a)
-		discard;
+
+
 
 	return Out;
 }
@@ -169,6 +177,40 @@ PS_OUT_NONLIGHT PS_MAIN_TRAIL(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_DISSOLVE(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	float fDissolve = length( g_DissolveTexture.Sample(DefaultSampler, In.vTexUV));
+	fDissolve = smoothstep(0.f, 4.f, fDissolve);
+
+	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	if (fDissolve <= g_fTime)
+		discard;
+
+	if (fDissolve <= g_fTime + 0.03f)
+	{
+		Out.vDiffuse.r = 1.f;
+		Out.vDiffuse.g *= 1.f - (g_fTime - fDissolve) ;
+		Out.vDiffuse.b *= 1.f - (g_fTime - fDissolve) ;
+	}
+
+	if (0 == Out.vDiffuse.a)
+		discard;
+
+	vector		vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexUV);
+	float3		vNormal = vNormalDesc.xyz * 2.f - 1.f;
+	float3x3	WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal);
+	vNormal = normalize(mul(vNormal, WorldMatrix));
+
+	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
+
+
+
+	return Out;
+}
 
 technique11 DefaultTechnique
 {
@@ -210,6 +252,16 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN3();
+	}
+
+	pass Dissolve
+	{
+		SetRasterizerState(RS_CullNone);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_DISSOLVE();
 	}
 
 	/*pass NONLIGHT

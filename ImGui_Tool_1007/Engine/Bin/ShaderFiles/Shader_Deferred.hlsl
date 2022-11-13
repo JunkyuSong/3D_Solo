@@ -201,18 +201,35 @@ PS_OUT PS_MAIN_BackBuffer(PS_IN In)
 PS_OUT PS_MAIN_Distortion(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
-	float2		Trans = In.vTexUV + g_fTick;
-	float4		Noise = g_DistortionTexture_Bump.Sample(DefaultSampler, Trans);
 
+	
 	float4		Distortion = g_DistortionTexture.Sample(DefaultSampler, In.vTexUV);
+	Distortion.w *= 300.f;
+	
 
-	Distortion *= Noise.x;
 
-	float2		UV = In.vTexUV + Noise.xy * 0.05f;
+	if (Distortion.z != 0.f)
+	{
+		//Distortion *= Noise.x;
+		float2		UV;
+		//UV.x = (Distortion.x/ Distortion.w + 1.f) / 2.f;
+		//UV.y = (Distortion.y/ Distortion.w - 1.f) / -2.f;
+		/*vProjPos.z = vDepthDesc.x;
+		vProjPos.w = 1.f;*/
+		//float2		Trans = In.vTexUV + g_fTick *0.2f;
+		float4		Noise = g_DistortionTexture_Bump.Sample(DefaultSampler, In.vTexUV);
 
-	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, UV);
+		UV.x = In.vTexUV.x + cos(Noise.x * g_fTick * 0.5f) * 0.02f;
+		UV.y = In.vTexUV.y + sin(Noise.x * g_fTick * 0.5f) * 0.02f;
+		Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, UV);
+		//Out.vColor *= Distortion;
+	}
+	else
+	{
+		Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	}
 
-	Out.vColor *= Distortion;
+	
 
 	if (Out.vColor.a == 0)
 		discard;

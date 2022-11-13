@@ -49,7 +49,7 @@ protected:
 	CCollider*				m_pColliderCom = nullptr;
 
 	TRAILPOS				m_tTrailPos;
-	class CTrail*			m_pTrailCom = nullptr;
+	class CTrail_Obj*		m_pTrailCom = nullptr;
 
 	_bool					m_bColliderOn = false;
 

@@ -1313,7 +1313,7 @@ void CPlayer::CheckEndAnim()
 	case Client::CPlayer::Corvus_VS_Puppet_Execution_Attack:
 	{
 		m_eCurState = Corvus_VS_Puppet_Execution_End;
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(46.269, 41.978f, 77.663, 1.f));
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(46.269f, 41.978f, 77.663f, 1.f));
 		static_cast<CPuppet*>(m_MonsterLayer->Get_ObjFromLayer(0))->Set_PuppetEnd(false);
 		m_pTransformCom->Turn_Angle(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
 		static_cast<CPuppet*>(m_MonsterLayer->Get_ObjFromLayer(0))->Set_AnimState(CPuppet::Puppet_VS_TakeExecution_End);

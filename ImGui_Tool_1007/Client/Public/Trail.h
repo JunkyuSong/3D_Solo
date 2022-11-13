@@ -67,6 +67,7 @@ private:
 	_float					m_fCurTime;
 	_float					m_fMaxTIme;
 	_bool					m_bTrailOn;
+	_bool					m_bRealOn = true;
 
 	_int					m_iVtxCount;
 

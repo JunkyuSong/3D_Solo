@@ -6,7 +6,7 @@
 #include "CameraMgr.h"
 #include "Camera.h"
 
-#include "Trail.h"
+#include "Trail_Obj.h"
 
 CSaber::CSaber(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CWeapon(pDevice, pContext)
@@ -133,13 +133,13 @@ HRESULT CSaber::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
 		return E_FAIL;
 
-		if (FAILED(m_pShaderCom->Begin(9)))
+		if (FAILED(m_pShaderCom->Begin(0)))
 			return E_FAIL;
 
 		if (FAILED(m_pModelCom->Render(i)))
 			return E_FAIL;
 	}
-	m_pTrailCom->Render();
+	//m_pTrailCom->Render();
 
 #ifdef _DEBUG
 	//if (nullptr != m_pColliderCom && m_bColliderOn)
@@ -175,6 +175,7 @@ void CSaber::Light_On()
 
 HRESULT CSaber::Ready_Components()
 {
+
 	/* For.Com_Transform */
 	CTransform::TRANSFORMDESC	_Desc;
 	_Desc.fRotationPerSec = XMConvertToRadians(90.f);
@@ -202,16 +203,18 @@ HRESULT CSaber::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Trail */
+
 	CTrail::TRAILINFO _tInfo;
 	_tInfo._Color = _float4(1.f / 255.f, 254.f / 255.f, 0.f, 1.f);
 	_tInfo._HighAndLow.vHigh = _float3(100.0f, 0.f, 0.f);
 	//_tInfo._HighAndLow.vLow = _float3(80.f, 0.f, 0.f);
 	_tInfo._HighAndLow.vLow = _float3(-5.f, 0.f, 0.f);
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Trail"), TEXT("Com_Trail"), (CComponent**)&m_pTrailCom, &_tInfo)))
-	{
-		MSG_BOX(TEXT("fail to trail in saber"));
+	//클론으로 받는다.
+	AUTOINSTANCE(CGameInstance, _pInstance);
+	m_pTrailCom = static_cast<CTrail_Obj*>(_pInstance->Clone_GameObject(TEXT("Prototype_GameObject_Trail"), &_tInfo));
+	if (m_pTrailCom == nullptr)
 		return E_FAIL;
-	}
+
 
 	///* For.Com_OBB */
 	//CCollider::COLLIDERDESC		ColliderDesc;

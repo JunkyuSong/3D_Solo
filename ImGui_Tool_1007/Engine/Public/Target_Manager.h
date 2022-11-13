@@ -22,7 +22,7 @@ public:
 	HRESULT Begin_MRT(ID3D11DeviceContext* pContext, const _tchar* pMRTTag);
 
 	/* 원래 상태로 복구한다.(BackBuffer를 장치에 셋한다.) */
-	HRESULT End_MRT(ID3D11DeviceContext* pContext);
+	HRESULT End_MRT(ID3D11DeviceContext* pContext, _uint iDepthStencil = 1);
 
 	HRESULT	AddBinding_RTV(ID3D11DeviceContext* pContext, const _tchar* pRTVTag, _uint _iIndex);
 

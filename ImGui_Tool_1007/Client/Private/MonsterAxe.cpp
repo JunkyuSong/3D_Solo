@@ -3,7 +3,7 @@
 #include "GameInstance.h"
 
 
-#include "Trail.h"
+#include "Trail_Obj.h"
 
 CMonsterAxe::CMonsterAxe(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CWeapon(pDevice, pContext)
@@ -38,7 +38,6 @@ HRESULT CMonsterAxe::Initialize(void * pArg)
 
 void CMonsterAxe::Tick(_float fTimeDelta)
 {
-	m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 
 	if (m_bColliderOn)
 		m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());

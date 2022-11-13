@@ -11,7 +11,7 @@ CTrail::CTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 CTrail::CTrail(const CTrail & rhs)
 	: CVIBuffer(rhs)
-	, m_fMaxTIme(0.01f)
+	, m_fMaxTIme(0.03f)
 	, m_fCurTime(0.f)
 	, m_bTrailOn(false)
 	, m_iVtxCount(0)
@@ -134,7 +134,7 @@ HRESULT CTrail::Initialize(void * pArg)
 
 HRESULT CTrail::Render()
 {
-	if (m_bTrailOn == false)
+	if (m_bRealOn == false)
 	{
 		return S_OK;
 	}
@@ -168,19 +168,17 @@ HRESULT CTrail::Render()
 
 void CTrail::Tick(const _float& _fTimeDelta, _matrix _matWeapon)
 {
-	if (m_bTrailOn == false)
+	if (m_bRealOn == false)
 	{
 		return;
 	}
-
 	m_fCurTime += _fTimeDelta;
 
-	//if (m_fCurTime > m_fMaxTIme)
+//	if (m_fCurTime > m_fMaxTIme)
 	{
-		//m_fCurTime -= 0.01f;
-		if (m_iVtxCount >= m_iNumVertices)
+		//m_fCurTime -= m_fMaxTIme;
+		if (m_bTrailOn == false)
 		{
-			m_iVtxCount = 20;
 			for (_uint i = 0; i < m_iNumVertices - 2; ++i)
 			{
 				m_RealData[i].vPosition = m_RealData[i + 2].vPosition;
@@ -191,36 +189,77 @@ void CTrail::Tick(const _float& _fTimeDelta, _matrix _matWeapon)
 				m_RealData[21].vPosition.z == m_RealData[1].vPosition.z)
 			{
 				m_iVtxCount = 0;
-				m_bTrailOn = false;
+				m_bRealOn = false;
 				return;
 			}
-		}
-		_fvector High = XMVector3TransformCoord(XMLoadFloat3(&(m_HighAndLow.vHigh)), _matWeapon);
-		_fvector Low = XMVector3TransformCoord(XMLoadFloat3(&(m_HighAndLow.vLow)), _matWeapon);
-		//_float3 High =  - _float3(0.f, 0.01f, 0.f);
-		//_float3 Low = m_HighAndLow.vLow - _float3(0.f, 0.01f, 0.f);
-		XMStoreFloat3(&(m_RealData[m_iVtxCount].vPosition), High);
-		XMStoreFloat3(&(m_RealData[m_iVtxCount + 1].vPosition), Low);
-		//D3DXVec3TransformCoord(&pVertices[m_iVtxCount].vPosition, &Low, &_matWeapon);
-		//D3DXVec3TransformCoord(&pVertices[m_iVtxCount + 1].vPosition, &High, &_matWeapon);
 
-		for (_uint i = 0; i < m_iVtxCount; i += 2)
-		{
-			_float _iVtxCount = 0.f;
-			if (m_iVtxCount < 1)
+
+			for (_uint i = 0; i < m_iVtxCount; i += 2)
 			{
-				_iVtxCount = 1.f;
+				_float _iVtxCount = 0.f;
+				if (m_iVtxCount < 1)
+				{
+					_iVtxCount = 1.f;
+				}
+				else
+				{
+					_iVtxCount = (_float)m_iVtxCount;
+				}
+				m_RealData[i].vTexture = { ((_float)i) / ((_float)_iVtxCount),0.f };
+				m_RealData[i + 1].vTexture = { ((_float)i) / ((_float)_iVtxCount),1.f };
 			}
-			else
-			{
-				_iVtxCount = (_float)m_iVtxCount;
-			}
-			m_RealData[i].vTexture = { ((_float)i) / ((_float)_iVtxCount),0.f };
-			m_RealData[i + 1].vTexture = { ((_float)i) / ((_float)_iVtxCount),1.f };
 		}
-		m_iVtxCount += 2;
+		else
+
+
+
+		{
+			
+			if (m_iVtxCount >= m_iNumVertices)
+			{
+				m_iVtxCount = 20;
+				for (_uint i = 0; i < m_iNumVertices - 2; ++i)
+				{
+					m_RealData[i].vPosition = m_RealData[i + 2].vPosition;
+				}
+				//if ( XMLoadFloat3(&m_vPosition[10]) == XMLoadFloat3(&m_vPosition[0]))
+				if (m_RealData[21].vPosition.x == m_RealData[1].vPosition.x &&
+					m_RealData[21].vPosition.y == m_RealData[1].vPosition.y &&
+					m_RealData[21].vPosition.z == m_RealData[1].vPosition.z)
+				{
+					m_iVtxCount = 0;
+					m_bTrailOn = false;
+					return;
+				}
+			}
+			_fvector High = XMVector3TransformCoord(XMLoadFloat3(&(m_HighAndLow.vHigh)), _matWeapon);
+			_fvector Low = XMVector3TransformCoord(XMLoadFloat3(&(m_HighAndLow.vLow)), _matWeapon);
+			//_float3 High =  - _float3(0.f, 0.01f, 0.f);
+			//_float3 Low = m_HighAndLow.vLow - _float3(0.f, 0.01f, 0.f);
+			XMStoreFloat3(&(m_RealData[m_iVtxCount].vPosition), High);
+			XMStoreFloat3(&(m_RealData[m_iVtxCount + 1].vPosition), Low);
+			//D3DXVec3TransformCoord(&pVertices[m_iVtxCount].vPosition, &Low, &_matWeapon);
+			//D3DXVec3TransformCoord(&pVertices[m_iVtxCount + 1].vPosition, &High, &_matWeapon);
+
+			for (_uint i = 0; i < m_iVtxCount; i += 2)
+			{
+				_float _iVtxCount = 0.f;
+				if (m_iVtxCount < 1)
+				{
+					_iVtxCount = 1.f;
+				}
+				else
+				{
+					_iVtxCount = (_float)m_iVtxCount;
+				}
+				m_RealData[i].vTexture = { ((_float)i) / ((_float)_iVtxCount),0.f };
+				m_RealData[i + 1].vTexture = { ((_float)i) / ((_float)_iVtxCount),1.f };
+			}
+			m_iVtxCount += 2;
+		}
 	}
-	Spline(_matWeapon);
+	
+	//Spline(_matWeapon);
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -244,7 +283,7 @@ void CTrail::TrailOn(_matrix _matWeapon)
 		XMStoreFloat3(&(m_RealData[i].vPosition), High);
 		XMStoreFloat3(&(m_RealData[i + 1].vPosition), Low);
 	}
-	
+	m_bRealOn = true;
 	m_bTrailOn = true;
 }
 

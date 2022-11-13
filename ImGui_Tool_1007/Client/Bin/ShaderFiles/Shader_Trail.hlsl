@@ -82,25 +82,27 @@ struct PS_OUT
 {
 	float4		vColor : SV_TARGET0;
 	//float4		vDepth : SV_TARGET1;
-	float4		vDistortion : SV_TARGET3;
+	float4		vDistortion : SV_TARGET2;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	float4 Diffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV + g_fTick);
-	Out.vColor.a = Diffuse.x;
-	//Out.vDistortion.a = /*(1.f - In.vTexUV.y) * 0.5f + In.vTexUV.x * 0.5f*/0.5f;
+	//float4 Diffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV + g_fTick);
+	Out.vColor.a = 0.2f;
+	//Out.vDistortion.a = /*(1.f - In.vTexUV.y) * 0.5f + In.vTexUV.x * 0.5f*/0.9f;
 
-	Out.vColor.x = g_Color.x;
-	Out.vColor.y = g_Color.y;
-	Out.vColor.z = g_Color.z;
-
-	//Out.vDistortion.x = 1.f;
-	//Out.vDistortion.y = 1.f;
-	//Out.vDistortion.z = 1.f;
-
+	//Out.vColor.x = 0.609375f;
+	//Out.vColor.y = 1.f;
+	//Out.vColor.z = 0.936669f;
+	Out.vColor.x = 0.f;
+	Out.vColor.y = 0.f;
+	Out.vColor.z = 0.f;
+		
+	//디스토션에는 투영 좌표를 넣는다 뎁스값도 필요한가? 
+	In.vProjPos.w /= 300.f;
+	Out.vDistortion = In.vProjPos;
 	
 	//Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
 

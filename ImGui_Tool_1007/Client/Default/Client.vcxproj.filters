@@ -271,6 +271,12 @@
     <Filter Include="02.GameObjects\03. UI\SkillSlot">
       <UniqueIdentifier>{e77af0fc-d512-4047-9401-a2e95787c6b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\07. Effect">
+      <UniqueIdentifier>{dceeff11-4af5-4c5f-8a2c-90c2be695529}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. Effect\00. Trail">
+      <UniqueIdentifier>{5cd8512c-317d-4032-960c-8f3eff0cdbc4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -519,6 +525,9 @@
     <ClInclude Include="..\Public\Balloon.h">
       <Filter>02.GameObjects\06. Map_Obj\Balloon</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Trail_Obj.h">
+      <Filter>02.GameObjects\07. Effect\00. Trail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -748,6 +757,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Balloon.cpp">
       <Filter>02.GameObjects\06. Map_Obj\Balloon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Trail_Obj.cpp">
+      <Filter>02.GameObjects\07. Effect\00. Trail</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
