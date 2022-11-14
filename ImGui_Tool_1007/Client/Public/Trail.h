@@ -14,9 +14,17 @@ class CTrail :
 	public CVIBuffer
 {
 public:
+	enum TRAILOPTION {
+		TRAILOPTION_DITORTION,
+		TRAILOPTION_DEFAULT,
+		TRAILOPTION_TEXTURE,
+		TRAILOPTION_END
+	};
+public:
 	struct TRAILINFO {
 		TRAILPOS	_HighAndLow;
 		_float4		_Color;
+		TRAILOPTION _eOption = TRAILOPTION_DEFAULT;
 	};
 
 	/*struct REALDATA {
@@ -41,7 +49,8 @@ public:
 
 	const _bool&	Get_On() { return m_bTrailOn; }
 
-	
+	void			Set_Option(TRAILOPTION _ePass) { m_ePass = _ePass; }
+
 	void			Set_Color(_float4 _Color) { m_Color = _Color; }
 
 	void			Spline(_matrix _matWeapon);
@@ -61,6 +70,7 @@ private:
 
 	TRAILPOS				m_HighAndLow;
 
+	TRAILOPTION				m_ePass = TRAILOPTION_END;
 
 	CShader*				m_pShaderCom;
 

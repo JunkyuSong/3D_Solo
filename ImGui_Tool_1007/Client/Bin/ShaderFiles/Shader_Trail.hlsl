@@ -146,10 +146,9 @@ PS_OUT PS_TEXTURE(PS_IN In)
 	float4 Diffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 	float4 Noise = g_NoiseTexture.Sample(DefaultSampler, In.vTexUV);
 
-	Out.vColor = vector(0.f,1.f,0.f,1.f);
+	Out.vColor = g_Color;
 
-	Out.vColor *= Diffuse;
-	Out.vColor.a = Diffuse.r;
+	Out.vColor = Diffuse;
 
 	if (Out.vColor.a <= 0.f)
 		discard;

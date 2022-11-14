@@ -44,6 +44,7 @@ struct VS_OUT
 	float4		vProjPos : TEXCOORD1;
 	float3		vTangent : TANGENT;
 	float3		vBinormal : BINORMAL;
+	float4		vWorldPosition : TEXCOORD2;
 };
 
 
@@ -67,7 +68,7 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.vNormal = mul(vector(In.vNormal, 0.f), BoneMatrix).xyz;
 	Out.vTangent = mul(vector(In.vTangent, 0.f), BoneMatrix).xyz;
 	
-
+	Out.vWorldPosition = mul(vPosition, g_WorldMatrix);
 	Out.vPosition = mul(vPosition, matWVP);
 
 	Out.vNormal = normalize(mul(float4(Out.vNormal, 0.f), g_WorldMatrix)).xyz;
@@ -88,6 +89,7 @@ struct PS_IN
 	float4		vProjPos : TEXCOORD1;
 	float3		vTangent : TANGENT;
 	float3		vBinormal : BINORMAL;
+	float4		vWorldPosition : TEXCOORD2;
 };
 
 struct PS_OUT
@@ -127,6 +129,36 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_RIMLIGHT(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+
+
+	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	if (0 == Out.vDiffuse.a)
+		discard;
+
+	vector		vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexUV);
+	float3		vNormal = vNormalDesc.xyz * 2.f - 1.f;
+	float3x3	WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal);
+	vNormal = normalize(mul(vNormal, WorldMatrix));
+
+	float4 ToCamera = normalize(g_vCamPosition - In.vWorldPosition);
+
+	//float fRimColor = smoothstep(1.f - fRImPower, 1.f, 1.f - max(0, dot(ToCamera, normalize(vector(vNormal, 0.f)))));
+
+	if (dot(ToCamera, normalize(vector(vNormal, 0.f))) < 0.5f)
+		Out.vDiffuse = vector(0.466f,0.96f,0.78f,1.f);
+
+
+	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
+
+	return Out;
+}
+
 PS_OUT PS_MAIN2(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
@@ -158,6 +190,7 @@ PS_OUT_NONLIGHT PS_MAIN3(PS_IN In)
 
 	return Out;
 }
+
 PS_OUT_NONLIGHT PS_MAIN_TRAIL(PS_IN In)
 {
 	PS_OUT_NONLIGHT		Out = (PS_OUT_NONLIGHT)0;
@@ -264,13 +297,13 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_DISSOLVE();
 	}
 
-	/*pass NONLIGHT
+	pass RIMLIGHT
 	{
 		SetRasterizerState(RS_CullNone);
 		SetDepthStencilState(DSS_Default, 0);
-		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_NONLIGHT();
-	}*/
+		PixelShader = compile ps_5_0 PS_RIMLIGHT();
+	}
 }

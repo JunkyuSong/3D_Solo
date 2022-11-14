@@ -237,6 +237,8 @@ HRESULT CPlayer::Render()
 
 		if (FAILED(m_pModelCom->Render(m_pShaderCom, m_ePass, i)))
 			return E_FAIL;
+		/*if (FAILED(m_pModelCom->Render(m_pShaderCom, 5, i)))
+			return E_FAIL;*/
 	}
 
 #ifdef _DEBUG
@@ -1383,25 +1385,35 @@ void CPlayer::CheckLimit()
 		}
 		break;
 	case Client::CPlayer::Corvus_PW_Axe:
-		if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][4])//다시 무기 스왑 및 타이머 정상화
+		if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][5])//다시 무기 스왑 및 타이머 정상화
 		{
 			m_eWeapon = WEAPON_BASE;
 			m_eCurSkill = SKILL_END;
 			AUTOINSTANCE(CGameInstance, pGame);
 			pGame->Set_TimeSpeed(TEXT("Timer_Main"), DEFAULTTIME);
+			
 		}
-		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][3])//다시 무기 스왑 및 타이머 정상화
+		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][4])//다시 무기 스왑 및 타이머 정상화
 		{
+			if (m_pSkillParts[SKILL_AXE][0]->Trail_GetOn())
+				m_pSkillParts[SKILL_AXE][0]->TrailOff();
 			AUTOINSTANCE(CGameInstance, pGame);
 			pGame->Set_TimeSpeed(TEXT("Timer_Main"), 2.f);
 		}
-		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][2])//모션트레일 off
+		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][3])//모션트레일 off
 		{
 			m_pSkillParts[SKILL_AXE][0]->Set_CollisionOn(false);
 			m_bMotionPlay = false;
 		}
+		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][2])//모션트레일 off
+		{
+			if (!m_pSkillParts[SKILL_AXE][0]->Trail_GetOn())
+				m_pSkillParts[SKILL_AXE][0]->TrailOn();
+
+		}
 		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][1])//타이머 및 모션트레일
 		{
+			
 			m_pSkillParts[SKILL_AXE][0]->Set_CollisionOn(true);
 			m_bMotionPlay = true;
 			AUTOINSTANCE(CGameInstance, pGame);
@@ -2299,6 +2311,7 @@ HRESULT CPlayer::Ready_AnimLimit()
 	//도끼스킬
 	m_vecLimitTime[Corvus_PW_Axe].push_back(40.f);
 	m_vecLimitTime[Corvus_PW_Axe].push_back(40.f);
+	m_vecLimitTime[Corvus_PW_Axe].push_back(50.f);
 	m_vecLimitTime[Corvus_PW_Axe].push_back(65.f);
 	m_vecLimitTime[Corvus_PW_Axe].push_back(120.f);
 	m_vecLimitTime[Corvus_PW_Axe].push_back(160.f);

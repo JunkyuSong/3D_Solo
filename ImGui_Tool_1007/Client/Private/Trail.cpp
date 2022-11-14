@@ -118,6 +118,7 @@ HRESULT CTrail::Initialize(void * pArg)
 	TRAILINFO _tInfo = *static_cast<TRAILINFO*>(pArg);
 	m_HighAndLow = _tInfo._HighAndLow;
 	m_Color = _tInfo._Color;
+	m_ePass = _tInfo._eOption;
 
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 	m_pShaderCom = static_cast<CShader*>(pGameInstance->Clone_Component(LEVEL_GAMEPLAY,TEXT("Prototype_Component_Shader_Trail")));
@@ -162,7 +163,7 @@ HRESULT CTrail::Render()
 		return E_FAIL;*/
 
 
-	m_pShaderCom->Begin(1);
+	m_pShaderCom->Begin(m_ePass);
 	
 	if (FAILED(__super::Render()))
 	{

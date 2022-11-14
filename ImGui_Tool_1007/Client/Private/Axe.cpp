@@ -70,6 +70,9 @@ HRESULT CAxe::Render()
 
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
+	if (FAILED(m_pShaderCom->Set_RawValue("g_fColor", &CLIENT_RGB(119.f, 245.f, 200.f), sizeof(_float4))))
+		return E_FAIL;
+
 	_float4x4		WorldMatrix;
 
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixTranspose(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix()));
@@ -80,8 +83,8 @@ HRESULT CAxe::Render()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Set_RawValue("g_CamPosition", &pGameInstance->Get_CamPosition(), sizeof(_float4))))
-		return E_FAIL;
+	//if (FAILED(m_pShaderCom->Set_RawValue("g_CamPosition", &pGameInstance->Get_CamPosition(), sizeof(_float4))))
+	//	return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 	_uint		iNumMeshes = m_pModelCom->Get_NumMesh();
@@ -93,13 +96,13 @@ HRESULT CAxe::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
 		return E_FAIL;
 
-		if (FAILED(m_pShaderCom->Begin(0)))
+		if (FAILED(m_pShaderCom->Begin(1)))
 			return E_FAIL;
 
 		if (FAILED(m_pModelCom->Render(i)))
 			return E_FAIL;
 	}
-	//m_pTrailCom->Render();
+	m_pTrailCom->Render();
 
 #ifdef _DEBUG
 	if (nullptr != m_pColliderCom && m_bColliderOn)
@@ -133,7 +136,7 @@ HRESULT CAxe::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Effect"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
 	/* For.Com_Model */
@@ -142,9 +145,10 @@ HRESULT CAxe::Ready_Components()
 
 	/* For.Com_Trail */
 	CTrail::TRAILINFO _tInfo;
-	_tInfo._Color = _float4(1.f, 0.f, 1.f, 1.f);
-	_tInfo._HighAndLow.vHigh = _float3(100.0f, 0.f, 0.f);
-	_tInfo._HighAndLow.vLow = _float3(30.f, 0.f, 0.f);
+	_tInfo._Color = CLIENT_RGB(0.f,1.f,0.f);
+	_tInfo._HighAndLow.vHigh = _float3(115.0f, 0.f, 0.f);
+	_tInfo._HighAndLow.vLow = _float3(15.f, 0.f, 0.f);
+	_tInfo._eOption = CTrail::TRAILOPTION_DITORTION;
 	AUTOINSTANCE(CGameInstance, _pInstance);
 	m_pTrailCom = static_cast<CTrail_Obj*>(_pInstance->Clone_GameObject(TEXT("Prototype_GameObject_Trail"), &_tInfo));
 	if (m_pTrailCom == nullptr)
