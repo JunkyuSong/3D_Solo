@@ -7,6 +7,7 @@
 #include "PipeLine.h"
 #include "Transform.h"
 #include "GameInstance.h"
+#include "RenderTarget.h"
 
 CRenderer::CRenderer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent(pDevice, pContext)
@@ -28,7 +29,11 @@ HRESULT CRenderer::Initialize_Prototype()
 	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
 
 	/* For.Target_BackBuffer */
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_BackBuffer"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 1.f, 1.f))))
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_BackBuffer"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+	/* For.Target_BlendingBackBuffer */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_BlendingBackBuffer"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
 	/* For.Target_Diffuse */
@@ -168,9 +173,13 @@ HRESULT CRenderer::Draw()
 	
 	if (FAILED(Render_AlphaBlend()))
 		return E_FAIL;
-	Render_BackBuffer();
-	if (FAILED(Render_Distortion()))
+	if (FAILED(Render_BackBuffer()))
 		return E_FAIL;
+	if (FAILED(Render_Fog()))
+		return E_FAIL;
+	if (FAILED(Render_Distortion()))
+		return E_FAIL;	
+
 
 	if (FAILED(Render_UI()))
 		return E_FAIL;
@@ -379,15 +388,26 @@ HRESULT CRenderer::Render_AlphaBlend()
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext, iDepthStencil)))
 		return E_FAIL;
 
+	//m_pTarget_Manager->Find_RenderTarget(TEXT("Target_Depth"))->Release();
+
 	return S_OK;
 }
 
 HRESULT CRenderer::Render_Distortion()
 {
+	_uint iDepthStencil = 0;
+	
+
 	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BackBuffer"), m_pShader, "g_DiffuseTexture")))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Distortion"), m_pShader, "g_DistortionTexture")))
 		return E_FAIL;
+
+	//if (FAILED(m_pTarget_Manager->AddBinding_RTV(m_pContext, TEXT("Target_BackBuffer"), 1)))
+	//	return E_FAIL;
+	//++iDepthStencil;
+	
+	
 	if (FAILED(m_pTextureCom->Set_SRV(m_pShader, "g_DistortionTexture_Bump")))
 		return E_FAIL;
 	m_fTick += CGameInstance::Get_Instance()->Get_TimeDelta(TEXT("Timer_Main")) / CGameInstance::Get_Instance()->Get_TimeSpeed(TEXT("Timer_Main"));
@@ -415,22 +435,57 @@ HRESULT CRenderer::Render_Distortion()
 
 	m_pVIBuffer->Render();
 
+	/*if (FAILED(m_pTarget_Manager->End_MRT(m_pContext, iDepthStencil)))
+		return E_FAIL;*/
+
 	return S_OK;
 }
 
 HRESULT CRenderer::Render_Fog()
 {
-	//백버퍼를 텍스쳐마냥 바인딩한다 -> 유브이 좌표는'
-	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BackBuffer"), m_pShader, "g_DiffuseTexture")))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
 		return E_FAIL;
 
-	/*
-	알파블렌딩까지 다 한 다음에 뎁스 타겟 갖고와서 현재 백버퍼에 안개깔면 되는데
-	1. 뎁스를 초기화를 안해야한다.
-	2. 백버퍼 가져올 수 있어야 한다.
-	3. 백버퍼에 뎁스 해서 픽셀세이더에서 카메라로부터 거리 체크해서 안개 넣고
-	4
-	*/
+	_float4x4			WorldMatrix;
+
+	_uint				iNumViewport = 1;
+	D3D11_VIEWPORT		ViewportDesc;
+
+	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
+
+	XMStoreFloat4x4(&WorldMatrix,
+		XMMatrixTranspose(XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 0.f) * XMMatrixTranslation(0.0f, 0.0f, 0.f)));
+
+	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+
+	CPipeLine*			pPipeLine = GET_INSTANCE(CPipeLine);
+
+	_float4x4			ViewMatrixInv;
+	_float4x4			ProjMatrixInv;
+
+	XMStoreFloat4x4(&ViewMatrixInv, XMMatrixTranspose(XMMatrixInverse(nullptr, pPipeLine->Get_TransformMatrix(CPipeLine::D3DTS_VIEW))));
+	XMStoreFloat4x4(&ProjMatrixInv, XMMatrixTranspose(XMMatrixInverse(nullptr, pPipeLine->Get_TransformMatrix(CPipeLine::D3DTS_PROJ))));
+
+	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrixInv", &ViewMatrixInv, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrixInv", &ProjMatrixInv, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_vCamPosition", &pPipeLine->Get_CamPosition(), sizeof(_float4))))
+		return E_FAIL;
+
+	RELEASE_INSTANCE(CPipeLine);
+
+	m_pShader->Begin(6);
+
+	m_pVIBuffer->Render();
+
 	return S_OK;
 }
 

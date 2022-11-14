@@ -51,12 +51,13 @@ private: /* 동시에 바인딩되어야할 렌더타겟들을 LIST로 묶어놓는다. (Diffuse + Nor
 	typedef map<const _tchar*, list<class CRenderTarget*>>	MRTS;
 
 private:
+	list<ID3D11RenderTargetView*>					m_pClearRenderTargets;
 	ID3D11RenderTargetView*					m_pOldRenderTargets[8] = { nullptr };
 	ID3D11DepthStencilView*					m_pOldDepthStencil = nullptr;
 
 
 
-private:
+public:
 	class CRenderTarget* Find_RenderTarget(const _tchar* pTargetTag);
 	list<class CRenderTarget*>* Find_MRT(const _tchar* pMRTTag);
 

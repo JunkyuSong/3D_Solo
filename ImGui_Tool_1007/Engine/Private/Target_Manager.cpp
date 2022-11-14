@@ -76,9 +76,9 @@ HRESULT CTarget_Manager::Begin_MRT(ID3D11DeviceContext * pContext, const _tchar 
 		m_UsingTargets.push_back(pRenderTarget);
 		Safe_AddRef(pRenderTarget);
 		RTVs[iNumRTVs++] = pRenderTarget->Get_RTV();
+		//m_pClearRenderTargets.push_back(RTVs[iNumRTVs-1]);
 	}
 
-		
 
 	pContext->OMSetRenderTargets(iNumRTVs, RTVs, m_pOldDepthStencil);
 
@@ -92,11 +92,12 @@ HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext * pContext, _uint iDepthSte
 	pContext->OMSetRenderTargets(iNumRTVs, m_pOldRenderTargets, m_pOldDepthStencil);
 
 	for (_uint i = 0; i < 8; ++i)
-		Safe_Release(m_pOldRenderTargets[i]);//릭나는거 구조 잘 생각해보자
+		Safe_Release(m_pOldRenderTargets[i]);
 
 	for (_uint i = 0; i < iDepthStencil; ++i)
 		m_pOldDepthStencil->Release();
 
+	
 	return S_OK;
 }
 
@@ -116,6 +117,7 @@ HRESULT CTarget_Manager::AddBinding_RTV(ID3D11DeviceContext * pContext, const _t
 	for (_uint i = 0 ; i < 8 ; ++i)
 	{
 		RTVs[i] = m_pOldRenderTargets[i];
+		
 		if (m_pOldRenderTargets[i] != nullptr)
 			++iNumRTVs;
 	}
@@ -125,11 +127,22 @@ HRESULT CTarget_Manager::AddBinding_RTV(ID3D11DeviceContext * pContext, const _t
 	Safe_AddRef(pRTV);
 	RTVs[_iIndex] = pRTV->Get_RTV();
 
+	if (iNumRTVs > 2)
+	{
+		m_pOldRenderTargets[0]->Release();
+		Safe_Release(m_pOldRenderTargets[0]);
 
+		Safe_Release(m_pOldRenderTargets[1]);
 
+		for (_uint i = 0 ; i < iNumRTVs -2 ; ++i)
+			m_pClearRenderTargets.push_back(m_pOldRenderTargets[i]);
 
+		for (_uint i = 0; i < iNumRTVs - 1; ++i)
+			m_pClearRenderTargets.push_back(m_pOldRenderTargets[i]);
+	}
+		
 	pContext->OMSetRenderTargets(iNumRTVs, RTVs, m_pOldDepthStencil);
-
+	
 	return S_OK;
 }
 
@@ -141,6 +154,13 @@ HRESULT CTarget_Manager::Clear_RTVs()
 		Safe_Release(_RTV);
 	}
 	m_UsingTargets.clear();
+
+	for (auto& RT : m_pClearRenderTargets)
+	{
+		Safe_Release(RT);
+	}
+	m_pClearRenderTargets.clear();
+
 	return S_OK;
 }
 

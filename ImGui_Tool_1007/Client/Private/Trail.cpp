@@ -11,7 +11,7 @@ CTrail::CTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 CTrail::CTrail(const CTrail & rhs)
 	: CVIBuffer(rhs)
-	, m_fMaxTIme(0.03f)
+	, m_fMaxTIme(0.01f)
 	, m_fCurTime(0.f)
 	, m_bTrailOn(false)
 	, m_iVtxCount(0)
@@ -122,7 +122,10 @@ HRESULT CTrail::Initialize(void * pArg)
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 	m_pShaderCom = static_cast<CShader*>(pGameInstance->Clone_Component(LEVEL_GAMEPLAY,TEXT("Prototype_Component_Shader_Trail")));
 	//m_pTextureCom = static_cast<CTexture*>(pGameInstance->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Distortion")));
-	m_pTextureCom = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/TFX_Noise_01.dds"));
+	m_pTextureCom = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/Trail_Default.png"));
+	m_pNoiseTextureCom = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Flame_Tile_1.png"));
+	m_pAlphaTextureCom = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/Trail_Alpha.png"));
+
 	if (m_pShaderCom == nullptr)
 	{
 		MSG_BOX(TEXT("Clone Trail Shader"));
@@ -141,6 +144,10 @@ HRESULT CTrail::Render()
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 	if (FAILED(m_pTextureCom->Set_SRV(m_pShaderCom, "g_DiffuseTexture")))
 		return E_FAIL;
+	if (FAILED(m_pNoiseTextureCom->Set_SRV(m_pShaderCom, "g_NoiseTexture")))
+		return E_FAIL;
+	if (FAILED(m_pAlphaTextureCom->Set_SRV(m_pShaderCom, "g_AlphaTexture")))
+		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
@@ -155,7 +162,7 @@ HRESULT CTrail::Render()
 		return E_FAIL;*/
 
 
-	m_pShaderCom->Begin(0);
+	m_pShaderCom->Begin(1);
 	
 	if (FAILED(__super::Render()))
 	{
@@ -174,7 +181,7 @@ void CTrail::Tick(const _float& _fTimeDelta, _matrix _matWeapon)
 	}
 	m_fCurTime += _fTimeDelta;
 
-//	if (m_fCurTime > m_fMaxTIme)
+	//if (m_fCurTime > m_fMaxTIme)
 	{
 		//m_fCurTime -= m_fMaxTIme;
 		if (m_bTrailOn == false)
@@ -379,5 +386,8 @@ void CTrail::Free()
 {
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pTextureCom);
+	Safe_Release(m_pNoiseTextureCom);
+	Safe_Release(m_pAlphaTextureCom);
 	__super::Free();
+
 }

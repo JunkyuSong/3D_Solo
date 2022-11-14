@@ -158,6 +158,7 @@ void CSaber::Light_On()
 	vHigh = XMVectorSet(100.0f, 0.f, 0.f, 1.f);
 	vLow = XMVectorSet(-5.f, 0.f, 0.f, 1.f);
 
+
 	vHigh = XMVector2TransformCoord(vHigh, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 	vLow = XMVector2TransformCoord(vLow, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 
@@ -205,7 +206,8 @@ HRESULT CSaber::Ready_Components()
 	/* For.Com_Trail */
 
 	CTrail::TRAILINFO _tInfo;
-	_tInfo._Color = _float4(1.f / 255.f, 254.f / 255.f, 0.f, 1.f);
+	//_tInfo._Color = _float4(1.f / 255.f, 254.f / 255.f, 0.f, 1.f);
+	_tInfo._Color = _float4(1.f, 1.f, 1.f, 1.f);
 	_tInfo._HighAndLow.vHigh = _float3(100.0f, 0.f, 0.f);
 	//_tInfo._HighAndLow.vLow = _float3(80.f, 0.f, 0.f);
 	_tInfo._HighAndLow.vLow = _float3(-5.f, 0.f, 0.f);

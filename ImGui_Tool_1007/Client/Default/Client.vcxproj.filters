@@ -277,6 +277,15 @@
     <Filter Include="02.GameObjects\07. Effect\00. Trail">
       <UniqueIdentifier>{5cd8512c-317d-4032-960c-8f3eff0cdbc4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\07. Effect\01. Claw">
+      <UniqueIdentifier>{7e007cf5-18e3-438e-be36-b89674882768}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. Effect\02. Blood">
+      <UniqueIdentifier>{1d35b122-56e4-4bdf-842f-b1a6831c7967}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. Effect\99. Particle">
+      <UniqueIdentifier>{085a2bde-e5d1-45b5-9dd5-e5a2b842c84a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -528,6 +537,12 @@
     <ClInclude Include="..\public\Trail_Obj.h">
       <Filter>02.GameObjects\07. Effect\00. Trail</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Effect.h">
+      <Filter>02.GameObjects\07. Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Claw.h">
+      <Filter>02.GameObjects\07. Effect\01. Claw</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -761,6 +776,12 @@
     <ClCompile Include="..\private\Trail_Obj.cpp">
       <Filter>02.GameObjects\07. Effect\00. Trail</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Effect.cpp">
+      <Filter>02.GameObjects\07. Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Claw.cpp">
+      <Filter>02.GameObjects\07. Effect\01. Claw</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -798,6 +819,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxRectInstance.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModel_Effect.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

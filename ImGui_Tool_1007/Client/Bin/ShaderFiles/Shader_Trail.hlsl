@@ -22,6 +22,9 @@
 float4		g_Color;
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D	g_DiffuseTexture;
+texture2D	g_NoiseTexture;
+
+texture2D	g_AlphaTexture;
 
 float		g_fTick;
 
@@ -89,29 +92,81 @@ PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	//float4 Diffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV + g_fTick);
 	Out.vColor.a = 0.2f;
-	//Out.vDistortion.a = /*(1.f - In.vTexUV.y) * 0.5f + In.vTexUV.x * 0.5f*/0.9f;
-
-	//Out.vColor.x = 0.609375f;
-	//Out.vColor.y = 1.f;
-	//Out.vColor.z = 0.936669f;
+	
 	Out.vColor.x = 0.f;
 	Out.vColor.y = 0.f;
 	Out.vColor.z = 0.f;
-		
+
 	//디스토션에는 투영 좌표를 넣는다 뎁스값도 필요한가? 
 	In.vProjPos.w /= 300.f;
 	Out.vDistortion = In.vProjPos;
+
+	//Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
+
+
+
+	return Out;
+}
+
+PS_OUT PS_TEST(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = g_Color;
+	
+	float4 Diffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	float4 Alpha = g_AlphaTexture.Sample(DefaultSampler, In.vTexUV);
+
+	//Out.vColor.a = Alpha.r;
+
+
+	Out.vColor *= Diffuse;
+	Out.vColor.a = Diffuse.r;
+	if (Out.vColor.a <= 0.f)
+		discard;
+	//디스토션에는 투영 좌표를 넣는다 뎁스값도 필요한가? 
+	//In.vProjPos.w /= 300.f;
+	//Out.vDistortion = In.vProjPos;
+
+	//Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
+
+
+
+	return Out;
+}
+
+PS_OUT PS_TEXTURE(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+	if (In.vTexUV.x < 0.1f)
+		In.vTexUV.x = 0.f;
+	In.vTexUV.y *= 0.5f; 
+	In.vTexUV.y += 0.2f;
+	float4 Diffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	float4 Noise = g_NoiseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	Out.vColor = vector(0.f,1.f,0.f,1.f);
+
+	Out.vColor *= Diffuse;
+	Out.vColor.a = Diffuse.r;
+
+	if (Out.vColor.a <= 0.f)
+		discard;
+	//Out.vColor.a = 0.8f;
+	//Out.vDistortion.a = /*(1.f - In.vTexUV.y) * 0.5f + In.vTexUV.x * 0.5f*/0.9f;
+
+	//Out.vColor.x = 0.f;
+	//Out.vColor.y = 0.f;
+	//Out.vColor.z = 0.f;
+		
+	//디스토션에는 투영 좌표를 넣는다 뎁스값도 필요한가? 
+	/*In.vProjPos.w /= 300.f;
+	Out.vDistortion = In.vProjPos;*/
 	
 	//Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
 
-	/*if (In.vTexUV.y > 0.3f)
-	{
-		Out.vColor.x = g_Color.x + In.vTexUV.y;
-		Out.vColor.y = g_Color.y + In.vTexUV.y;
-		Out.vColor.z = g_Color.z + In.vTexUV.y;
-	}*/
+	
 
 	return Out;	
 }
@@ -128,5 +183,22 @@ technique11 DefaultTechnique
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
-
+	pass DefaultTest
+	{
+		SetRasterizerState(RS_CullNone);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_TEST();
+	}
+	pass TexturePass
+	{
+		SetRasterizerState(RS_CullNone);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_TEXTURE();
+	}
 }

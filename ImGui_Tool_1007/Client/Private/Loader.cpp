@@ -875,6 +875,10 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Sky/", "Sky.fbx"))))
 		return E_FAIL;
 
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Model_Effect_Claw"),
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Effect/Claw/", "Temp_Claw.fbx"))))
+		return E_FAIL;
+
 	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Model_Monster_asb01"),
 	//	CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster_List/Extra01/", "asb01.fbx", PivotMatrix))))
 	//	return E_FAIL;
@@ -910,6 +914,12 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_InstancingModel"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxModelInstance.hlsl"), VTXMODELINTANCE_DECLARATION::Elements, VTXMODELINTANCE_DECLARATION::iNumElements))))
 		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Effect"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxModel_Effect.hlsl"), VTXMODELINTANCE_DECLARATION::Elements, VTXMODELINTANCE_DECLARATION::iNumElements))))
+		return E_FAIL;
+
+
 
 	lstrcpy(m_szLoadingText, TEXT("충돌체를 로딩중입니다. "));
 

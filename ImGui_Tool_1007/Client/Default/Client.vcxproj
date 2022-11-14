@@ -189,10 +189,12 @@
     <ClInclude Include="..\Public\Cane.h" />
     <ClInclude Include="..\Public\Cane_Sword.h" />
     <ClInclude Include="..\Public\Card.h" />
+    <ClInclude Include="..\public\Claw.h" />
     <ClInclude Include="..\public\Client_Camere.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\Dagger.h" />
     <ClInclude Include="..\public\Dummy.h" />
+    <ClInclude Include="..\public\Effect.h" />
     <ClInclude Include="..\Public\Extra01.h" />
     <ClInclude Include="..\Public\Extra01_Last.h" />
     <ClInclude Include="..\Public\Extra02.h" />
@@ -271,9 +273,11 @@
     <ClCompile Include="..\Private\Cane.cpp" />
     <ClCompile Include="..\Private\Cane_Sword.cpp" />
     <ClCompile Include="..\Private\Card.cpp" />
+    <ClCompile Include="..\private\Claw.cpp" />
     <ClCompile Include="..\private\Client_Camere.cpp" />
     <ClCompile Include="..\Private\Dagger.cpp" />
     <ClCompile Include="..\private\Dummy.cpp" />
+    <ClCompile Include="..\private\Effect.cpp" />
     <ClCompile Include="..\Private\Extra01.cpp" />
     <ClCompile Include="..\Private\Extra01_Last.cpp" />
     <ClCompile Include="..\Private\Extra02.cpp" />
@@ -347,6 +351,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimModel.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModel.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModelInstance.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModel_Effect.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxRectInstance.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex.hlsl" />

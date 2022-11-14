@@ -76,5 +76,7 @@ private:
 	_uint					m_iCatmullRomIndex[4] = { NULL };
 
 	CTexture*				m_pTextureCom = nullptr;
+	CTexture*				m_pNoiseTextureCom = nullptr;
+	CTexture*				m_pAlphaTextureCom = nullptr;
 };
 END
