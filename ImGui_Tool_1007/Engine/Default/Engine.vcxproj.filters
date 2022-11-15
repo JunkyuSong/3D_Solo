@@ -175,6 +175,9 @@
     <ClCompile Include="..\Private\InstancingModel.cpp">
       <Filter>03.Components\06. Model\InstancingModel</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\HDR_Mgr.cpp">
+      <Filter>04.Utility\08. HDR\ShaderResourceView</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -371,6 +374,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\InstancingModel.h">
       <Filter>03.Components\06. Model\InstancingModel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\HDR_Mgr.h">
+      <Filter>04.Utility\08. HDR\ShaderResourceView</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hpp">
+      <Filter>03.Components\01.Renderer\Shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -569,6 +578,18 @@
     <Filter Include="03.Components\06. Model\InstancingModel">
       <UniqueIdentifier>{1b99b0b8-7a3b-474d-b7fa-9dbbb8886e8c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04.Utility\08. HDR">
+      <UniqueIdentifier>{80193112-719e-4396-8d8a-62a6e16cbcc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\08. HDR\UnorderedTarget">
+      <UniqueIdentifier>{a2faa9b9-4d4e-40a7-bd4b-25dedd0a9197}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\08. HDR\ShaderResourceView">
+      <UniqueIdentifier>{db43afd3-a9e6-46e2-a093-cf7258dd8a0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\08. HDR\ShaderFiles">
+      <UniqueIdentifier>{0a7aaa6e-2b70-4927-980a-8599c6070265}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Cell.hlsl">
@@ -576,6 +597,12 @@
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl">
       <Filter>03.Components\01.Renderer\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_HDR.hlsl">
+      <Filter>04.Utility\08. HDR\ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\ComputeShader_DownScale.hlsl">
+      <Filter>04.Utility\08. HDR\ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

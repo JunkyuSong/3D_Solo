@@ -7,13 +7,13 @@ class CNonAnimModel;
 END
 
 BEGIN(Client)
-class CClaw :
+class CReadyBow :
 	public CEffect
 {
 private:
-	CClaw(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CClaw(const CEffect& rhs);
-	virtual ~CClaw();
+	CReadyBow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CReadyBow(const CEffect& rhs);
+	virtual ~CReadyBow();
 	
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -29,7 +29,7 @@ private:
 	HRESULT Ready_Components();
 
 public:
-	static CClaw* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CReadyBow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CEffect* Clone(void* pArg);
 	virtual void Free() override;
 

@@ -3,6 +3,8 @@ matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 float		g_fAlpha;
 float		g_fTime;
 
+float4		g_fColor;
+
 float4			g_vCamPosition;
 float			g_fFogRange = 10.f;
 
@@ -210,6 +212,24 @@ PS_OUT_NONLIGHT PS_MAIN_TRAIL(PS_IN In)
 	return Out;
 }
 
+PS_OUT_NONLIGHT PS_BOW(PS_IN In)
+{
+	PS_OUT_NONLIGHT		Out = (PS_OUT_NONLIGHT)0;
+
+	Out.vDiffuse = g_fColor;
+
+	vector Mask = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	Out.vDiffuse *= Mask.r;
+
+	if (0 >= Out.vDiffuse.a)
+		discard;
+
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
+
+	return Out;
+}
+
 PS_OUT PS_DISSOLVE(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
@@ -227,6 +247,39 @@ PS_OUT PS_DISSOLVE(PS_IN In)
 		Out.vDiffuse.r = 1.f;
 		Out.vDiffuse.g *= 1.f - (g_fTime - fDissolve) ;
 		Out.vDiffuse.b *= 1.f - (g_fTime - fDissolve) ;
+	}
+
+	if (0 == Out.vDiffuse.a)
+		discard;
+
+	vector		vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexUV);
+	float3		vNormal = vNormalDesc.xyz * 2.f - 1.f;
+	float3x3	WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal);
+	vNormal = normalize(mul(vNormal, WorldMatrix));
+
+	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
+
+
+
+	return Out;
+}
+
+PS_OUT PS_COLOR_DISSOLVE(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	float fDissolve = length(g_DissolveTexture.Sample(DefaultSampler, In.vTexUV));
+	fDissolve = smoothstep(0.f, 4.f, fDissolve);
+
+	Out.vDiffuse = g_fColor;
+
+	if (fDissolve >= g_fTime)
+		discard;
+
+	if (fDissolve >= g_fTime + 0.03f)
+	{
+		Out.vDiffuse.r = 1.f;
 	}
 
 	if (0 == Out.vDiffuse.a)
@@ -305,5 +358,25 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_RIMLIGHT();
+	}
+
+	pass EFFECT_BOW
+	{
+		SetRasterizerState(RS_CullNone);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_BOW();
+	}
+
+	pass COLOR_DISSOLVE
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_COLOR_DISSOLVE();
 	}
 }

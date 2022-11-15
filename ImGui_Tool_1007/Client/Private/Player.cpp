@@ -9,6 +9,7 @@
 #include "MotionTrail.h"
 #include "Dummy.h"
 #include "Weapon.h"
+#include "Bow.h"
 
 #include "Layer.h"
 
@@ -507,6 +508,17 @@ void CPlayer::KeyInput_Idle(_float fTimeDelta)
 	{
 		m_eCurState = Corvus_PW_Axe;
 		m_bCollision[COLLIDERTYPE_BODY] = false;
+	}
+	if (pGameInstance->KeyDown(DIK_3))
+	{
+		m_eCurState = PW_Bow_Start;
+		m_eWeapon = WEAPON::WEAPON_SKILL;
+		m_eCurSkill = SKILL_BOW;
+		m_bCollision[COLLIDERTYPE_BODY] = false;
+		static_cast<CBow*>(m_pSkillParts[SKILL_BOW][0])->Set_Stop(false);
+		m_pModelCom->DirectAnim(PW_Bow_Start);
+		static_cast<CAnimModel*>(m_pSkillParts[SKILL_BOW][0]->Get_ComponentPtr(TEXT("Com_Model")))->Set_AnimationIndex(CBow::BOW_START);
+		static_cast<CAnimModel*>(m_pSkillParts[SKILL_BOW][0]->Get_ComponentPtr(TEXT("Com_Model")))->DirectAnim(CBow::BOW_START);
 	}
 	if (pGameInstance->MouseDown(DIMK_WHEEL))
 	{
@@ -1163,7 +1175,9 @@ void CPlayer::CheckEndAnim()
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::PW_Bow_Start:
-		m_eCurState = PW_Bow_End;
+		m_eWeapon = WEAPON_BASE;
+		m_eCurSkill = SKILL_END;
+		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::PW_Bow_End:
 		m_eCurState = STATE_IDLE;
@@ -2481,6 +2495,13 @@ HRESULT CPlayer::Ready_PlayerParts_Skill()
 		return E_FAIL;
 	m_pSkillParts[SKILL_DUAL].push_back(pGameObject);
 	m_pSkillHands[SKILL_DUAL].push_back(HAND_LEFT);
+
+	pGameObject = static_cast<CWeapon*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Weapon_Bow")));
+
+	if (nullptr == pGameObject)
+		return E_FAIL;
+	m_pSkillParts[SKILL_BOW].push_back(pGameObject);
+	m_pSkillHands[SKILL_BOW].push_back(HAND_LEFT);
 
 	return S_OK;
 }

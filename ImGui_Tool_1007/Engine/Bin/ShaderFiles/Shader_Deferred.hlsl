@@ -102,7 +102,7 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 
 	float4			vNormal = float4(vNormalDesc.xyz * 2.f - 1.f, 0.f);
 
-	Out.vShade = g_vLightDiffuse * saturate(max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f) + (g_vLightAmbient * g_vMtrlAmbient));
+	Out.vShade = g_vLightDiffuse * /*saturate*/(max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f) + (g_vLightAmbient * g_vMtrlAmbient));
 
 	Out.vShade.a = 1.f;
 
@@ -120,7 +120,7 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 	vector			vReflect = reflect(normalize(g_vLightDir), vNormal);
 	vector			vLook = vWorldPos - g_vCamPosition;
 
-	Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * pow(saturate(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f)), 100.f);
+	Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * pow(/*saturate*/(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f)), 100.f);
 
 
 
@@ -157,7 +157,7 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
 
 	float			fAtt = max(g_fLightRange - fDistance, 0.f) / g_fLightRange;
 
-	Out.vShade = (g_vLightDiffuse * saturate(max(dot(normalize(vLightDir) * -1.f, vNormal), 0.f) + (g_vLightAmbient * g_vMtrlAmbient))) * fAtt;
+	Out.vShade = (g_vLightDiffuse * /*saturate*/(max(dot(normalize(vLightDir) * -1.f, vNormal), 0.f) + (g_vLightAmbient * g_vMtrlAmbient))) * fAtt;
 
 	Out.vShade.a = 1.f;
 
@@ -165,7 +165,7 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
 	vector			vReflect = reflect(normalize(vLightDir), vNormal);
 	vector			vLook = vWorldPos - g_vCamPosition;
 
-	Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * pow(saturate(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f)), 30.f) * fAtt;
+	Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * pow(/*saturate*/(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f)), 30.f) * fAtt;
 
 	Out.vSpecular.a = 0.f;
 

@@ -64,7 +64,7 @@ HRESULT CAnimModel::Initialize_Prototype(const char * pModelFilePath, const char
 
 	_uint		iFlag = 0;
 
-	iFlag |= aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace;
+	iFlag |= aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace | aiProcessPreset_TargetRealtime_Fast;
 
 	m_pAIScene = m_Importer.ReadFile(szFullPath, iFlag);
 

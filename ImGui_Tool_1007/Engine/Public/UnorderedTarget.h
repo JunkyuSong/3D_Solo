@@ -4,11 +4,11 @@
 
 BEGIN(Engine)
 
-class CRenderTarget final : public CBase
+class CUnorderedTarget final : public CBase
 {
 private:
-	CRenderTarget(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	virtual ~CRenderTarget() = default;
+	CUnorderedTarget(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	virtual ~CUnorderedTarget() = default;
 
 public:
 	ID3D11RenderTargetView* Get_RTV() const {
@@ -17,10 +17,6 @@ public:
 
 	ID3D11Texture2D* Get_Texture2D() const {
 		return m_pTexture2D;
-	}
-
-	ID3D11ShaderResourceView* Get_SRV() const {
-		return m_pSRV;
 	}
 
 public:
@@ -41,13 +37,12 @@ public:
 private:
 	ID3D11Device*				m_pDevice = nullptr;
 	ID3D11DeviceContext*		m_pContext = nullptr;
-	
-	ID3D11Texture2D*			m_pTexture2D = nullptr;
-	ID3D11RenderTargetView*		m_pRTV = nullptr;
-	ID3D11ShaderResourceView*	m_pSRV = nullptr;
 
+	ID3D11Buffer*				m_pBuffer = nullptr;
+	ID3D11RenderTargetView*		m_pRTV = nullptr;
+	ID3D11UnorderedAccessView*	m_pURV = nullptr;
 	_float4						m_vClearColor = _float4(0.f, 0.f, 0.f, 1.f);
-	
+
 
 #ifdef _DEBUG
 private:
@@ -55,7 +50,7 @@ private:
 #endif // _DEBUG
 
 public:
-	static CRenderTarget* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iSizeX, _uint iSizeY, DXGI_FORMAT eFormat, const _float4* pClearColor);
+	static CUnorderedTarget* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iSizeX, _uint iSizeY, DXGI_FORMAT eFormat, const _float4* pClearColor);
 	virtual void Free() override;
 };
 

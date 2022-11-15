@@ -14,7 +14,7 @@ HRESULT CRenderTarget::Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT eForma
 {
 	m_vClearColor = *pClearColor;
 
-	D3D11_TEXTURE2D_DESC	TextureDesc;
+	D3D11_TEXTURE2D_DESC   TextureDesc;
 	ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
 
 	TextureDesc.Width = iSizeX;
@@ -23,8 +23,8 @@ HRESULT CRenderTarget::Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT eForma
 	TextureDesc.ArraySize = 1;
 	TextureDesc.Format = eFormat;
 
-	TextureDesc.SampleDesc.Quality = 0;
 	TextureDesc.SampleDesc.Count = 1;
+	TextureDesc.SampleDesc.Quality = 0;
 
 	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
 	TextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
@@ -34,13 +34,37 @@ HRESULT CRenderTarget::Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT eForma
 	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr, &m_pTexture2D)))
 		return E_FAIL;
 
-	if (FAILED(m_pDevice->CreateRenderTargetView(m_pTexture2D, nullptr, &m_pRTV)))
-		return E_FAIL;
+	if (eFormat == DXGI_FORMAT_R16G16B16A16_TYPELESS)
+	{
+		D3D11_RENDER_TARGET_VIEW_DESC rtsvd =
+		{
+			DXGI_FORMAT_R16G16B16A16_FLOAT,
+			D3D11_RTV_DIMENSION_TEXTURE2D
+		};
 
-	if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture2D, nullptr, &m_pSRV)))
-		return E_FAIL;
+		if (FAILED(m_pDevice->CreateRenderTargetView(m_pTexture2D, &rtsvd, &m_pRTV)))
+			return E_FAIL;
 
+		D3D11_SHADER_RESOURCE_VIEW_DESC dsrvd =
+		{
+			DXGI_FORMAT_R16G16B16A16_FLOAT,
+			D3D11_SRV_DIMENSION_TEXTURE2D,
+			0,
+			0
+		};
+		dsrvd.Texture2D.MipLevels = 1;
 
+		if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture2D, &dsrvd, &m_pSRV)))
+			return E_FAIL;
+	}
+	else
+	{
+		if (FAILED(m_pDevice->CreateRenderTargetView(m_pTexture2D, nullptr, &m_pRTV)))
+			return E_FAIL;
+
+		if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture2D, nullptr, &m_pSRV)))
+			return E_FAIL;
+	}
 	return S_OK;
 }
 

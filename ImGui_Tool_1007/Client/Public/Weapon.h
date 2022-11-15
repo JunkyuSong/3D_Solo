@@ -9,6 +9,7 @@ class CRenderer;
 class CCollider;
 class CTransform;
 class CNonAnimModel;
+class CAnimModel;
 END
 
 BEGIN(Client)
@@ -45,6 +46,7 @@ protected:
 	CTransform*				m_pTransformCom = nullptr;
 	CTransform*				m_pParentTransformCom = nullptr;
 	CNonAnimModel*			m_pModelCom = nullptr;
+	CAnimModel*				m_pAnimModelCom = nullptr;
 
 	CCollider*				m_pColliderCom = nullptr;
 

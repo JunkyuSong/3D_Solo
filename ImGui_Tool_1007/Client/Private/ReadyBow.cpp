@@ -1,27 +1,27 @@
 #include "stdafx.h"
-#include "..\Public\Claw.h"
+#include "..\Public\ReadyBow.h"
 #include "GameInstance.h"
 
-CClaw::CClaw(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CReadyBow::CReadyBow(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CEffect(pDevice, pContext)
 {
 }
 
-CClaw::CClaw(const CEffect & rhs)
+CReadyBow::CReadyBow(const CEffect & rhs)
 	: CEffect(rhs)
 {
 }
 
-CClaw::~CClaw()
+CReadyBow::~CReadyBow()
 {
 }
 
-HRESULT CClaw::Initialize_Prototype()
+HRESULT CReadyBow::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CClaw::Initialize(void * pArg)
+HRESULT CReadyBow::Initialize(void * pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -30,7 +30,7 @@ HRESULT CClaw::Initialize(void * pArg)
 	return S_OK;
 }
 
-const _bool& CClaw::Update(_float fTimeDelta)
+const _bool& CReadyBow::Update(_float fTimeDelta)
 {
 	if (m_bDead)
 		return false;
@@ -40,11 +40,11 @@ const _bool& CClaw::Update(_float fTimeDelta)
 	return true;
 }
 
-void CClaw::LateTick(_float fTimeDelta)
+void CReadyBow::LateTick(_float fTimeDelta)
 {
 }
 
-HRESULT CClaw::Render()
+HRESULT CReadyBow::Render()
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
@@ -75,7 +75,7 @@ HRESULT CClaw::Render()
 	return S_OK;
 }
 
-HRESULT CClaw::Ready_Components()
+HRESULT CReadyBow::Ready_Components()
 {
 
 	/* For.Com_Transform */
@@ -95,28 +95,28 @@ HRESULT CClaw::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Effect_Claw"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Model_Effect_BowReady"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-CClaw * CClaw::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CReadyBow * CReadyBow::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CClaw*		pInstance = new CClaw(pDevice, pContext);
+	CReadyBow*		pInstance = new CReadyBow(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CClaw"));
+		MSG_BOX(TEXT("Failed To Created : CReadyBow"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CEffect * CClaw::Clone(void * pArg)
+CEffect * CReadyBow::Clone(void * pArg)
 {
-	CClaw*		pInstance = new CClaw(*this);
+	CReadyBow*		pInstance = new CReadyBow(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
@@ -127,7 +127,7 @@ CEffect * CClaw::Clone(void * pArg)
 	return pInstance;
 }
 
-void CClaw::Free()
+void CReadyBow::Free()
 {
 	__super::Free();
 

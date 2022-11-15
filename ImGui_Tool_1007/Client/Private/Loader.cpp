@@ -25,6 +25,7 @@
 #include "Cane_Sword.h"
 #include "Axe.h"
 #include "Knife.h"
+#include "Bow.h"
 #include "UI_PlayerHpBar.h"
 #include "UI_MonsterHpBar.h"
 #include "UI_Targeting.h"
@@ -215,8 +216,14 @@ HRESULT CLoader::Loading_ForLogoLevel()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven.png")))))
 		return E_FAIL;
 
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/TFX_Noise_01.dds")))))
+	//	return E_FAIL;
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/TFX_Noise_01.dds")))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Dissolve.dds")))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve_Weapon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Dissolve_Weapon.dds")))))
 		return E_FAIL;
 
 	//실제 UI 텍스쳐
@@ -391,6 +398,8 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Stage_01"),
 		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_01/", "BossRoom.dat"))))
 		return E_FAIL;
+
+
 
 
 
@@ -789,6 +798,10 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 		CSaber::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Weapon_Bow"),
+		CBow::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Weapon_Dagger"),
 		CDagger::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
@@ -847,6 +860,12 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"),
 		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Player/", "player_test.dat", PivotMatrix))))
 		return E_FAIL;
+	
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Weapon_Bow"),
+		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Player/SkillWeapon/", "Bow.dat", PivotMatrix))))
+		return E_FAIL;
 
 	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Model_Player_mmm"),
 	//	CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Player/", "fdsfsd.fbx", PivotMatrix))))
@@ -877,6 +896,10 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Model_Effect_Claw"),
 		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Effect/Claw/", "Temp_Claw.fbx"))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Model_Effect_BowReady"),
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Effect/Test/", "ChPang2.fbx"))))
 		return E_FAIL;
 
 	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Model_Monster_asb01"),

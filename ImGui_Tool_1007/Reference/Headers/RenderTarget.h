@@ -19,6 +19,10 @@ public:
 		return m_pTexture2D;
 	}
 
+	ID3D11ShaderResourceView* Get_SRV() const {
+		return m_pSRV;
+	}
+
 public:
 	HRESULT Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT eFormat, const _float4* pClearColor);
 	HRESULT Clear();

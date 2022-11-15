@@ -66,6 +66,7 @@ private:
 	HRESULT Render_NonLight();
 	HRESULT Render_AlphaBlend();
 	HRESULT Render_Distortion();
+	HRESULT Render_PostProcessing();
 	HRESULT Render_UI();
 
 	HRESULT Render_BackBuffer();
@@ -75,8 +76,8 @@ private:
 
 #endif
 
-private: /* For.Deferred Lighting */
-
+private:
+	class CHDR_Mgr* m_pHDRMgr = nullptr;
 
 
 public:

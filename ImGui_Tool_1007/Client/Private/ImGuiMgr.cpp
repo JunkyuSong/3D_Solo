@@ -175,7 +175,7 @@ HRESULT CImGui::Render()
 
 	return S_OK;
 }
-
+ 
 void CImGui::ClientTick()
 {
 	ImGui::Begin("Client");

@@ -181,6 +181,7 @@
     <ClInclude Include="..\public\BackGround.h" />
     <ClInclude Include="..\Public\Balloon.h" />
     <ClInclude Include="..\Public\Boss_Bat.h" />
+    <ClInclude Include="..\Public\Bow.h" />
     <ClInclude Include="..\public\CameraMgr.h" />
     <ClInclude Include="..\Public\Camera_CutScene.h" />
     <ClInclude Include="..\Public\Camera_CutScene_Enter.h" />
@@ -195,6 +196,7 @@
     <ClInclude Include="..\Public\Dagger.h" />
     <ClInclude Include="..\public\Dummy.h" />
     <ClInclude Include="..\public\Effect.h" />
+    <ClInclude Include="..\public\Effect_Mgr.h" />
     <ClInclude Include="..\Public\Extra01.h" />
     <ClInclude Include="..\Public\Extra01_Last.h" />
     <ClInclude Include="..\Public\Extra02.h" />
@@ -223,6 +225,7 @@
     <ClInclude Include="..\public\Obj_Tool.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Puppet.h" />
+    <ClInclude Include="..\Public\ReadyBow.h" />
     <ClInclude Include="..\public\ReleaseMgr.h" />
     <ClInclude Include="..\Public\Saber.h" />
     <ClInclude Include="..\Public\Sky.h" />
@@ -265,6 +268,7 @@
     <ClCompile Include="..\private\BackGround.cpp" />
     <ClCompile Include="..\Private\Balloon.cpp" />
     <ClCompile Include="..\Private\Boss_Bat.cpp" />
+    <ClCompile Include="..\Private\Bow.cpp" />
     <ClCompile Include="..\private\CameraMgr.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene_Enter.cpp" />
@@ -278,6 +282,7 @@
     <ClCompile Include="..\Private\Dagger.cpp" />
     <ClCompile Include="..\private\Dummy.cpp" />
     <ClCompile Include="..\private\Effect.cpp" />
+    <ClCompile Include="..\private\Effect_Mgr.cpp" />
     <ClCompile Include="..\Private\Extra01.cpp" />
     <ClCompile Include="..\Private\Extra01_Last.cpp" />
     <ClCompile Include="..\Private\Extra02.cpp" />
@@ -306,6 +311,7 @@
     <ClCompile Include="..\private\Obj_Tool.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\Puppet.cpp" />
+    <ClCompile Include="..\Private\ReadyBow.cpp" />
     <ClCompile Include="..\private\ReleaseMgr.cpp" />
     <ClCompile Include="..\Private\Saber.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
