@@ -49,11 +49,11 @@ private:
 	_float									m_fTick = 0.f;
 
 	class CTexture*							m_pTextureCom = nullptr;
-
+	class CVIBuffer_Rect*					m_pVIBuffer = nullptr;
 #ifdef _DEBUG
 private:
 	class CShader*							m_pShader = nullptr;
-	class CVIBuffer_Rect*					m_pVIBuffer = nullptr;
+	
 	_float4x4								m_ViewMatrix, m_ProjMatrix;
 #endif // _DEBUG
 

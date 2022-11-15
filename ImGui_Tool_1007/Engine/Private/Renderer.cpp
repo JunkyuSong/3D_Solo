@@ -33,7 +33,11 @@ HRESULT CRenderer::Initialize_Prototype()
 	m_pHDRMgr->Initialize(ViewportDesc.Width, ViewportDesc.Height, m_pDevice, m_pContext);
 
 	/* For.Target_BackBuffer */
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_BackBuffer"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_BackBuffer"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_TYPELESS, &_float4(0.0f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+	/* For.Target_BackBufferRTV */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_BackBufferRTV"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_TYPELESS, &_float4(0.0f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
 	/* For.Target_BlendingBackBuffer */
@@ -172,29 +176,33 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_Blend()))
 		return E_FAIL;
 
+
 	if (FAILED(Render_NonLight()))
 		return E_FAIL;
 	
 	if (FAILED(Render_AlphaBlend()))
 		return E_FAIL;
 
-
+	if (FAILED(Render_PostProcessing()))
+		return E_FAIL;
 
 	if (FAILED(Render_BackBuffer()))
 		return E_FAIL;
 
 
-
 	if (FAILED(Render_Fog()))
 		return E_FAIL;
 	if (FAILED(Render_Distortion()))
-		return E_FAIL;	
+		return E_FAIL;
+
+
+
+
 
 
 	if (FAILED(Render_UI()))
 		return E_FAIL;
-	//if (FAILED(Render_PostProcessing()))
-	//	return E_FAIL;
+
 	
 
 #ifdef _DEBUG
@@ -409,7 +417,7 @@ HRESULT CRenderer::Render_Distortion()
 	_uint iDepthStencil = 0;
 	
 
-	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BackBuffer"), m_pShader, "g_DiffuseTexture")))
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BackBufferRTV"), m_pShader, "g_DiffuseTexture")))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Distortion"), m_pShader, "g_DistortionTexture")))
 		return E_FAIL;
@@ -470,14 +478,16 @@ HRESULT CRenderer::Render_PostProcessing()
 	_Matrix[1] = m_ViewMatrix;
 	_Matrix[2] = m_ProjMatrix;
 
-	m_pHDRMgr->PostProcessing(m_pTarget_Manager->Find_RenderTarget(TEXT("Target_BackBuffer")), _Matrix);
+	m_pHDRMgr->PostProcessing(m_pTarget_Manager->Find_RenderTarget(TEXT("Target_BackBuffer"))->Get_SRV(), m_pTarget_Manager->Find_RenderTarget(TEXT("Target_BackBufferRTV"))->Get_RTV()
+		,m_pVIBuffer
+		, _Matrix);
 
 
-
+/*
 	_uint iDepthStencil = 0;
 
 
-	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BackBuffer"), m_pShader, "g_DiffuseTexture")))
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BackBufferRTV"), m_pShader, "g_DiffuseTexture")))
 		return E_FAIL;
 
 
@@ -493,17 +503,19 @@ HRESULT CRenderer::Render_PostProcessing()
 	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4))))
 		return E_FAIL;
 
-	m_pShader->Begin(4);
+	if (FAILED(m_pShader->Begin(4)))
+		return E_FAIL;
 
-	m_pVIBuffer->Render();
-
+	if (FAILED(m_pVIBuffer->Render()))
+		return E_FAIL;
+*/
 
 	return S_OK;
 }
 
 HRESULT CRenderer::Render_Fog()
 {
-	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BackBuffer"), m_pShader, "g_DiffuseTexture")))
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BackBufferRTV"), m_pShader, "g_DiffuseTexture")))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
 		return E_FAIL;
@@ -569,7 +581,7 @@ HRESULT CRenderer::Render_BackBuffer()
 	m_pTarget_Manager->BackBuffer_End(m_pContext, &m_pBackBuffer);
 
 	//디퓨즈로 넣고 그걸 그대로 그리면 됨
-	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BackBuffer"), m_pShader, "g_DiffuseTexture")))
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BackBufferRTV"), m_pShader, "g_DiffuseTexture")))
 		return E_FAIL;
 
 	_float4x4			WorldMatrix;
