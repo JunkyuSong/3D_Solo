@@ -25,7 +25,11 @@ HRESULT CEffect_Particle::Initialize_Prototype(_tchar * szTextureTag)
 HRESULT CEffect_Particle::Initialize(void * pArg)
 {
 	if (!pArg)
+	{
+		MSG_BOX(TEXT("no Option"));
 		return E_FAIL;
+	}
+		
 
 	m_tOption = *(OPTION*)pArg;
 
@@ -36,7 +40,7 @@ HRESULT CEffect_Particle::Initialize(void * pArg)
 	CEffect_Particle* _pParticle = nullptr;
 	for (_uint i = 0; i < m_tOption.iNumParticles; ++i)
 	{
-		_pParticle = CDeadParticle_Mgr::Get_Instance()->Get_Straight_Particle(m_tOption);
+		_pParticle = CDeadParticle_Mgr::Get_Instance()->Get_Straight_Particle();
 		if (nullptr == _pParticle)
 			return E_FAIL;
 		_pParticle->Init_Again(m_tOption, m_pTextureCom, m_pVIBufferCom);
@@ -49,6 +53,8 @@ HRESULT CEffect_Particle::Initialize(void * pArg)
 const _bool & CEffect_Particle::Update(_float _fTimeDelta)
 {
 	m_fCurLifeTime += _fTimeDelta;
+
+	AUTOINSTANCE(CDeadParticle_Mgr, _pInstance);
 	if (m_Particles.size() == 0)
 	{
 		//갖고 있는 입자들 싹 초기화 해주고 파티클 생성관리자에 넘겨준다 -> 이미 다 넘겨주고 삭제된다
@@ -62,7 +68,10 @@ const _bool & CEffect_Particle::Update(_float _fTimeDelta)
 		{
 			if (m_fCurLifeTime > m_tOption.fLifeTime)
 			{
-				m_Particles.erase(iter);
+				_pInstance->Dead_Straight_Particle();
+				iter = m_Particles.erase(iter);
+				//그냥 이레이즈 하면 안되지
+
 			}
 			else
 			{

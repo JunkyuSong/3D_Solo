@@ -10,13 +10,13 @@ CDeadParticle_Mgr::CDeadParticle_Mgr()
 {
 }
 
-CStraight_Particle * CDeadParticle_Mgr::Get_Straight_Particle(CEffect_Particle::OPTION _tOption)
+CEffect_Particle * CDeadParticle_Mgr::Get_Straight_Particle()
 {
 	CStraight_Particle* _pParticle = nullptr;
 	if (m_Dead_Straight_Particles.size() > 0)
 	{
 		_pParticle = m_Dead_Straight_Particles.back();
-		_pParticle->Init_Again(_tOption);
+		//_pParticle->Init_Again(_tOption);
 		m_Dead_Straight_Particles.pop_back();
 	}
 	else
@@ -28,8 +28,9 @@ CStraight_Particle * CDeadParticle_Mgr::Get_Straight_Particle(CEffect_Particle::
 	return _pParticle;
 }
 
-void CDeadParticle_Mgr::Dead_Straight_Particle()
+void CDeadParticle_Mgr::Dead_Straight_Particle(CStraight_Particle* _pParticle)
 {
+	
 }
 
 void CDeadParticle_Mgr::Free()

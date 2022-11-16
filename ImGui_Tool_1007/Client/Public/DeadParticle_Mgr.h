@@ -15,8 +15,8 @@ private:
 	virtual ~CDeadParticle_Mgr() = default;
 
 public:
-	CStraight_Particle*				Get_Straight_Particle(CEffect_Particle::OPTION _tOption);
-	void							Dead_Straight_Particle();
+	CEffect_Particle*				Get_Straight_Particle();
+	void							Dead_Straight_Particle(class CStraight_Particle* _pParticle);
 
 private:
 	list<class CStraight_Particle*> m_Dead_Straight_Particles;
