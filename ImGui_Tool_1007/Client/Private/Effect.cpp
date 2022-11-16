@@ -9,6 +9,9 @@ CEffect::CEffect(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 
 CEffect::CEffect(const CEffect & rhs)
 	: CGameObject(rhs)
+	, m_pRendererCom(rhs.m_pRendererCom)
+	, m_pShaderCom(rhs.m_pShaderCom)
+	, m_pTransformCom(rhs.m_pTransformCom)
 {
 }
 

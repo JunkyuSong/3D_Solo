@@ -212,6 +212,8 @@ PS_OUT PS_MAIN_Distortion(PS_IN In)
 	/*if (Distortion.z != 0.f)
 	{*/
 		//Distortion *= Noise.x;
+		//----------------------------------------------------------------------------------------------
+
 		float2		UV;
 		//UV.x = (Distortion.x/ Distortion.w + 1.f) / 2.f;
 		//UV.y = (Distortion.y/ Distortion.w - 1.f) / -2.f;
@@ -223,6 +225,7 @@ PS_OUT PS_MAIN_Distortion(PS_IN In)
 		UV.x = In.vTexUV.x + cos(Noise.x * g_fTick * 0.5f) * 0.02f;
 		UV.y = In.vTexUV.y + sin(Noise.x * g_fTick * 0.5f) * 0.02f;
 		Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, UV);
+		//----------------------------------------------------------------------------------------------
 
 		//Out.vBack = Out.vColor;
 		//Out.vColor *= Distortion;

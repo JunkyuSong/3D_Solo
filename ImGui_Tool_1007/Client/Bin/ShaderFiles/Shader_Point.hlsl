@@ -12,6 +12,13 @@ float3		g_Center;
 float2		g_Size;
 float		g_Alpha;
 
+vector		g_vCamPosition;
+
+int			g_iMaxY;
+int			g_iMaxX;
+int			g_iCurY;
+int			g_iCurX;
+
 struct POINTLIST
 {
 	vector	vPos[2];
@@ -178,6 +185,42 @@ void GS_UIRECT(point GS_IN In[1], inout TriangleStream<GS_OUT> GeometryStream)
 	GeometryStream.RestartStrip();
 }
 
+[maxvertexcount(6)]
+void GS_PARTICLE(point GS_IN In[1], inout TriangleStream<GS_OUT> GeometryStream)
+{
+	GS_OUT			Out[4];
+
+	float3			vLook = (g_vCamPosition - In[0].vPosition).xyz;
+	float3			vRight = normalize(cross(float3(0.f, 1.f, 0.f), vLook)) * g_Size.x * 0.5f;
+	float3			vUp = normalize(cross(vLook, vRight)) * g_Size.y * 0.5f;
+
+	matrix			matVP = mul(g_ViewMatrix, g_ProjMatrix);
+
+	Out[0].vPosition = mul(vector(In[0].vPosition.xyz + vRight + vUp, 1.f), matVP);
+	Out[0].vTexUV = float2(0.f, 0.f);
+
+	Out[1].vPosition = mul(vector(In[0].vPosition.xyz - vRight + vUp, 1.f), matVP);
+	Out[1].vTexUV = float2(1.f, 0.f);
+
+	Out[2].vPosition = mul(vector(In[0].vPosition.xyz - vRight - vUp, 1.f), matVP);
+	Out[2].vTexUV = float2(1.f, 1.f);
+
+	Out[3].vPosition = mul(vector(In[0].vPosition.xyz + vRight - vUp, 1.f), matVP);
+	Out[3].vTexUV = float2(0.f, 1.f);
+
+	GeometryStream.Append(Out[0]);
+	GeometryStream.Append(Out[1]);
+	GeometryStream.Append(Out[2]);
+	GeometryStream.RestartStrip();
+
+
+	GeometryStream.Append(Out[0]);
+	GeometryStream.Append(Out[2]);
+	GeometryStream.Append(Out[3]);
+	GeometryStream.RestartStrip();
+}
+
+
 struct PS_IN
 {
 	float4		vPosition : SV_POSITION;
@@ -211,7 +254,20 @@ PS_OUT PS_TEXTURE(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_PARTICLE(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
 
+	In.vTexUV.y = (1.f / g_iMaxY * g_iCurY) + (1.f / g_iMaxY * In.vTexUV.y);
+	In.vTexUV.x = (1.f / g_iMaxX * g_iCurX) + (1.f / g_iMaxX * In.vTexUV.x);
+
+	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	if (0 >= Out.vColor.a)
+		discard;
+
+	return Out;
+}
 
 
 technique11 DefaultTechnique
@@ -236,4 +292,13 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_TEXTURE();
 	}
 
+	pass DrawParticle
+	{
+		SetRasterizerState(RS_CullNone);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = compile gs_5_0 GS_PARTICLE();
+		PixelShader = compile ps_5_0 PS_PARTICLE();
+	}
 }

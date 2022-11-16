@@ -17,9 +17,13 @@ CTexture::CTexture(const CTexture & rhs)
 	lstrcpy(m_szName, rhs.m_szName);
 }
 
-HRESULT CTexture::Initialize_Prototype(const _tchar * pTextureFilePath, _uint iNumTextures)
+HRESULT CTexture::Initialize_Prototype(const _tchar * pTextureFilePath, _uint iNumTextures, _float _fSpeed)
 {
 	m_iNumTextures = iNumTextures;
+	m_iWidthNum = 0;
+	m_iHighNum = 0;
+	m_fSpriteSpeed = _fSpeed;
+	m_eType = TYPE_SINGLE;
 
 	for (_uint i = 0; i < iNumTextures; ++i)
 	{
@@ -55,6 +59,48 @@ HRESULT CTexture::Initialize_Prototype(const _tchar * pTextureFilePath, _uint iN
 	return S_OK;
 }
 
+HRESULT CTexture::Initialize_Prototype(const _tchar * pTextureFilePath, _uint iWidthNum, _uint iHighNum, _float _fSpeed)
+{
+	m_iNumTextures = iWidthNum * iHighNum;
+	m_iWidthNum = iWidthNum;
+	m_iHighNum = iHighNum;
+	m_fSpriteSpeed = _fSpeed;
+	m_eType = TYPE_MULTI;
+
+	for (_uint i = 0; i < 1; ++i)
+	{
+		_tchar			szFullPath[MAX_PATH] = TEXT("");
+
+		wsprintf(szFullPath, pTextureFilePath, i);
+
+		_tchar			szDrive[MAX_PATH] = TEXT("");
+		_tchar			szName[MAX_PATH] = TEXT("");
+		_tchar			szExt[MAX_PATH] = TEXT("");
+
+		_wsplitpath_s(szFullPath, szDrive, MAX_PATH, nullptr, 0, szName, MAX_PATH, szExt, MAX_PATH);
+
+		HRESULT hr = 0;
+
+		ID3D11ShaderResourceView*			pSRV = nullptr;
+
+		if (false == lstrcmp(TEXT(".dds"), szExt))
+			hr = DirectX::CreateDDSTextureFromFile(m_pDevice, szFullPath, nullptr, &pSRV);
+
+		else if (false == lstrcmp(TEXT(".tga"), szExt))
+			hr = E_FAIL;
+
+		else
+			hr = DirectX::CreateWICTextureFromFile(m_pDevice, szFullPath, nullptr, &pSRV);
+
+		if (FAILED(hr))
+			return E_FAIL;
+		lstrcpy(m_szName, szName);
+		m_SRVs.push_back(pSRV);
+	}
+
+	return S_OK;
+}
+
 HRESULT CTexture::Initialize(void * pArg)
 {
 	return S_OK;
@@ -69,11 +115,24 @@ HRESULT CTexture::Set_SRV(CShader * pShader, const char * pConstantName, _uint i
 
 }
 
-CTexture * CTexture::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const _tchar * pTextureFilePath, _uint iNumTextures)
+CTexture * CTexture::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const _tchar * pTextureFilePath, _uint iNumTextures, _float _fSpeed)
 {
 	CTexture*			pInstance = new CTexture(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(pTextureFilePath, iNumTextures)))
+	if (FAILED(pInstance->Initialize_Prototype(pTextureFilePath, iNumTextures, _fSpeed)))
+	{
+		MSG_BOX(TEXT("Failed To Created : CTexture"));
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+CTexture * CTexture::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const _tchar * pTextureFilePath, _uint iWidthNum, _uint iHighNum, _float _fSpeed)
+{
+	CTexture*			pInstance = new CTexture(pDevice, pContext);
+
+	if (FAILED(pInstance->Initialize_Prototype(pTextureFilePath, iWidthNum, iHighNum, _fSpeed)))
 	{
 		MSG_BOX(TEXT("Failed To Created : CTexture"));
 		Safe_Release(pInstance);

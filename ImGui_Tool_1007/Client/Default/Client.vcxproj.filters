@@ -274,23 +274,11 @@
     <Filter Include="02.GameObjects\07. Effect">
       <UniqueIdentifier>{dceeff11-4af5-4c5f-8a2c-90c2be695529}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\07. Effect\00. Trail">
-      <UniqueIdentifier>{5cd8512c-317d-4032-960c-8f3eff0cdbc4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\07. Effect\01. Claw">
-      <UniqueIdentifier>{7e007cf5-18e3-438e-be36-b89674882768}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\07. Effect\02. Blood">
-      <UniqueIdentifier>{1d35b122-56e4-4bdf-842f-b1a6831c7967}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\07. Effect\99. Mgr">
       <UniqueIdentifier>{01bacc8d-2d01-4c3f-9fae-859e9ce2320f}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\07. Effect\98. Particle">
       <UniqueIdentifier>{085a2bde-e5d1-45b5-9dd5-e5a2b842c84a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\07. Effect\03. BowReady">
-      <UniqueIdentifier>{267717e8-d827-49d7-9fd3-b897b7fab532}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\04. Weapon\00. Player\02. SkillWeapon\02. Bow">
       <UniqueIdentifier>{95a0d6c0-beb1-4d71-aa46-102698c49af1}</UniqueIdentifier>
@@ -303,6 +291,36 @@
     </Filter>
     <Filter Include="96. ImGuiMgr\Tool\Effect_Tool\Effect">
       <UniqueIdentifier>{7754689a-5bfb-4524-8d24-14cbfbcc7ccf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. Effect\98. Particle\02. Curve">
+      <UniqueIdentifier>{66392037-a819-41b4-8379-bed0c4b2ca39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. Effect\98. Particle\03. Instancing">
+      <UniqueIdentifier>{02170826-e3e0-4692-af07-475f753c0b20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. Effect\98. Particle\01. Straight">
+      <UniqueIdentifier>{e8b576c2-2e08-45ff-9ec7-82fb6eabbfe8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. Effect\98. Particle\99. DeadParticle_Mgr">
+      <UniqueIdentifier>{0e202381-dcfa-4939-986e-f2520731cff6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. Effect\00. MeshEffect">
+      <UniqueIdentifier>{cc7abbad-fe2d-43a4-ac1d-99b5eb957672}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. Effect\00. MeshEffect\00. Trail">
+      <UniqueIdentifier>{5cd8512c-317d-4032-960c-8f3eff0cdbc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. Effect\00. MeshEffect\01. Claw">
+      <UniqueIdentifier>{7e007cf5-18e3-438e-be36-b89674882768}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. Effect\00. MeshEffect\02. BowReady">
+      <UniqueIdentifier>{267717e8-d827-49d7-9fd3-b897b7fab532}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. Effect\01. TextureEffect">
+      <UniqueIdentifier>{47fc045e-df3e-4160-8dd7-85bd652543b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. Effect\01. TextureEffect\02. Blood">
+      <UniqueIdentifier>{1d35b122-56e4-4bdf-842f-b1a6831c7967}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -553,13 +571,13 @@
       <Filter>02.GameObjects\06. Map_Obj\Balloon</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Trail_Obj.h">
-      <Filter>02.GameObjects\07. Effect\00. Trail</Filter>
+      <Filter>02.GameObjects\07. Effect\00. MeshEffect\00. Trail</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Effect.h">
       <Filter>02.GameObjects\07. Effect</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Claw.h">
-      <Filter>02.GameObjects\07. Effect\01. Claw</Filter>
+      <Filter>02.GameObjects\07. Effect\00. MeshEffect\01. Claw</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Effect_Mgr.h">
       <Filter>02.GameObjects\07. Effect\99. Mgr</Filter>
@@ -568,7 +586,7 @@
       <Filter>02.GameObjects\04. Weapon\00. Player\02. SkillWeapon\02. Bow</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ReadyBow.h">
-      <Filter>02.GameObjects\07. Effect\03. BowReady</Filter>
+      <Filter>02.GameObjects\07. Effect\00. MeshEffect\02. BowReady</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Particle_Tool.h">
       <Filter>96. ImGuiMgr\Tool\Effect_Tool\Particle</Filter>
@@ -579,6 +597,13 @@
     <ClInclude Include="EffectModel_Tool.h">
       <Filter>96. ImGuiMgr\Tool\Effect_Tool\Effect</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Straight_Particle.h">
+      <Filter>02.GameObjects\07. Effect\98. Particle\01. Straight</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Effect_Particle.h">
+      <Filter>02.GameObjects\07. Effect\98. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\DeadParticle_Mgr.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -810,13 +835,13 @@
       <Filter>02.GameObjects\06. Map_Obj\Balloon</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Trail_Obj.cpp">
-      <Filter>02.GameObjects\07. Effect\00. Trail</Filter>
+      <Filter>02.GameObjects\07. Effect\00. MeshEffect\00. Trail</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Effect.cpp">
       <Filter>02.GameObjects\07. Effect</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Claw.cpp">
-      <Filter>02.GameObjects\07. Effect\01. Claw</Filter>
+      <Filter>02.GameObjects\07. Effect\00. MeshEffect\01. Claw</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Effect_Mgr.cpp">
       <Filter>02.GameObjects\07. Effect\99. Mgr</Filter>
@@ -825,7 +850,7 @@
       <Filter>02.GameObjects\04. Weapon\00. Player\02. SkillWeapon\02. Bow</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ReadyBow.cpp">
-      <Filter>02.GameObjects\07. Effect\03. BowReady</Filter>
+      <Filter>02.GameObjects\07. Effect\00. MeshEffect\02. BowReady</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Particle_Tool.cpp">
       <Filter>96. ImGuiMgr\Tool\Effect_Tool\Particle</Filter>
@@ -836,6 +861,13 @@
     <ClCompile Include="EffectModel_Tool.cpp">
       <Filter>96. ImGuiMgr\Tool\Effect_Tool\Effect</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Straight_Particle.cpp">
+      <Filter>02.GameObjects\07. Effect\98. Particle\01. Straight</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Effect_Particle.cpp">
+      <Filter>02.GameObjects\07. Effect\98. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\DeadParticle_Mgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -876,6 +908,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModel_Effect.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPointInstance.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

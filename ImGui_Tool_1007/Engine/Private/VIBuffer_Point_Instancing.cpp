@@ -15,18 +15,16 @@ CVIBuffer_Point_Instancing::CVIBuffer_Point_Instancing(const CVIBuffer_Point_Ins
 
 }
 
-HRESULT CVIBuffer_Point_Instancing::Initialize_Prototype()
+HRESULT CVIBuffer_Point_Instancing::Initialize_Prototype(_uint iNumInstance, vector<_float4x4>* _WorldMatrix, vector<_float3> _vecDirect)
 {
-#pragma region VERTEXBUFFER
-	
+	if (FAILED(Ready_VertexBuffer()))
+		return E_FAIL;
 
-#pragma endregion
+	if (FAILED(Ready_IndexBuffer(iNumInstance)))
+		return E_FAIL;
 
-#pragma region INDEXBUFFER
-	
-
-#pragma endregion
-
+	if (FAILED(Ready_InstancingBuffer(iNumInstance, _WorldMatrix, _vecDirect)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -37,11 +35,11 @@ HRESULT CVIBuffer_Point_Instancing::Initialize(void * pArg)
 	return S_OK;
 }
 
-CVIBuffer_Point_Instancing * CVIBuffer_Point_Instancing::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CVIBuffer_Point_Instancing * CVIBuffer_Point_Instancing::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, _uint iNumInstance, vector<_float4x4>* _WorldMatrix, vector<_float3> _vecDirect)
 {
 	CVIBuffer_Point_Instancing*			pInstance = new CVIBuffer_Point_Instancing(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(pInstance->Initialize_Prototype(iNumInstance, _WorldMatrix, _vecDirect)))
 	{
 		MSG_BOX(TEXT("Failed To Created : CVIBuffer_Point_Instancing"));
 		Safe_Release(pInstance);
@@ -66,13 +64,14 @@ CComponent * CVIBuffer_Point_Instancing::Clone(void * pArg)
 void CVIBuffer_Point_Instancing::Free()
 {
 	__super::Free();
+	Safe_Release(m_pVBInstance);
 }
 
 HRESULT CVIBuffer_Point_Instancing::Render()
 {
 	if (nullptr == m_pContext)
 		return E_FAIL;
-	//m_pVBInstance 이거 맵언맵해서 순서대로 넣... 여기서 해주면 안된다-> 인스턴싱 쓰려는 객체에서 컬링해야함.
+	//여기는 솔팅(카메라 바라보는 방향으로 -> 근데 파티클이 여러개 합쳐지면 문제임)
 	ID3D11Buffer*		pVertexBuffers[] = {
 		m_pVB,
 		m_pVBInstance,
@@ -132,6 +131,12 @@ HRESULT CVIBuffer_Point_Instancing::Ready_VertexBuffer()
 
 HRESULT CVIBuffer_Point_Instancing::Ready_IndexBuffer(_uint iNumInstance)
 {
+	if (iNumInstance > 200)
+	{
+		return E_FAIL;
+	}
+	m_iNumInstance = iNumInstance;
+
 	m_iNumPrimitives = 1;
 	m_iIndexSizeofPrimitive = sizeof(FACEINDICES16);
 	m_iNumIndicesofPrimitive = 1;
@@ -139,15 +144,14 @@ HRESULT CVIBuffer_Point_Instancing::Ready_IndexBuffer(_uint iNumInstance)
 	m_eTopology = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
 
 	ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));
-	m_BufferDesc.ByteWidth = m_iNumPrimitives * m_iIndexSizeofPrimitive;
+	m_BufferDesc.ByteWidth = m_iNumPrimitives * m_iIndexSizeofPrimitive * iNumInstance;
 	m_BufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	m_BufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	m_BufferDesc.CPUAccessFlags = 0;
 	m_BufferDesc.MiscFlags = 0;
 	m_BufferDesc.StructureByteStride = 0;
 
-
-	_ushort*		pIndices = new _ushort[m_iNumPrimitives];
+	_ushort*		pIndices = new _ushort[m_iNumPrimitives * iNumInstance];
 	ZeroMemory(pIndices, sizeof(_ushort) * m_iNumPrimitives);
 
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
@@ -161,12 +165,13 @@ HRESULT CVIBuffer_Point_Instancing::Ready_IndexBuffer(_uint iNumInstance)
 	return S_OK;
 }
 
-HRESULT CVIBuffer_Point_Instancing::Ready_InstancingBuffer(_uint iNumInstance, vector<_float4x4>* _WorldMatrix)
+HRESULT CVIBuffer_Point_Instancing::Ready_InstancingBuffer(_uint iNumInstance, vector<_float4x4>* _WorldMatrix, vector<_float3> _vecDirect)
 {
 	if (iNumInstance > 200)
 	{
 		return E_FAIL;
 	}
+	m_iNumInstance = iNumInstance;
 	m_iInstanceStride = sizeof(VTXINSTANCE);
 
 	ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));

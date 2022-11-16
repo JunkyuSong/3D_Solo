@@ -34,8 +34,8 @@ sampler DefaultSampler = sampler_state {
 	/*minfilter = linear;
 	magfilter = linear;
 	mipfilter = linear;*/
-	AddressU = WRAP;
-	AddressV = WRAP;
+	AddressU = CLAMP;
+	AddressV = CLAMP;
 };
 
 struct VS_IN
