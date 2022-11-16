@@ -49,6 +49,7 @@
 #include "StreetLight.h"
 #include "Balloon.h"
 #include "Trail_Obj.h"
+#include "Effect_Particle.h"
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -826,6 +827,10 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 		CTrail_Obj::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_ParticleEffect"),
+		CEffect_Particle::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	
 
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
@@ -836,6 +841,10 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/T_WoodTiles01_BC.dds")))))//Grass_%d.dds
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Texture_Mask_Blood"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Blood/TFX_Blood_01.dds")))))//Grass_%d.dds
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));

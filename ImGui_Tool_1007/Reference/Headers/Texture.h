@@ -39,8 +39,8 @@ private:
 	_tchar			m_szName[MAX_PATH];
 
 	_uint			m_iNumTextures = 0;
-	_uint			m_iHighNum = 0;
-	_uint			m_iWidthNum = 0;
+	_uint			m_iHighNum = 1;
+	_uint			m_iWidthNum = 1;
 
 	_float			m_fSpriteSpeed = 0.f;
 

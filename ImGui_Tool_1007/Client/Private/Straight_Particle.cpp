@@ -45,6 +45,8 @@ const _bool & CStraight_Particle::Update(_float _fTimeDelta)
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, this);
+
 	return true;
 }
 
@@ -92,6 +94,12 @@ HRESULT CStraight_Particle::Render()
 	if (FAILED(m_pTextureCom->Set_SRV(m_pShaderCom, "g_DiffuseTexture")))
 		return E_FAIL;
 
+	if (m_pMaskTextureCom)
+	{
+		if (FAILED(m_pMaskTextureCom->Set_SRV(m_pShaderCom, "g_NoiseTexture")))
+			return E_FAIL;
+	}
+
 	if (FAILED(m_pShaderCom->Begin(2)))
 		return E_FAIL;
 
@@ -101,7 +109,7 @@ HRESULT CStraight_Particle::Render()
 	return S_OK;
 }
 
-void CStraight_Particle::Init_Again(OPTION _tOption, CTexture* _pTextureCom, CVIBuffer_Point* _pBufferCom)
+void CStraight_Particle::Init_Again(OPTION _tOption, CTexture* _pTextureCom, CTexture* _pMaskCom, CVIBuffer_Point* _pBufferCom)
 {
 	AUTOINSTANCE(CGameInstance, _pInstance);
 
@@ -109,8 +117,10 @@ void CStraight_Particle::Init_Again(OPTION _tOption, CTexture* _pTextureCom, CVI
 
 	m_pVIBufferCom = _pBufferCom;
 	m_pTextureCom = _pTextureCom;
-	Safe_AddRef(_pBufferCom);
-	Safe_AddRef(_pTextureCom);
+	m_pMaskTextureCom = _pMaskCom;
+	Safe_AddRef(m_pVIBufferCom);
+	Safe_AddRef(m_pTextureCom);
+	Safe_AddRef(m_pMaskTextureCom);
 
 	_vector _vPos;
 	_vPos.m128_f32[3] = 1.f;

@@ -18,7 +18,7 @@ public:
 	virtual const _bool & Update(_float _fTimeDelta) override;
 
 public:
-	void			Init_Again(OPTION _tOption, CTexture* _pTextureCom, CVIBuffer_Point* _pBufferCom) override; //데드관리자에서 해주는거 -> 버퍼랑 텍스쳐 포인터 있어야함.
+	void			Init_Again(OPTION _tOption, CTexture* _pTextureCom, CTexture* _pMaskCom, CVIBuffer_Point* _pBufferCom) override; //데드관리자에서 해주는거 -> 버퍼랑 텍스쳐 포인터 있어야함.
 	virtual void	Recycle() override;
 
 
@@ -32,7 +32,7 @@ private:
 
 
 public:
-	CEffect_Particle* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _tchar* szTextureTag = nullptr);
+	static CEffect_Particle* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _tchar* szTextureTag = nullptr);
 	virtual CGameObject * Clone(void * pArg) override;
 	
 	virtual void Free();

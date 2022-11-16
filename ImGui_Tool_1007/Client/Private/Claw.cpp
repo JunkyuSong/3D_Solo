@@ -23,8 +23,12 @@ HRESULT CClaw::Initialize_Prototype()
 
 HRESULT CClaw::Initialize(void * pArg)
 {
-	if (FAILED(Ready_Components()))
-		return E_FAIL;
+	if (m_bDead == false)
+	{
+		if (FAILED(Ready_Components()))
+			return E_FAIL;
+	}
+	m_bDead = false;
 	m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 1.f));
 	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMConvertToRadians(-90.0f));
 	return S_OK;

@@ -1,7 +1,8 @@
 #pragma once
 #include "Base.h"
 #include "Client_Defines.h"
-#include "Effect.h"
+
+#include "Effect_Particle.h"
 
 BEGIN(Client)
 
@@ -13,6 +14,7 @@ public:
 	enum EFFECT_TYPE {
 		EFFECT_CLAW,
 		EFFECT_BLOOD,
+		EFFECT_PARTICLE,
 		EFFECT_END
 	};
 
@@ -23,7 +25,8 @@ private:
 public:
 	void Tick(_float fTimeDelta);
 	
-	HRESULT Add_Effect();
+	HRESULT Add_Effect(EFFECT_TYPE _eType, void* pArg);
+	HRESULT Add_ParticleEffect(CEffect_Particle::PARTICLETYPE _eParticleType, void* pArg);
 
 	void Clear_Level(LEVEL _eLv);
 
