@@ -295,6 +295,15 @@
     <Filter Include="02.GameObjects\04. Weapon\00. Player\02. SkillWeapon\02. Bow">
       <UniqueIdentifier>{95a0d6c0-beb1-4d71-aa46-102698c49af1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="96. ImGuiMgr\Tool\Effect_Tool">
+      <UniqueIdentifier>{3755c536-1f95-486c-b2ba-6c5c7ae2b755}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96. ImGuiMgr\Tool\Effect_Tool\Particle">
+      <UniqueIdentifier>{be7eb3bc-790e-4050-9815-a3bc6babb1c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96. ImGuiMgr\Tool\Effect_Tool\Effect">
+      <UniqueIdentifier>{7754689a-5bfb-4524-8d24-14cbfbcc7ccf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -561,6 +570,15 @@
     <ClInclude Include="..\Public\ReadyBow.h">
       <Filter>02.GameObjects\07. Effect\03. BowReady</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Particle_Tool.h">
+      <Filter>96. ImGuiMgr\Tool\Effect_Tool\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Effect_Tool.h">
+      <Filter>96. ImGuiMgr\Tool\Effect_Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectModel_Tool.h">
+      <Filter>96. ImGuiMgr\Tool\Effect_Tool\Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -808,6 +826,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\ReadyBow.cpp">
       <Filter>02.GameObjects\07. Effect\03. BowReady</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Particle_Tool.cpp">
+      <Filter>96. ImGuiMgr\Tool\Effect_Tool\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Effect_Tool.cpp">
+      <Filter>96. ImGuiMgr\Tool\Effect_Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectModel_Tool.cpp">
+      <Filter>96. ImGuiMgr\Tool\Effect_Tool\Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

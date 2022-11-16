@@ -96,23 +96,6 @@ void CBoss_Bat::Tick(_float fTimeDelta)
 	
 	
 
-	if (_Instance->KeyDown(DIK_NUMPAD1))
-	{
-		m_eCurState = BossBat_JumpSmash_Chest;
-	}
-	else if (_Instance->KeyDown(DIK_NUMPAD2))
-	{
-		m_eCurState = BossBat_JumpSmashForwardL;
-	}
-	else if (_Instance->KeyDown(DIK_NUMPAD3))
-	{
-		m_eCurState = BossBat_AttackL_01_3a;
-	}
-	else if (_Instance->KeyDown(DIK_NUMPAD4))
-	{
-		m_eCurState = BossBat_Dash;
-	}
-
 	if (m_pModelCom != nullptr)
 	{
 		Check_Stun();
@@ -706,54 +689,6 @@ _bool CBoss_Bat::Collision(_float fTimeDelta)
 			return true;
 		}
 	
-
-		//문제 : 어느 각도에서 맞았냐에 따라!
-		// 라이트와 내적하자.
-
-		//_vector _vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
-
-		//CTransform* _pTransform = static_cast<CTransform*>(_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")));
-		//_vector _vHitLook = XMVector3Normalize(_pTransform->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-
-		//_float _fAngle = XMVector3Dot(_vRight, _vHitLook).m128_f32[0];
-
-		//if (_fAngle > 0.f)
-		//{
-		//	//오른쪽에서 피격
-		//	if (m_eCurState == BossBat_HurtXL_R)
-		//	{
-		//		if (m_bAgainAnim == false)
-		//		{
-		//			m_bAgainAnim = true;
-		//			Set_Anim(m_eCurState);
-		//		}
-		//	}
-		//	else
-		//	{
-		//		m_eCurState = BossBat_HurtXL_R;
-		//	}
-		//}
-		//else
-		//{
-		//	//왼쪽에서 피격
-		//	if (m_eCurState == BossBat_HurtXL_L)
-		//	{
-		//		if (m_bAgainAnim == false)
-		//		{
-		//			m_bAgainAnim = true;
-		//			Set_Anim(m_eCurState);
-		//		}
-		//	}
-		//	else
-		//	{
-		//		m_eCurState = BossBat_HurtXL_L;
-		//	}
-		//	
-		//}
-		/*for (_uint i = 0; i < COLLILDERTYPE_END; ++i)
-		{
-			On_Collider((MAGICIANCOLLIDER)i, false);
-		}*/
 		m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack());
 		m_fHitCurTime = 0.f;
 		//return true;

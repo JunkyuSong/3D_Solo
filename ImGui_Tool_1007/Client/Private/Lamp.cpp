@@ -50,8 +50,8 @@ HRESULT CLamp::Initialize(void * pArg)
 	XMStoreFloat4(&LightDesc.vPosition, _vPos);
 	LightDesc.fRange = 15.f;
 	LightDesc.vDiffuse = CLIENT_RGB(255.f, 127.f, 0.f);
-	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.1f);
-	LightDesc.vSpecular = _float4(0.4f, 0.4f, 0.4f, 0.2f);
+	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	LightDesc.vSpecular = _float4(0.1f, 0.1f, 0.1f, 1.f);
 
 	
 	m_iLightIndex = pGameInstance->Add_Light(m_pDevice, m_pContext, LEVEL_STAGE_LAST, CLight_Manager::STATICPOINTLIHGT, LightDesc);

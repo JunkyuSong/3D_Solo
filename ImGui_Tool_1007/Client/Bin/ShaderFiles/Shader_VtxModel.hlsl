@@ -100,6 +100,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vDiffuse = (vector)1.f;
 
 	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 
 	vector		vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexUV);
 
@@ -127,7 +128,7 @@ PS_OUT_NONLIGHT PS_NONLIGHT(PS_IN In)
 	Out.vDiffuse = (vector)1.f;
 
 	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 
 	if (0 >= Out.vDiffuse.a)
 		discard;
@@ -149,7 +150,7 @@ PS_OUT PS_BALLOON(PS_IN In)
 	Out.vDiffuse = (vector)1.f;
 
 	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 	vector		vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexUV);
 
 	float3		vNormal = vNormalDesc.xyz * 2.f - 1.f;
@@ -176,7 +177,7 @@ PS_OUT PS_MAIN_2(PS_IN In)
 	Out.vDiffuse = (vector)1.f;
 
 	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 	if (0 == Out.vDiffuse.a)
 		discard;
 
@@ -195,7 +196,7 @@ PS_OUT PS_Sky(PS_IN In)
 	Out.vDiffuse = (vector)1.f;
 
 	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 	if (0 == Out.vDiffuse.a)
 		discard;
 
@@ -214,7 +215,7 @@ PS_OUT PS_Stage(PS_IN In)
 	Out.vDiffuse = (vector)1.f;
 
 	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 	vector		vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexUV);
 
 	float3		vNormal = vNormalDesc.xyz * 2.f - 1.f;
@@ -243,7 +244,7 @@ PS_OUT PS_MAIN_3(PS_IN In)
 	vector			vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 	Out.vDiffuse = vMtrlDiffuse;
 	Out.vDiffuse.a *= g_fAlpha;
-
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 	if (0 == Out.vDiffuse.a)
 		discard;
 	
@@ -262,7 +263,7 @@ PS_OUT PS_TEST(PS_IN In)
 
 	if (0 == Out.vDiffuse.a)
 		discard;
-
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 	return Out;
 }
 
@@ -282,6 +283,7 @@ PS_OUT PS_MAIN_SEl(PS_IN In)
 	Out.vDiffuse *= vector(0.8f, 1.f, 0.8f, 1.f);
 	if (0 == Out.vDiffuse.a)
 		discard;
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 	return Out;
 }
 
@@ -305,6 +307,7 @@ PS_OUT PS_MAIN_ADD(PS_IN In)
 
 	if (0 == Out.vDiffuse.a)
 		discard;
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 	return Out;
 }
 
@@ -321,6 +324,7 @@ PS_OUT PS_MAIN4(PS_IN In)
 	
 	if (0 == Out.vDiffuse.a)
 		discard;
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 	return Out;
 }
 

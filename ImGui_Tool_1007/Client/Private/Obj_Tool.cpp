@@ -317,6 +317,10 @@ void CObj_Tool::Load_Map()
 
 HRESULT CObj_Tool::Tool_Obj()
 {
+
+	ImGui::SliderFloat("White", CGameInstance::Get_Instance()->Get_HDR_White(), 0.5f, 3.f);
+	ImGui::SliderFloat("Grey", CGameInstance::Get_Instance()->Get_HDR_Grey(), 0.f, 2.f);
+
 	if (ImGui::BeginCombo("Level", m_pLevels[m_iSelectLevel], 1))
 	{
 		for (int i = 0; i < m_pLevels.size(); ++i)

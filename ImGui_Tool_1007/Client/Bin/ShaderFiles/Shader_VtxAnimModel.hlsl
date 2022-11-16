@@ -114,7 +114,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	
 
 	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-	
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 	if (0 == Out.vDiffuse.a)
 		discard;
 
@@ -138,7 +138,7 @@ PS_OUT PS_RIMLIGHT(PS_IN In)
 
 
 	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 	if (0 == Out.vDiffuse.a)
 		discard;
 
@@ -170,7 +170,7 @@ PS_OUT PS_MAIN2(PS_IN In)
 	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 
 	Out.vDiffuse.a *= (g_fAlpha);
-
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 	if (0.f >= Out.vDiffuse.a)
 		discard;
 
@@ -183,7 +183,7 @@ PS_OUT_NONLIGHT PS_MAIN3(PS_IN In)
 	Out.vDiffuse = (vector)1.f;
 
 	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
 
 
@@ -208,7 +208,7 @@ PS_OUT_NONLIGHT PS_MAIN_TRAIL(PS_IN In)
 
 	if (0 >= Out.vDiffuse.a)
 		discard;
-
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 	return Out;
 }
 
@@ -224,7 +224,7 @@ PS_OUT_NONLIGHT PS_BOW(PS_IN In)
 
 	if (0 >= Out.vDiffuse.a)
 		discard;
-
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
 
 	return Out;
@@ -260,7 +260,7 @@ PS_OUT PS_DISSOLVE(PS_IN In)
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
 
-
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 
 	return Out;
 }
@@ -293,7 +293,7 @@ PS_OUT PS_COLOR_DISSOLVE(PS_IN In)
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
 
-
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 
 	return Out;
 }

@@ -590,6 +590,9 @@
     <Filter Include="04.Utility\08. HDR\ShaderFiles">
       <UniqueIdentifier>{0a7aaa6e-2b70-4927-980a-8599c6070265}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.Components\02.VIBuffer\Particle">
+      <UniqueIdentifier>{eaca0528-44a5-4c7a-996b-9ce76edccf03}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Cell.hlsl">

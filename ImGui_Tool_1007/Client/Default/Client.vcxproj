@@ -197,6 +197,7 @@
     <ClInclude Include="..\public\Dummy.h" />
     <ClInclude Include="..\public\Effect.h" />
     <ClInclude Include="..\public\Effect_Mgr.h" />
+    <ClInclude Include="..\public\Effect_Tool.h" />
     <ClInclude Include="..\Public\Extra01.h" />
     <ClInclude Include="..\Public\Extra01_Last.h" />
     <ClInclude Include="..\Public\Extra02.h" />
@@ -223,6 +224,7 @@
     <ClInclude Include="..\Public\Obj_NonAnim.h" />
     <ClInclude Include="..\Public\Obj_Plus.h" />
     <ClInclude Include="..\public\Obj_Tool.h" />
+    <ClInclude Include="..\public\Particle_Tool.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Puppet.h" />
     <ClInclude Include="..\Public\ReadyBow.h" />
@@ -251,6 +253,7 @@
     <ClInclude Include="..\public\UI_Tool.h" />
     <ClInclude Include="..\Public\Weapon.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="EffectModel_Tool.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -283,6 +286,7 @@
     <ClCompile Include="..\private\Dummy.cpp" />
     <ClCompile Include="..\private\Effect.cpp" />
     <ClCompile Include="..\private\Effect_Mgr.cpp" />
+    <ClCompile Include="..\private\Effect_Tool.cpp" />
     <ClCompile Include="..\Private\Extra01.cpp" />
     <ClCompile Include="..\Private\Extra01_Last.cpp" />
     <ClCompile Include="..\Private\Extra02.cpp" />
@@ -309,6 +313,7 @@
     <ClCompile Include="..\Private\Obj_NonAnim.cpp" />
     <ClCompile Include="..\Private\Obj_Plus.cpp" />
     <ClCompile Include="..\private\Obj_Tool.cpp" />
+    <ClCompile Include="..\private\Particle_Tool.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\Puppet.cpp" />
     <ClCompile Include="..\Private\ReadyBow.cpp" />
@@ -337,6 +342,7 @@
     <ClCompile Include="..\private\UI_Tool.cpp" />
     <ClCompile Include="..\Private\Weapon.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="EffectModel_Tool.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

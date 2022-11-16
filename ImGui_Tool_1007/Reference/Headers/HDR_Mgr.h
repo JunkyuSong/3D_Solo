@@ -22,6 +22,9 @@ public:
 
 	inline void SetParameters(const _float& fMiddleGrey, const _float& fWhite) { m_fMiddleGrey = fMiddleGrey; m_fWhite = fWhite; }
 
+	_float* Get_White() { return &m_fWhite; }
+	_float* Get_Grey() { return &m_fMiddleGrey; }
+
 private:
 	HRESULT CreateComputeShader(PWCHAR strPath, D3D10_SHADER_MACRO* pMacros, char* strEntryPoint, char* strProfile, DWORD dwShaderFlags, ID3D11ComputeShader** _ppComputeShader);
 
@@ -45,8 +48,8 @@ private:// Average luminance
 	_uint m_iWidth = 0;
 	_uint m_iHeight = 0;
 	_uint m_iDownScaleGroups = 0;
-	_float m_fMiddleGrey = 0.863f;
-	_float m_fWhite = 1.53f;
+	_float m_fMiddleGrey = 1.f;
+	_float m_fWhite = 1.2f;
 
 	typedef struct
 	{

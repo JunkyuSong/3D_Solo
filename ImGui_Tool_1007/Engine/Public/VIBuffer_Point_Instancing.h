@@ -17,10 +17,15 @@ public:
 	virtual HRESULT	Render() override;
 
 private:
+	HRESULT			Ready_VertexBuffer();
+	HRESULT			Ready_IndexBuffer(_uint iNumInstance);
+	HRESULT			Ready_InstancingBuffer(_uint iNumInstance, vector<_float4x4>* _WorldMatrix);
+
+private:
 	_uint					m_iNumInstance = 0; // 인스턴싱 갯수
 	_uint					m_iInstanceStride = 0; // 인스턴싱 byte수인데..?
 	ID3D11Buffer*			m_pVBInstance = nullptr; // 인스턴싱 버퍼(행렬정보 들어갈 예정)
-
+	vector<_float4x4>		m_vecWorldMatrix;
 
 public:
 	static CVIBuffer_Point_Instancing* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

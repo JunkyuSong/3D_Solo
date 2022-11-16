@@ -46,7 +46,7 @@ void CObj_NonAnim::LateTick( _float fTimeDelta)
 	//_bool		isDraw = _pInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 15.f);
 	//if (isDraw)
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 	}
 }
 
@@ -69,8 +69,8 @@ HRESULT CObj_NonAnim::Render()
 	{
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
-		//if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-		//	return E_FAIL;
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+			return E_FAIL;
 
 		if (FAILED(m_pShaderCom->Begin(0)))
 			return E_FAIL;
@@ -147,7 +147,7 @@ HRESULT CObj_NonAnim::Ready_Components()
 	/* For.Com_Shader */
 	/*if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;*/
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Effect"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
 

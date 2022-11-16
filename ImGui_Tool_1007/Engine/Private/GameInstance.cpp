@@ -15,6 +15,7 @@ CGameInstance::CGameInstance()
 	, m_pRand_Mgr(CRandMgr::Get_Instance())
 	, m_pTarget_Manager(CTarget_Manager::Get_Instance())
 	, m_pFrustum(CFrustum::Get_Instance())
+	, m_pHdr_Mgr(CHDR_Mgr::Get_Instance())
 {	
 	Safe_AddRef(m_pLight_Manager);
 	Safe_AddRef(m_pPipeLine);
@@ -28,6 +29,7 @@ CGameInstance::CGameInstance()
 	Safe_AddRef(m_pRand_Mgr);
 	Safe_AddRef(m_pTarget_Manager);
 	Safe_AddRef(m_pFrustum);
+	Safe_AddRef(m_pHdr_Mgr);
 }
 
 HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInst, const GRAPHICDESC& GraphicDesc, ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
@@ -429,6 +431,22 @@ _bool CGameInstance::isIn_Frustum_WorldSpace(_fvector vWorldPos, float fRadius)
 	return m_pFrustum->isIn_WorldSpace(vWorldPos, fRadius);
 }
 
+_float * CGameInstance::Get_HDR_White()
+{
+	if (nullptr == m_pHdr_Mgr)
+		return false;
+
+	return m_pHdr_Mgr->Get_White();
+}
+
+_float * CGameInstance::Get_HDR_Grey()
+{
+	if (nullptr == m_pHdr_Mgr)
+		return false;
+
+	return m_pHdr_Mgr->Get_Grey();
+}
+
 void CGameInstance::Release_Engine()
 {
 	CGameInstance::Get_Instance()->Destroy_Instance();
@@ -467,11 +485,13 @@ void CGameInstance::Free()
 	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pTimer_Manager);
+	Safe_Release(m_pCollision_Mgr);
 	Safe_Release(m_pComponent_Manager);
 	Safe_Release(m_pObject_Manager);
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pInput_Device);
+	Safe_Release(m_pHdr_Mgr);
 	Safe_Release(m_pGraphic_Device);
-	Safe_Release(m_pCollision_Mgr);
 	Safe_Release(m_pRand_Mgr);
+
 }
