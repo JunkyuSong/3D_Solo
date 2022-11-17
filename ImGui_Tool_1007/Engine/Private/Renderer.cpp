@@ -72,6 +72,18 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Fog"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, &_float4(0.0f, 0.f, 0.f, 1.f))))
 		return E_FAIL;
 
+	/* For.Target_Alpha */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Alpha"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 1.f))))
+		return E_FAIL;
+
+	/* For.Target_AlphaDepth */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_AlphaDepth"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, &_float4(0.0f, 0.f, 0.f, 1.f))))
+		return E_FAIL;
+
+	/* For.Target_TotalDepth */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_TotalDepth"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, &_float4(0.0f, 0.f, 0.f, 1.f))))
+		return E_FAIL;
+
 	/* For.MRT_Back */
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Back"), TEXT("Target_BackBuffer"))))
 		return E_FAIL;
@@ -92,9 +104,19 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Specular"))))
 		return E_FAIL;
 
+	/* For.MRT_Alpha */
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Alpha"), TEXT("Target_Alpha"))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Alpha"), TEXT("Target_AlphaDepth"))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Alpha"), TEXT("Target_Distortion"))))
+		return E_FAIL;
 
-	/* For.MRT_Technic */
-	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Technic"), TEXT("Target_Fog"))))
+
+	/* For.MRT_Final */
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Final"), TEXT("Target_BackBufferRTV"))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Final"), TEXT("Target_TotalDepth"))))
 		return E_FAIL;
 
 
@@ -189,6 +211,8 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_BackBuffer()))
 		return E_FAIL;
 
+	//if (FAILED(Render_After_HDR()))
+	//	return E_FAIL;
 
 	if (FAILED(Render_Fog()))
 		return E_FAIL;
@@ -382,13 +406,9 @@ HRESULT CRenderer::Render_AlphaBlend()
 {
 	if (nullptr == m_pTarget_Manager)
 		return E_FAIL;
-	_uint iDepthStencil = 0;
-	if (FAILED(m_pTarget_Manager->AddBinding_RTV(m_pContext, TEXT("Target_Depth"), 1)))
-		return E_FAIL;
-	++iDepthStencil;
-	if (FAILED(m_pTarget_Manager->AddBinding_RTV(m_pContext, TEXT("Target_Distortion"), 2)))
-		return E_FAIL;
-	++iDepthStencil;
+	//_uint iDepthStencil = 0;
+	//if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Alpha"))))
+	//	return E_FAIL;
 
 	m_RenderObjects[RENDER_ALPHABLEND].sort([](CGameObject* pSour, CGameObject* pDest)
 	{
@@ -404,10 +424,8 @@ HRESULT CRenderer::Render_AlphaBlend()
 	}
 	m_RenderObjects[RENDER_ALPHABLEND].clear();
 
-	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext, iDepthStencil)))
-		return E_FAIL;
-
-	//m_pTarget_Manager->Find_RenderTarget(TEXT("Target_Depth"))->Release();
+	//if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+	//	return E_FAIL;
 
 	return S_OK;
 }
@@ -509,6 +527,55 @@ HRESULT CRenderer::Render_PostProcessing()
 	if (FAILED(m_pVIBuffer->Render()))
 		return E_FAIL;
 */
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_After_HDR()
+{
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	//µª½º¶û, ¾ËÆÄµðÇ»Áî¶û, ¾ËÆÄµª½º ´øÁ®¼­ 
+
+	
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Final"))))
+		return E_FAIL;
+
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Alpha"), m_pShader, "g_AlphaDiffuseTexture")))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_AlphaDepth"), m_pShader, "g_AlphaDepthTexture")))
+		return E_FAIL;
+	
+	_float4x4			WorldMatrix;
+
+	_uint				iNumViewport = 1;
+	D3D11_VIEWPORT		ViewportDesc;
+
+	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
+
+	XMStoreFloat4x4(&WorldMatrix,
+		XMMatrixTranspose(XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 0.f) * XMMatrixTranslation(0.0f, 0.0f, 0.f)));
+
+	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+
+
+	m_pShader->Begin(7);
+
+	m_pVIBuffer->Render();
+	
+	/*if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;*/
 
 	return S_OK;
 }

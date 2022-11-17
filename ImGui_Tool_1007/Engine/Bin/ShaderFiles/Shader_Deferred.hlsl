@@ -25,8 +25,10 @@ texture2D	g_ShadeTexture;
 texture2D	g_DepthTexture;
 texture2D	g_SpecularTexture;
 texture2D	g_DistortionTexture;
-texture2D	g_DistortionTexture_Bump;
+texture2D	g_DistortionTexture_Bump; 
 
+texture2D	g_AlphaDepthTexture;
+texture2D	g_AlphaDiffuseTexture;
 
 float		g_fTick;
 
@@ -282,6 +284,41 @@ PS_OUT PS_MAIN_FOG(PS_IN In)
 	return Out;
 }
 
+struct PS_OUT_ALPHA
+{
+	float4		vColor : SV_TARGET0;
+	float4		vTotalDepth : SV_TARGET1;
+};
+PS_OUT_ALPHA PS_MAIN_ALPHA(PS_IN In)
+{
+	PS_OUT_ALPHA			Out = (PS_OUT_ALPHA)0;
+
+	//vector			vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	vector			vAlphaDiffuse = g_AlphaDiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	vector			vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexUV);
+	vector			vAlphaDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexUV);
+
+	//==ÀÏ¹Ýµª½º
+	float			fViewZ = vDepthDesc.y;
+
+
+	//==¾ËÆÄµª½º
+	float			fAlphaViewZ = vAlphaDepthDesc.y;
+
+	if (fViewZ > fAlphaViewZ)
+	{
+		Out.vColor = vAlphaDiffuse;
+		Out.vTotalDepth = vAlphaDepthDesc;
+	}
+	else
+	{
+		//Out.vColor = vDiffuse;
+		Out.vTotalDepth = vDepthDesc;
+	}
+
+	return Out;
+}
+
 RasterizerState RS_Default
 {
 	FillMode = solid;
@@ -401,5 +438,15 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN_FOG();
 	}
 
+	pass Alpha
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Skip_ZTest_ZWrite, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_ALPHA();
+	}
 
 }

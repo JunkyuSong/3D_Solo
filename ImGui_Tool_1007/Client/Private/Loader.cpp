@@ -915,7 +915,7 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 		return E_FAIL;
 
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Model_Effect_Claw"),
-		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Effect/Claw/", "Temp_Claw.fbx"))))
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Effect/Claw/", "Claw.fbx"))))
 		return E_FAIL;
 
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Model_Effect_BowReady"),

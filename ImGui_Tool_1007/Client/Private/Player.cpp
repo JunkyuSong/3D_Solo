@@ -518,12 +518,12 @@ void CPlayer::KeyInput_Idle(_float fTimeDelta)
 		_tOption.Spread = CEffect_Particle::SPREAD::SPREAD_EDGE;
 		_tOption.szMaskTag = TEXT("Prototype_Component_Texture_Mask_Blood");
 		_tOption.szTextureTag = TEXT("Prototype_Component_Texture_Diffuse_Blood");
-		//_tOption.vColor = CLIENT_RGB(119.f, 245.f, 200.f);
+		_tOption.vColor = CLIENT_RGB(119.f, 245.f, 200.f);
 		//_tOption.vColor = CLIENT_RGB(82.f, 9.f, 4.f);
 		//_tOption.bPlayerDir = true;
 		_tOption.fSpead_Angle = _float3(0.f, 10.f, 10.f);
 		_tOption.vStart_Dir = _float3(1.f, 0.f, 0.f);
-		_tOption.eDiffuseType = CEffect_Particle::DIFFUSE_TEXTURE;
+		_tOption.eDiffuseType = CEffect_Particle::DIFFUSE_COLOR;
 		_tOption.eDirType = CEffect_Particle::DIR_TYPE::DIR_ANGLE;
 		_tOption.eStartType = CEffect_Particle::START_CENTER;
 		_tOption.fMaxDistance = { 0.4f, 1.2f };

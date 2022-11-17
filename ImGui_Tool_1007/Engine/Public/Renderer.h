@@ -10,7 +10,7 @@ BEGIN(Engine)
 class ENGINE_DLL CRenderer final : public CComponent
 {
 public: /* 그려지는 순서에 따른 정의 */
-	enum RENDERGROUP { RENDER_PRIORITY, RENDER_NONALPHABLEND, RENDER_NONLIGHT, RENDER_ALPHABLEND, RENDER_UI, RENDER_END };
+	enum RENDERGROUP { RENDER_PRIORITY, RENDER_NONALPHABLEND, RENDER_NONLIGHT, RENDER_ALPHABLEND,RENDER_AFTER_HDR, RENDER_UI, RENDER_END };
 
 
 private:
@@ -67,7 +67,11 @@ private:
 	HRESULT Render_AlphaBlend();
 	HRESULT Render_Distortion();
 	HRESULT Render_PostProcessing();
+	
+	HRESULT Render_After_HDR();
+
 	HRESULT Render_UI();
+
 
 	HRESULT Render_BackBuffer();
 

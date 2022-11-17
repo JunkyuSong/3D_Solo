@@ -10,7 +10,7 @@ HRESULT CHDR_Mgr::Initialize(const _uint& width, const _uint& height, ID3D11Devi
 	// Find the amount of thread groups needed for the downscale operation
 	m_iWidth = width;
 	m_iHeight = height;
-	m_iDownScaleGroups = (_uint)ceil((float)(m_iWidth * m_iHeight / 16) / 1024.f);
+	m_iDownScaleGroups = (_uint)ceil((float)(m_iWidth * m_iHeight / 32) / 1024.f);
 
 	m_pDevice = pDevice;
 	Safe_AddRef(m_pDevice);

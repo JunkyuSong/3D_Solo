@@ -185,7 +185,7 @@ HRESULT CTarget_Manager::BackBuffer_Start(ID3D11DeviceContext * pContext, const 
 	pContext->OMSetRenderTargets(1, m_pOldRenderTargets, m_pOldDepthStencil);
 
 	Safe_Release(m_pOldDepthStencil);
-
+	//m_pOldDepthStencil->Release();
 	return S_OK;
 }
 
@@ -207,6 +207,7 @@ HRESULT CTarget_Manager::BackBuffer_End(ID3D11DeviceContext * pContext, ID3D11Re
 		Safe_Release(m_pOldRenderTargets[i]);
 
 	Safe_Release(m_pOldDepthStencil);
+
 
 	return S_OK;
 }
