@@ -244,9 +244,14 @@ PS_OUT PS_DISSOLVE(PS_IN In)
 
 	if (fDissolve <= g_fTime + 0.03f)
 	{
-		Out.vDiffuse.r = 1.f;
+		/*Out.vDiffuse.r = 1.f;
 		Out.vDiffuse.g *= 1.f - (g_fTime - fDissolve) ;
-		Out.vDiffuse.b *= 1.f - (g_fTime - fDissolve) ;
+		Out.vDiffuse.b *= 1.f - (g_fTime - fDissolve) ;*/
+
+		Out.vDiffuse.r = 119.f / 255.f;
+		Out.vDiffuse.g = 245.f / 255.f;
+		Out.vDiffuse.b = 200.f / 255.f;
+
 	}
 
 	if (0 == Out.vDiffuse.a)

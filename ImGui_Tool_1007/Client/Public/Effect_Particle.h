@@ -14,19 +14,37 @@ class CEffect_Particle :
 public:
 	enum PARTICLETYPE { TYPE_STRIGHT, TYPE_EDGE, TYPE_INTANCE, TYPE_END };
 	enum SPREAD { SPREAD_CENTER, SPREAD_EDGE, SPREAD_END };
+	enum STARTTYPE { START_CENTER, START_RANDOM, START_END };
+	enum DIR_TYPE { DIR_NORMAL, DIR_ANGLE, DIR_END };
+	enum DIFFUSE_TYPE { DIFFUSE_TEXTURE, DIFFUSE_COLOR, DIFFUSE_END };
 	struct OPTION
 	{
+		DIFFUSE_TYPE					eDiffuseType = DIFFUSE_TEXTURE;
 		_tchar*							szTextureTag = nullptr;
 		_tchar*							szMaskTag = nullptr;
+		_float4							vColor = CLIENT_RGB(0.f,0.f,0.f);
 		PARTICLETYPE					eType = TYPE_END;
 		_float3							Center;
 		SPREAD							Spread = SPREAD_EDGE;
 		_uint							iNumParticles = 0;
 		_float							fGravity = 0.f;
+		_float2							fSpeed = {0.f,0.f};
 		_float							fAccSpeed = 0.f;
 		_float							fLifeTime = 0.f;
 		_float2							Size;
 		_float3							fRange;
+
+		_float2 						fMinMaxX;
+		_float2 						fMinMaxY;
+		_float2 						fMinMaxZ;
+
+		STARTTYPE						eStartType = START_RANDOM;
+		DIR_TYPE						eDirType = DIR_NORMAL;
+		_float3							vStart_Dir = {0.f,0.f,1.f};
+		_bool							bPlayerDir = false;
+		_float4x4						matPlayerAxix;
+		_float3							fSpead_Angle = { 30.f, 30.f, 30.f };
+		_float2							fMaxDistance = { 5.f, 5.f };
 	};
 
 protected:
@@ -47,6 +65,8 @@ public:
 
 protected:
 	_bool			MoveFrame(_float _fDeltaTime);
+	void			Set_Recycle() { m_bRecycle = true; }
+	virtual void	Re_Option() {}
 
 private:
 	HRESULT			Ready_Components();
@@ -62,9 +82,11 @@ protected:
 
 	_float							m_fSpriteTime = 0.f;
 
-	_float2							m_fMinMaxX;
-	_float2							m_fMinMaxY;
-	_float2							m_fMinMaxZ;
+	_float							m_fCurSpeed = 0.f;
+
+	_bool							m_bRecycle = false;
+
+	_float3							m_vOriginPos;
 
 private:
 	list<CEffect_Particle*>			m_Particles;

@@ -12,6 +12,8 @@
 #include "UI_Mgr.h"
 #include "Status.h"
 #include "VIBuffer_Point.h"
+#include "Effect_Mgr.h"
+#include "DeadParticle_Mgr.h"
 
 using namespace Client;
 
@@ -82,6 +84,7 @@ void CMainApp::Tick(const _float& fTimeDelta)
 	CImGui::Get_Instance()->Intcheck(&m_iFps, "FPS");
 	CImGui::Get_Instance()->End();
 	m_pGameInstance->Tick_Engine(fTimeDelta);
+	CEffect_Mgr::Get_Instance()->Tick(fTimeDelta);
 	CCameraMgr::Get_Instance()->Tick(fTimeDelta);
 	CPipeLine::Get_Instance()->Update();
 	
@@ -246,6 +249,8 @@ void CMainApp::Free()
 	Safe_Release(m_pContext);
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pGameInstance);
+	CDeadParticle_Mgr::Destroy_Instance();
+	CEffect_Mgr::Destroy_Instance();
 	CReleaseMgr::Destroy_Instance();
 	CStageMgr::Destroy_Instance();
 	CTerrainMgr::Destroy_Instance();

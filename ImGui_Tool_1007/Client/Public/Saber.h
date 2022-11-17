@@ -27,6 +27,7 @@ public:
 
 
 	void		Light_On();
+	void		Hit();
 
 private:
 	_uint	m_iLight = 0;

@@ -84,6 +84,20 @@ CComponent * CGameObject::Find_Component(const _tchar * pComponentTag)
 	return iter->second;
 }
 
+HRESULT CGameObject::Compute_CamZ(_fvector vWorldPos)
+{
+	CPipeLine*		pPipeLine = GET_INSTANCE(CPipeLine);
+
+	_fvector		vCamPos = XMLoadFloat4(&pPipeLine->Get_CamPosition());
+
+	m_fCamDistance = XMVectorGetX(XMVector3Length(vWorldPos - vCamPos));
+
+	RELEASE_INSTANCE(CPipeLine);
+
+	return S_OK;
+
+}
+
 void CGameObject::Free()
 {
 	for (auto& Pair : m_Components)

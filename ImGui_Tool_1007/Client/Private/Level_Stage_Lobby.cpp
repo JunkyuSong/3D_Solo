@@ -7,6 +7,8 @@
 #include "CameraMgr.h"
 #include "UI_Mgr.h"
 
+#include "Effect_Particle.h"
+#include "Effect_Mgr.h"
 
 CLevel_Stage_Lobby::CLevel_Stage_Lobby(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel_Client(pDevice, pContext)
@@ -196,7 +198,8 @@ HRESULT CLevel_Stage_Lobby::Ready_Layer_Effect(const _tchar * pLayerTag)
 
 	//}
 
-
+	//파티클 보자
+	
 
 
 	return S_OK;

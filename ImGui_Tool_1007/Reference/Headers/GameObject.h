@@ -29,7 +29,7 @@ public:
 
 public:
 	virtual HRESULT SetUp_State(_fmatrix StateMatrix) { return S_OK; }
-
+	HRESULT Compute_CamZ(_fvector vWorldPos);
 	OBJTYPE Get_ObjType() { return m_eTypeObj; }
 
 protected:

@@ -8,6 +8,8 @@
 
 #include "Trail_Obj.h"
 
+#include "Effect_Particle.h"
+#include "Effect_Mgr.h"
 CSaber::CSaber(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CWeapon(pDevice, pContext)
 {
@@ -98,6 +100,7 @@ HRESULT CSaber::Render()
 	{
 		// 라이트는 패링되었을때, 그 외엔 피 이펙트(시간 멈추는 타이밍에)!
 		Light_On();
+		Hit();
 		CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->ZoomIn(50.f, 80.f, 0.3f);
 		//CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER)->Shake_On(0.1f, 0.5f);
 
@@ -105,6 +108,8 @@ HRESULT CSaber::Render()
 		m_fCurStopTime = 0.f;
 		m_fCurDelayTime = 0.f;
 		m_bHitTime = true;
+
+		
 	}
 
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
@@ -159,8 +164,8 @@ void CSaber::Light_On()
 	vLow = XMVectorSet(-5.f, 0.f, 0.f, 1.f);
 
 
-	vHigh = XMVector2TransformCoord(vHigh, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
-	vLow = XMVector2TransformCoord(vLow, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+	vHigh = XMVector3TransformCoord(vHigh, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+	vLow = XMVector3TransformCoord(vLow, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 
 	LightPos = XMVectorSetW((vHigh + vLow) * 0.5f, 1.f);
 
@@ -170,6 +175,58 @@ void CSaber::Light_On()
 	XMStoreFloat4(&(LIGHT->vPosition), LightPos);
 	LIGHT->fRange = 3.f;
 	
+
+
+	
+}
+
+void CSaber::Hit()
+{
+	_vector LightPos, vHigh, vLow;
+	vHigh = XMVectorSet(100.0f, 0.f, 0.f, 1.f);
+	vLow = XMVectorSet(-5.f, 0.f, 0.f, 1.f);
+
+
+	vHigh = XMVector3TransformCoord(vHigh, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+	vLow = XMVector3TransformCoord(vLow, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+
+	LightPos = XMVectorSetW((vHigh + vLow) * 0.5f, 1.f);
+
+	CEffect_Particle::OPTION _tOption;
+	//_tOption.Center = _float3(45.f, 2.f, 45.f);
+	_vector	_vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	_float4x4	_vWorld = m_pTransformCom->Get_WorldFloat4x4();
+	//_tOption.Center = _float3(_vPos.m128_f32[0], _vPos.m128_f32[1] + 1.f, _vPos.m128_f32[2]);
+
+	XMStoreFloat3(&_tOption.Center, LightPos);
+
+	_tOption.eType = CEffect_Particle::PARTICLETYPE::TYPE_STRIGHT;
+	_tOption.fAccSpeed = 0.99f;
+	_tOption.fSpeed = { 1.5f, 3.3f };
+	_tOption.fGravity = 0.f;
+	_tOption.fLifeTime = 0.f;
+	_tOption.fRange = _float3(5.f, 5.f, 1.f);
+	_tOption.iNumParticles = 50;
+	_tOption.Size = _float2(0.2f, 0.2f);
+	_tOption.Spread = CEffect_Particle::SPREAD::SPREAD_EDGE;
+	_tOption.szMaskTag = TEXT("Prototype_Component_Texture_Mask_Blood");
+	_tOption.szTextureTag = TEXT("Prototype_Component_Texture_Diffuse_Blood");
+	//_tOption.vColor = CLIENT_RGB(119.f, 245.f, 200.f);
+	_tOption.vColor = CLIENT_RGB(255.f, 9.f, 4.f);
+	_tOption.bPlayerDir = true;
+	_tOption.fSpead_Angle = _float3(0.f, 25.f, 25.f);
+	_tOption.vStart_Dir = _float3(1.f, 0.f, 0.f);
+	_tOption.eDiffuseType = CEffect_Particle::DIFFUSE_TEXTURE;
+	_tOption.eDirType = CEffect_Particle::DIR_TYPE::DIR_ANGLE;
+	_tOption.eStartType = CEffect_Particle::START_CENTER;
+	_tOption.fMaxDistance = { 0.4f, 1.2f };
+	XMStoreFloat4x4(&_tOption.matPlayerAxix, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+
+	if (FAILED(CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_PARTICLE, &_tOption)))
+	{
+		MSG_BOX(TEXT("effect"));
+		return;
+	}
 }
 
 

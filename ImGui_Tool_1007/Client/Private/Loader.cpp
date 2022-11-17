@@ -50,6 +50,9 @@
 #include "Balloon.h"
 #include "Trail_Obj.h"
 #include "Effect_Particle.h"
+#include "Straight_Particle.h"
+
+#include "Effect_Mgr.h"
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -831,6 +834,10 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 		CEffect_Particle::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Straight_Particle"),
+		CStraight_Particle::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	
 
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
@@ -843,8 +850,12 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/T_WoodTiles01_BC.dds")))))//Grass_%d.dds
 		return E_FAIL;
 
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Texture_Mask_Blood"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Blood/TFX_Blood_01.dds")))))//Grass_%d.dds
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Mask_Blood"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Blood/T_Splatter_73_M.dds")))))//Grass_%d.dds
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Diffuse_Blood"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Blood/T_Blood_Fresh_BC.dds")))))//Grass_%d.dds
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
@@ -985,6 +996,9 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Navigation_Stage_Lobby"),
 		CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/Data/Stage_Lobby.dat")))))
 		return E_FAIL;
+
+	
+
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 

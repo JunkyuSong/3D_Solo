@@ -24,14 +24,7 @@ HRESULT CEffect_Particle::Initialize_Prototype(_tchar * szTextureTag)
 
 HRESULT CEffect_Particle::Initialize(void * pArg)
 {
-	if (!m_bDead)
-	{
-		//이때만 새로 생성된 경우임!
-		//컴포넌트 생성 해줌
-		if (FAILED(Ready_Components()))
-			return E_FAIL;
-	}
-	m_bDead = false;
+	
 
 	if (!pArg)
 	{
@@ -42,11 +35,20 @@ HRESULT CEffect_Particle::Initialize(void * pArg)
 
 	m_tOption = *(OPTION*)pArg;
 
+	if (!m_bDead)
+	{
+		//이때만 새로 생성된 경우임!
+		//컴포넌트 생성 해줌
+		if (FAILED(Ready_Components()))
+			return E_FAIL;
+	}
+	m_bDead = false;
+
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&m_tOption.Center), 1.f));
 
-	m_fMinMaxX = { m_tOption.Center.x - (m_tOption.fRange.x * 0.5f), m_tOption.Center.x + (m_tOption.fRange.x * 0.5f) };
-	m_fMinMaxY = { m_tOption.Center.y - (m_tOption.fRange.y * 0.5f), m_tOption.Center.y + (m_tOption.fRange.y * 0.5f) };
-	m_fMinMaxZ = { m_tOption.Center.z - (m_tOption.fRange.z * 0.5f), m_tOption.Center.z + (m_tOption.fRange.z * 0.5f) };
+	m_tOption.fMinMaxX = { m_tOption.Center.x - (m_tOption.fRange.x * 0.5f), m_tOption.Center.x + (m_tOption.fRange.x * 0.5f) };
+	m_tOption.fMinMaxY = { m_tOption.Center.y - (m_tOption.fRange.y * 0.5f), m_tOption.Center.y + (m_tOption.fRange.y * 0.5f) };
+	m_tOption.fMinMaxZ = { m_tOption.Center.z - (m_tOption.fRange.z * 0.5f), m_tOption.Center.z + (m_tOption.fRange.z * 0.5f) };
 
 	CEffect_Particle* _pParticle = nullptr;
 	for (_uint i = 0; i < m_tOption.iNumParticles; ++i)
@@ -76,18 +78,20 @@ const _bool & CEffect_Particle::Update(_float _fTimeDelta)
 
 	for (auto& iter = m_Particles.begin(); iter != m_Particles.end(); )
 	{
-		if ((*iter)->Update(_fTimeDelta))
+		if (false == (*iter)->Update(_fTimeDelta))
 		{
 			if (m_fCurLifeTime > m_tOption.fLifeTime)
 			{
 				//여기도 스위치문으로 해줘야함.
 				_pInstance->Dead_Straight_Particle(static_cast<CStraight_Particle*>(*iter));
 				iter = m_Particles.erase(iter);
+				
 				//그냥 이레이즈 하면 안되지
 			}
 			else
 			{
-				(*iter)->Recycle();
+				(*iter)->Set_Recycle();
+				++iter;
 			}
 		}
 		else
@@ -137,7 +141,7 @@ HRESULT CEffect_Particle::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Point"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
 	/* For.Com_Buffer */
@@ -149,8 +153,13 @@ HRESULT CEffect_Particle::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Mask */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_tOption.szMaskTag, TEXT("Com_Mask"), (CComponent**)&m_pMaskTextureCom)))
-		return E_FAIL;
+
+	if (m_tOption.szMaskTag != nullptr)
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_tOption.szMaskTag, TEXT("Com_Mask"), (CComponent**)&m_pMaskTextureCom)))
+			return E_FAIL;
+	}
+	
 	
 	return S_OK;
 }
@@ -187,5 +196,9 @@ void CEffect_Particle::Free()
 {
 	__super::Free();
 	Safe_Release(m_pTextureCom);
+	Safe_Release(m_pMaskTextureCom);
 	Safe_Release(m_pVIBufferCom);
+
+	for (auto& iter : m_Particles)
+		Safe_Release(iter);
 }

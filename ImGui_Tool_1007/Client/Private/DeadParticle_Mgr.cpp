@@ -22,7 +22,7 @@ CEffect_Particle * CDeadParticle_Mgr::Get_Straight_Particle()
 	else
 	{
 		AUTOINSTANCE(CGameInstance, _pGameInstance);
-		_pParticle = static_cast<CStraight_Particle*>(_pGameInstance->Clone_GameObject(TEXT("")));
+		_pParticle = static_cast<CStraight_Particle*>(_pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Straight_Particle")));
 	}
 
 	return _pParticle;
@@ -30,9 +30,13 @@ CEffect_Particle * CDeadParticle_Mgr::Get_Straight_Particle()
 
 void CDeadParticle_Mgr::Dead_Straight_Particle(CStraight_Particle* _pParticle)
 {
-	
+	m_Dead_Straight_Particles.push_back(_pParticle);
 }
 
 void CDeadParticle_Mgr::Free()
 {
+	for (auto& iter : m_Dead_Straight_Particles)
+	{
+		Safe_Release(iter);
+	}
 }

@@ -52,8 +52,9 @@ HRESULT CEffect_Mgr::Add_Effect(EFFECT_TYPE _eType, void * pArg)
 				Safe_Release(_pEffect);
 				return E_FAIL;
 			}
-			m_pEffects[EFFECT_PARTICLE].push_back(_pEffect);
+			
 		}
+		m_pEffects[EFFECT_PARTICLE].push_back(_pEffect);
 		break;
 	}
 
@@ -85,4 +86,15 @@ void CEffect_Mgr::Clear_Level(LEVEL _eLv)
 
 void CEffect_Mgr::Free()
 {
+
+	for (_uint i = 0; i < EFFECT_END; ++i)
+	{
+		for (auto& iter : m_pEffects[i])
+			Safe_Release(iter);
+		for (auto& iter : m_pDeadEffects[i])
+			Safe_Release(iter);
+
+		m_pEffects[i].clear();
+		m_pDeadEffects[i].clear();
+	}
 }

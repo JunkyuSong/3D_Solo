@@ -2,6 +2,7 @@
 
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D	g_DiffuseTexture;
+texture2D	g_NoiseTexture;
 
 float3		g_Right, g_Up;
 float		g_Width;
@@ -18,6 +19,8 @@ int			g_iMaxY;
 int			g_iMaxX;
 int			g_iCurY;
 int			g_iCurX;
+
+float4		g_Color;
 
 struct POINTLIST
 {
@@ -59,6 +62,15 @@ VS_OUT VS_MAIN(VS_IN In)
 {
 	VS_OUT		Out = (VS_OUT)0;
 	
+	return Out;
+}
+
+VS_OUT VS_PARTICLE(VS_IN In)
+{
+	VS_OUT		Out = (VS_OUT)0;
+
+	Out.vPosition = mul(In.vPosition, g_WorldMatrix);
+
 	return Out;
 }
 
@@ -258,17 +270,34 @@ PS_OUT PS_PARTICLE(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
+	float4 _vNoise = g_NoiseTexture.Sample(DefaultSampler, In.vTexUV);
+
 	In.vTexUV.y = (1.f / g_iMaxY * g_iCurY) + (1.f / g_iMaxY * In.vTexUV.y);
 	In.vTexUV.x = (1.f / g_iMaxX * g_iCurX) + (1.f / g_iMaxX * In.vTexUV.x);
 
-	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	
 
+	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV) * _vNoise.r;
+	//Out.vColor.a = saturate( _vNoise.r + _vNoise.g + _vNoise.b);
 	if (0 >= Out.vColor.a)
 		discard;
 
 	return Out;
 }
 
+PS_OUT PS_PARTICLE_Color(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	float4 _vNoise = g_NoiseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	Out.vColor = g_Color * _vNoise.r;
+	Out.vColor.a = saturate( _vNoise.r + _vNoise.g + _vNoise.b);
+	if (0 >= Out.vColor.a)
+		discard;
+
+	return Out;
+}
 
 technique11 DefaultTechnique
 {
@@ -297,8 +326,18 @@ technique11 DefaultTechnique
 		SetRasterizerState(RS_CullNone);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-		VertexShader = compile vs_5_0 VS_MAIN();
+		VertexShader = compile vs_5_0 VS_PARTICLE();
 		GeometryShader = compile gs_5_0 GS_PARTICLE();
 		PixelShader = compile ps_5_0 PS_PARTICLE();
+	}
+
+	pass DrawParticle_Color
+	{
+		SetRasterizerState(RS_CullNone);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_PARTICLE();
+		GeometryShader = compile gs_5_0 GS_PARTICLE();
+		PixelShader = compile ps_5_0 PS_PARTICLE_Color();
 	}
 }

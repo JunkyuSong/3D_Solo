@@ -603,7 +603,9 @@
     <ClInclude Include="..\public\Effect_Particle.h">
       <Filter>02.GameObjects\07. Effect\98. Particle</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\DeadParticle_Mgr.h" />
+    <ClInclude Include="..\public\DeadParticle_Mgr.h">
+      <Filter>02.GameObjects\07. Effect\98. Particle\99. DeadParticle_Mgr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -867,7 +869,9 @@
     <ClCompile Include="..\private\Effect_Particle.cpp">
       <Filter>02.GameObjects\07. Effect\98. Particle</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\DeadParticle_Mgr.cpp" />
+    <ClCompile Include="..\private\DeadParticle_Mgr.cpp">
+      <Filter>02.GameObjects\07. Effect\98. Particle\99. DeadParticle_Mgr</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
