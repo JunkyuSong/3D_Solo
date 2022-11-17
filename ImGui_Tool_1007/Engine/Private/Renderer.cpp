@@ -409,6 +409,13 @@ HRESULT CRenderer::Render_AlphaBlend()
 	//_uint iDepthStencil = 0;
 	//if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Alpha"))))
 	//	return E_FAIL;
+	_uint iDepth = 0;
+	if (FAILED(m_pTarget_Manager->AddBinding_RTV(m_pContext, TEXT("Target_Depth"), 1)))
+		return E_FAIL;
+	++iDepth;
+	if (FAILED(m_pTarget_Manager->AddBinding_RTV(m_pContext, TEXT("Target_Distortion"), 2)))
+		return E_FAIL;
+	++iDepth;
 
 	m_RenderObjects[RENDER_ALPHABLEND].sort([](CGameObject* pSour, CGameObject* pDest)
 	{
@@ -424,8 +431,8 @@ HRESULT CRenderer::Render_AlphaBlend()
 	}
 	m_RenderObjects[RENDER_ALPHABLEND].clear();
 
-	//if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
-	//	return E_FAIL;
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext, iDepth)))
+		return E_FAIL;
 
 	return S_OK;
 }

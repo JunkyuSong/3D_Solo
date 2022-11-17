@@ -3,6 +3,8 @@
 #include "Client_Defines.h"
 #include "GameObject.h"
 
+#include "Effect_Particle.h"
+
 
 BEGIN(Engine)
 class CShader;
@@ -80,7 +82,7 @@ private:
 	enum DIRECT { DIR_F, DIR_B, DIR_R, DIR_L, DIR_FR, DIR_BR, DIR_FL, DIR_BL, DIR_END };
 	enum COLLIDERTYPE { COLLIDERTYPE_CLAW, COLLIDERTYPE_BODY, COLLIDERTYPE_PARRY, COLLIDERTYPE_PUSH, COLLILDERTYPE_END };
 	enum ATTACKLIMIT { ATTACKLIMIT_MOVE, ATTACKLIMIT_CHANGE, ATTACKLIMIT_TRAILON, ATTACKLIMIT_TRAILEND, ATTACKLIMIT_COLLIDERON, ATTACKLIMIT_COLLIDEREND, ATTACKLIMIT_END };
-
+	enum PARTICLEEFFECT {PARTICLE_CLAW, PARTICLE_END};
 public:
 	struct OBJ_DESC
 	{
@@ -218,7 +220,14 @@ private:
 
 	_int					m_iLightIndex = -1;
 
+	_bool					m_bEffect = false;
+
+	_float3					m_vCurClaw;
+	_float3					m_vPreClaw;
+
 private:
+	HRESULT	Ready_ParticleDesc();
+
 	HRESULT	Check_MotionTrail(_float fTimeDelta);
 
 	HRESULT Ready_Components();
@@ -280,6 +289,10 @@ private:
 	void CutScene();
 	void Gate();
 	void MoveLevel();
+
+
+private:
+	CEffect_Particle::OPTION m_Particles[PARTICLE_END];
 
 };
 

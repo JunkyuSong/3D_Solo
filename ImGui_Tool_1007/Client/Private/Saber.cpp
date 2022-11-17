@@ -212,7 +212,8 @@ void CSaber::Hit()
 	_tOption.szMaskTag = TEXT("Prototype_Component_Texture_Mask_Blood");
 	_tOption.szTextureTag = TEXT("Prototype_Component_Texture_Diffuse_Blood");
 	//_tOption.vColor = CLIENT_RGB(119.f, 245.f, 200.f);
-	_tOption.vColor = CLIENT_RGB(255.f, 9.f, 4.f);
+	//_tOption.vColor = CLIENT_RGB(255.f, 9.f, 4.f);
+	_tOption.vColor = CLIENT_RGB(255.f, 0.f, 0.f);
 	_tOption.bPlayerDir = true;
 	_tOption.fSpead_Angle = _float3(0.f, 25.f, 25.f);
 	_tOption.vStart_Dir = _float3(1.f, 0.f, 0.f);

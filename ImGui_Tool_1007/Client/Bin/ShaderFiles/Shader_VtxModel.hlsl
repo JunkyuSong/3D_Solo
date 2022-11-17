@@ -118,6 +118,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
 
+
 	return Out;
 }
 
@@ -136,6 +137,7 @@ PS_OUT_NONLIGHT PS_NONLIGHT(PS_IN In)
 	// -1 ~ 1
 	//  0 ~ 1
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
+
 
 	return Out;
 }
@@ -167,6 +169,7 @@ PS_OUT PS_BALLOON(PS_IN In)
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
 
+
 	return Out;
 }
 
@@ -186,6 +189,7 @@ PS_OUT PS_MAIN_2(PS_IN In)
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
 
+
 	return Out;
 }
 
@@ -204,6 +208,7 @@ PS_OUT PS_Sky(PS_IN In)
 	//  0 ~ 1
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
+	Out.vDiffuse = pow(Out.vDiffuse, 2.2f);
 
 	return Out;
 }
@@ -231,6 +236,7 @@ PS_OUT PS_Stage(PS_IN In)
 	//  0 ~ 1
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
+
 
 	return Out;
 }

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "GameObject.h"
 #include "Client_Defines.h"
 
@@ -27,6 +29,7 @@ protected:
 	_bool					m_bDead = false;
 
 public:
-	virtual void Free() override;
+	virtual CGameObject * Clone(void * pArg) = 0;
+	virtual void Free();
 };
 END

@@ -89,7 +89,7 @@ HRESULT CPlayer::Initialize(void * pArg)
 		return E_FAIL;
 
 	Ready_AnimLimit();
-
+	Ready_ParticleDesc();
 
 	ZeroMemory(&m_tInfo, sizeof(OBJ_DESC));
 
@@ -1422,6 +1422,7 @@ void CPlayer::CheckEndAnim()
 	
 	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 	m_PreAnimPos = m_AnimPos;
+	m_bEffect = false;
 }
 
 void CPlayer::CheckLimit()
@@ -1590,12 +1591,30 @@ void CPlayer::CheckLimit()
 	case Client::CPlayer::Raven_ClawLong_ChargeFull:
 		break;
 	case Client::CPlayer::Raven_ClawNear:
-		if (m_fPlayTime > m_vecLimitTime[Raven_ClawNear][1])
+		if (m_fPlayTime > m_vecLimitTime[Raven_ClawNear][3])
 		{
+			
 			m_bCollision[COLLIDERTYPE_CLAW] = false;
+		}
+		else if (m_fPlayTime > m_vecLimitTime[Raven_ClawNear][2])
+		{
+			if (!m_bEffect)
+			{
+				CClaw::CLAW_DESC _tInfo;
+				_tInfo.TargetMatrix = m_pTransformCom->Get_WorldFloat4x4();
+				_tInfo.eClaw = CClaw::CLAWTYPE_LEFT;
+				CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_CLAW, &_tInfo);
+
+				m_bEffect = true;
+			}
+		}
+		else if (m_fPlayTime > m_vecLimitTime[Raven_ClawNear][1])
+		{
+			
 		}
 		else if (m_fPlayTime > m_vecLimitTime[Raven_ClawNear][0])
 		{
+			
 			m_bCollision[COLLIDERTYPE_CLAW] = true;
 		}
 		break;
@@ -2145,6 +2164,8 @@ void CPlayer::Update_Collider()
 	CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_PUSH, m_pColliderCom[COLLIDERTYPE_PUSH], this);
 	if (m_bCollision[COLLIDERTYPE_CLAW])
 	{
+		m_vPreClaw = m_vCurClaw;
+		XMStoreFloat3(&m_vCurClaw, (m_pHands[HAND_RIGHT]->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix()).r[3]);
 		m_pColliderCom[COLLIDERTYPE_CLAW]->Update(m_pHands[HAND_RIGHT]->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix());
 		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_WEAPON, m_pColliderCom[COLLIDERTYPE_CLAW], this);
 	}
@@ -2215,6 +2236,41 @@ _bool CPlayer::Collision(_float fTimeDelta)
 		}
 	}
 	return false;
+}
+
+HRESULT CPlayer::Ready_ParticleDesc()
+{
+	CEffect_Particle::OPTION _tOption;
+	//_tOption.Center = _float3(45.f, 2.f, 45.f);
+	_vector	_vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	_float4x4	_vWorld = m_pTransformCom->Get_WorldFloat4x4();;
+	_tOption.Center = _float3(_vPos.m128_f32[0], _vPos.m128_f32[1] + 1.f, _vPos.m128_f32[2]);
+	_tOption.eType = CEffect_Particle::PARTICLETYPE::TYPE_STRIGHT;
+	_tOption.fAccSpeed = 0.999f;
+	_tOption.fSpeed = { 4.7f, 5.f };
+	_tOption.fGravity = 0.f;
+	_tOption.fLifeTime = 0.f;
+	_tOption.fRange = _float3(5.f, 5.f, 1.f);
+	_tOption.iNumParticles = 20;
+	_tOption.Size = _float2(0.1f, 0.1f);
+	_tOption.Spread = CEffect_Particle::SPREAD::SPREAD_EDGE;
+	_tOption.szMaskTag = TEXT("Prototype_Component_Texture_Mask_ClawEffect");
+	_tOption.szTextureTag = TEXT("Prototype_Component_Texture_Diffuse_Blood");
+	_tOption.vColor = CLIENT_RGB(119.f, 245.f, 110.f);
+	//_tOption.vColor = CLIENT_RGB(82.f, 9.f, 4.f);
+	//_tOption.bPlayerDir = true;
+	_tOption.fSpead_Angle = _float3(0.f, 5.f, 5.f);
+	_tOption.vStart_Dir = _float3(1.f, 0.f, 0.f);
+	_tOption.eDiffuseType = CEffect_Particle::DIFFUSE_COLOR;
+	_tOption.eDirType = CEffect_Particle::DIR_TYPE::DIR_ANGLE;
+	_tOption.eStartType = CEffect_Particle::START_CENTER;
+	_tOption.fMaxDistance = { 0.3f, 0.8f };
+	_tOption.bPlayerDir = false;
+	_tOption.matPlayerAxix = _vWorld;
+
+	m_Particles[PARTICLE_CLAW] = _tOption;
+	
+	return S_OK;
 }
 
 HRESULT CPlayer::Check_MotionTrail(_float fTimeDelta)
@@ -2406,6 +2462,8 @@ HRESULT CPlayer::Ready_AnimLimit()
 
 	//클로
 	m_vecLimitTime[Raven_ClawNear].push_back(5.f);
+	m_vecLimitTime[Raven_ClawNear].push_back(25.f);
+	m_vecLimitTime[Raven_ClawNear].push_back(30.f);
 	m_vecLimitTime[Raven_ClawNear].push_back(50.f);
 
 	//패리

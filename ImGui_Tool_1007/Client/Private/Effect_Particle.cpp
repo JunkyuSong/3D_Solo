@@ -149,9 +149,11 @@ HRESULT CEffect_Particle::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Texture */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_tOption.szTextureTag, TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-		return E_FAIL;
-
+	if (m_tOption.szTextureTag != nullptr)
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_tOption.szTextureTag, TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+	}
 	/* For.Com_Mask */
 
 	if (m_tOption.szMaskTag != nullptr)

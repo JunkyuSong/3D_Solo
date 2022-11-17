@@ -264,7 +264,7 @@ PS_OUT PS_TEXTURE(PS_IN In)
 	Out.vColor.a = g_Alpha;
 	if (0 >= Out.vColor.a)
 		discard;
-	//Out.vColor = pow(Out.vColor, 2.2f);
+	Out.vColor = pow(Out.vColor, 2.2f);
 	return Out;
 }
 
@@ -283,7 +283,7 @@ PS_OUT PS_PARTICLE(PS_IN In)
 	//Out.vColor.a = saturate( _vNoise.r + _vNoise.g + _vNoise.b);
 	if (0 >= Out.vColor.a)
 		discard;
-	//Out.vColor = pow(Out.vColor, 2.2f);
+	Out.vColor = pow(Out.vColor, 2.2f);
 	return Out;
 }
 
@@ -297,7 +297,7 @@ PS_OUT PS_PARTICLE_Color(PS_IN In)
 	Out.vColor.a = saturate( _vNoise.r + _vNoise.g + _vNoise.b);
 	if (0 >= Out.vColor.a)
 		discard;
-	//Out.vColor = pow(Out.vColor, 2.2f);
+	Out.vColor = pow(Out.vColor, 2.2f);
 	return Out;
 }
 

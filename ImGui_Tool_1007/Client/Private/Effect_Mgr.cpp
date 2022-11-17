@@ -33,6 +33,24 @@ HRESULT CEffect_Mgr::Add_Effect(EFFECT_TYPE _eType, void * pArg)
 	switch (_eType)
 	{
 	case Client::CEffect_Mgr::EFFECT_CLAW:
+		if (m_pDeadEffects[EFFECT_CLAW].size() > 0)
+		{
+			_pEffect = m_pDeadEffects[EFFECT_CLAW].back();
+			m_pDeadEffects[EFFECT_CLAW].pop_back();
+			_pEffect->Initialize(pArg);
+		}
+		else
+		{
+			_pEffect = static_cast<CEffect*>(_pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Claw_Effect"), pArg));
+			if (_pEffect == nullptr)
+			{
+				MSG_BOX(TEXT("fail to clone effect(particle)"));
+				Safe_Release(_pEffect);
+				return E_FAIL;
+			}
+
+		}
+		m_pEffects[EFFECT_CLAW].push_back(_pEffect);
 		break;
 	case Client::CEffect_Mgr::EFFECT_BLOOD:
 		break;

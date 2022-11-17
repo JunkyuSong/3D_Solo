@@ -2,7 +2,10 @@
 #include "Base.h"
 #include "Client_Defines.h"
 
-#include "Effect_Particle.h"
+
+#include "Claw.h"
+
+#include "Straight_Particle.h"
 
 BEGIN(Client)
 

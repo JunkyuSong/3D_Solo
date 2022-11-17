@@ -49,10 +49,14 @@
 #include "StreetLight.h"
 #include "Balloon.h"
 #include "Trail_Obj.h"
-#include "Effect_Particle.h"
-#include "Straight_Particle.h"
 
+
+
+//#include "Effect_Particle.h"
+#include "Straight_Particle.h"
 #include "Effect_Mgr.h"
+#include "Claw.h"
+
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -838,6 +842,10 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 		CStraight_Particle::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Claw_Effect"),
+		CClaw::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	
 
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
@@ -858,6 +866,11 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Blood/T_Blood_Fresh_BC.dds")))))//Grass_%d.dds
 		return E_FAIL;
 
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Mask_ClawEffect"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Blood/T_Splatter_36_M.dds")))))//Grass_%d.dds
+		return E_FAIL;
+
+	
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 	/* 모델를 로드한다. */
 
