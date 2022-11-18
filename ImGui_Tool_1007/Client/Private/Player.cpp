@@ -1594,6 +1594,7 @@ void CPlayer::CheckLimit()
 		if (m_fPlayTime > m_vecLimitTime[Raven_ClawNear][3])
 		{
 			
+			m_bCollision[COLLIDERTYPE_BODY] = true;
 			m_bCollision[COLLIDERTYPE_CLAW] = false;
 		}
 		else if (m_fPlayTime > m_vecLimitTime[Raven_ClawNear][2])
@@ -1614,7 +1615,7 @@ void CPlayer::CheckLimit()
 		}
 		else if (m_fPlayTime > m_vecLimitTime[Raven_ClawNear][0])
 		{
-			
+			m_bCollision[COLLIDERTYPE_BODY] = false;
 			m_bCollision[COLLIDERTYPE_CLAW] = true;
 		}
 		break;
@@ -2223,17 +2224,41 @@ _bool CPlayer::Collision(_float fTimeDelta)
 				{
 					_Part->TrailOff();
 				}
-
+				
 				_Part->Set_CollisionOn(false);
 			}
 			m_pTransformCom->LookAt_ForLandObject(
 				static_cast<CTransform*>(_pTarget->Get_ComponentPtr(TEXT("Com_Transform")))
 				->Get_State(CTransform::STATE_POSITION));
+			m_bCollision[COLLIDERTYPE_CLAW] = false;
+			m_bCollision[COLLIDERTYPE_PARRY] = false;
 
+			m_eWeapon = WEAPON_BASE;
 			m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack());
 			m_bCollision[COLLIDERTYPE_BODY] = false;
 			return true;
 		}
+		else if (_pTarget = (m_pColliderCom[COLLIDERTYPE_CLAW])->Get_Target())
+		{
+			_vector _vPos = static_cast<CTransform*>(_pTarget->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+			_vector _vPlayerPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+			_vPos.m128_f32[1] += 1.7f;
+			_vPlayerPos.m128_f32[1] += 1.7f;
+			XMStoreFloat3(&(m_Particles[PARTICLE_CLAW].vStart_Dir), _vPlayerPos - _vPos/*XMLoadFloat3(&m_vCurClaw)*/);
+			m_Particles[PARTICLE_CLAW].Center = m_vCurClaw;
+			m_Particles[PARTICLE_CLAW].vColor =CLIENT_RGB(119.f, 245.f, 110.f);
+			if (FAILED(CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_PARTICLE, &m_Particles[PARTICLE_CLAW])))
+			{
+				MSG_BOX(TEXT("effect"));
+			}
+			m_Particles[PARTICLE_CLAW].vColor = CLIENT_RGB(255.f, 127.f, 0.f);
+			if (FAILED(CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_PARTICLE, &m_Particles[PARTICLE_CLAW])))
+			{
+				MSG_BOX(TEXT("effect"));
+			}
+		}
+		
+
 	}
 	return false;
 }
@@ -2246,25 +2271,25 @@ HRESULT CPlayer::Ready_ParticleDesc()
 	_float4x4	_vWorld = m_pTransformCom->Get_WorldFloat4x4();;
 	_tOption.Center = _float3(_vPos.m128_f32[0], _vPos.m128_f32[1] + 1.f, _vPos.m128_f32[2]);
 	_tOption.eType = CEffect_Particle::PARTICLETYPE::TYPE_STRIGHT;
-	_tOption.fAccSpeed = 0.999f;
-	_tOption.fSpeed = { 4.7f, 5.f };
+	_tOption.fAccSpeed = 0.99f;
+	_tOption.fSpeed = { 5.f, 7.f };
 	_tOption.fGravity = 0.f;
 	_tOption.fLifeTime = 0.f;
 	_tOption.fRange = _float3(5.f, 5.f, 1.f);
-	_tOption.iNumParticles = 20;
-	_tOption.Size = _float2(0.1f, 0.1f);
+	_tOption.iNumParticles = 15;
+	_tOption.Size = _float2(0.2f, 0.2f);
 	_tOption.Spread = CEffect_Particle::SPREAD::SPREAD_EDGE;
 	_tOption.szMaskTag = TEXT("Prototype_Component_Texture_Mask_ClawEffect");
 	_tOption.szTextureTag = TEXT("Prototype_Component_Texture_Diffuse_Blood");
 	_tOption.vColor = CLIENT_RGB(119.f, 245.f, 110.f);
 	//_tOption.vColor = CLIENT_RGB(82.f, 9.f, 4.f);
 	//_tOption.bPlayerDir = true;
-	_tOption.fSpead_Angle = _float3(0.f, 5.f, 5.f);
+	_tOption.fSpead_Angle = _float3(0.f, 20.f, 20.f);
 	_tOption.vStart_Dir = _float3(1.f, 0.f, 0.f);
 	_tOption.eDiffuseType = CEffect_Particle::DIFFUSE_COLOR;
 	_tOption.eDirType = CEffect_Particle::DIR_TYPE::DIR_ANGLE;
 	_tOption.eStartType = CEffect_Particle::START_CENTER;
-	_tOption.fMaxDistance = { 0.3f, 0.8f };
+	_tOption.fMaxDistance = { 2.5f, 3.f };
 	_tOption.bPlayerDir = false;
 	_tOption.matPlayerAxix = _vWorld;
 

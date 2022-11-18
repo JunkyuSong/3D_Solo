@@ -289,9 +289,11 @@ void CExtra01::CheckEndAnim()
 		break;
 	case Client::CExtra01::LV1Villager_M_HurtS_FL:
 		m_eCurState = LV1Villager_M_IdleGeneral;
+		m_iPass = 0;
 		break;
 	case Client::CExtra01::LV1Villager_M_HurtS_FR:
 		m_eCurState = LV1Villager_M_IdleGeneral;
+		m_iPass = 0;
 		break;
 	}
 
@@ -595,6 +597,12 @@ _bool CExtra01::Collision(_float fTimeDelta)
 	if ((_pTarget = m_pColliderCom[COLLIDERTYPE_BODY]->Get_Target()) && (CPlayer::ParryL != *static_cast<CPlayer*>(_pTarget)->Get_AnimState()))
 	{
 		CPlayer* _pPlayer = static_cast<CPlayer*>(_pTarget);
+
+		if (CPlayer::Raven_ClawNear == *static_cast<CPlayer*>(_pTarget)->Get_AnimState())
+		{
+
+			m_iPass = 5;
+		}
 
 		CTransform* _Trans = static_cast<CTransform*>(_instance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
 		m_pTransformCom->LookAt_ForLandObject(_Trans->Get_State(CTransform::STATE_POSITION));

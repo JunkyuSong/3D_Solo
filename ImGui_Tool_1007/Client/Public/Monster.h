@@ -60,6 +60,8 @@ protected:
 
 	MONSTERTYPE				m_eMonsterType = MONSTER_END;
 
+	_uint					m_iPass = 0;
+
 public:
 	virtual void Free() override;
 };

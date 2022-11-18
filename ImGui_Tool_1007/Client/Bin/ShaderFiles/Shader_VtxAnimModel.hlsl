@@ -149,10 +149,11 @@ PS_OUT PS_RIMLIGHT(PS_IN In)
 
 	float4 ToCamera = normalize(g_vCamPosition - In.vWorldPosition);
 
-	//float fRimColor = smoothstep(1.f - fRImPower, 1.f, 1.f - max(0, dot(ToCamera, normalize(vector(vNormal, 0.f)))));
+	float fRimColor = smoothstep(0.5f, 1.f, 1.f - max(0, dot(ToCamera, normalize(vector(vNormal, 0.f)))));
 
-	if (dot(ToCamera, normalize(vector(vNormal, 0.f))) < 0.5f)
-		Out.vDiffuse = vector(0.466f,0.96f,0.78f,1.f);
+	//if (dot(ToCamera, normalize(vector(vNormal, 0.f))) < 0.5f)
+	Out.vDiffuse *= 0.1f;
+		Out.vDiffuse += vector(0.466f,0.96f,0.78f,1.f) * fRimColor;
 
 
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
