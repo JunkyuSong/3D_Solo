@@ -198,14 +198,15 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_Blend()))
 		return E_FAIL;
 
+	if (FAILED(Render_PostProcessing()))
+		return E_FAIL;
+
+
 
 	if (FAILED(Render_NonLight()))
 		return E_FAIL;
 	
 	if (FAILED(Render_AlphaBlend()))
-		return E_FAIL;
-
-	if (FAILED(Render_PostProcessing()))
 		return E_FAIL;
 
 	if (FAILED(Render_BackBuffer()))

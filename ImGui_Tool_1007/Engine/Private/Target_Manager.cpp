@@ -94,10 +94,11 @@ HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext * pContext, _uint iDepthSte
 	for (_uint i = 0; i < 8; ++i)
 		Safe_Release(m_pOldRenderTargets[i]);
 
-	for (_uint i = 0; i < iDepthStencil; ++i)
-		m_pOldDepthStencil->Release();
+	/*for (_uint i = 0; i < iDepthStencil; ++i)
+		m_pOldDepthStencil->Release();*/
 
-	
+	Safe_Release(m_pOldDepthStencil);
+
 	return S_OK;
 }
 
