@@ -217,7 +217,7 @@ void CSaber::Hit()
 	_tOption.bPlayerDir = true;
 	_tOption.fSpead_Angle = _float3(0.f, 25.f, 25.f);
 	_tOption.vStart_Dir = _float3(1.f, 0.f, 0.f);
-	_tOption.eDiffuseType = CEffect_Particle::DIFFUSE_TEXTURE;
+	_tOption.eDiffuseType = CEffect_Particle::DIFFUSE_COLOR;
 	_tOption.eDirType = CEffect_Particle::DIR_TYPE::DIR_ANGLE;
 	_tOption.eStartType = CEffect_Particle::START_CENTER;
 	_tOption.fMaxDistance = { 0.4f, 1.2f };

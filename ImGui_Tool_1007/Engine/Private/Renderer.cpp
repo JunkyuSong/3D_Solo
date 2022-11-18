@@ -385,8 +385,8 @@ HRESULT CRenderer::Render_NonLight()
 	if (nullptr == m_pTarget_Manager)
 		return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->AddBinding_RTV(m_pContext, TEXT("Target_Depth"), 1)))
-		return E_FAIL;
+	/*if (FAILED(m_pTarget_Manager->AddBinding_RTV(m_pContext, TEXT("Target_Depth"), 1)))
+		return E_FAIL;*/
 	
 	for (auto& pRenderObject : m_RenderObjects[RENDER_NONLIGHT])
 	{
@@ -397,8 +397,8 @@ HRESULT CRenderer::Render_NonLight()
 	}
 	m_RenderObjects[RENDER_NONLIGHT].clear();
 
-	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
-		return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+	//	return E_FAIL;
 
 	return S_OK;
 }
@@ -411,9 +411,9 @@ HRESULT CRenderer::Render_AlphaBlend()
 	//if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Alpha"))))
 	//	return E_FAIL;
 	_uint iDepth = 0;
-	if (FAILED(m_pTarget_Manager->AddBinding_RTV(m_pContext, TEXT("Target_Depth"), 1)))
+	/*if (FAILED(m_pTarget_Manager->AddBinding_RTV(m_pContext, TEXT("Target_Depth"), 1)))
 		return E_FAIL;
-	++iDepth;
+	++iDepth;*/
 	if (FAILED(m_pTarget_Manager->AddBinding_RTV(m_pContext, TEXT("Target_Distortion"), 2)))
 		return E_FAIL;
 	++iDepth;
