@@ -35,6 +35,16 @@ DepthStencilState DSS_Default
 	DepthFunc = less_equal;
 };
 
+DepthStencilState DSS_Test
+{
+	DepthEnable = true;
+	DepthWriteMask = all;
+		//DepthFunc = less_equal;
+	//DepthFunc = greater;
+};
+
+
+
 DepthStencilState DSS_Skybox
 {
 	DepthEnable = false;

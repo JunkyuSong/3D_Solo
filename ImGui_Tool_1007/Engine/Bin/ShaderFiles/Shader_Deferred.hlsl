@@ -1,6 +1,8 @@
 
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
+matrix		g_LightViewInverse;
+
 vector		g_vCamPosition;
 vector		g_vPlayerPoition;
 float		g_fFogRange = 5.f;
@@ -29,6 +31,8 @@ texture2D	g_DistortionTexture_Bump;
 
 texture2D	g_AlphaDepthTexture;
 texture2D	g_AlphaDiffuseTexture;
+
+texture2D	g_ShadowDepthTexture;
 
 float		g_fTick;
 
@@ -91,6 +95,7 @@ struct PS_OUT_LIGHT
 {
 	float4		vShade : SV_TARGET0;
 	float4		vSpecular : SV_TARGET1;
+	float4		vShadowDepth : SV_TARGET2;
 };
 
 PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
@@ -99,6 +104,8 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 
 	vector			vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexUV);
 	vector			vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexUV);
+
+	vector			vShadowDepthDesc = g_ShadowDepthTexture.Sample(DefaultSampler, In.vTexUV);
 
 	float			fViewZ = vDepthDesc.y;
 
@@ -118,6 +125,11 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 
 	vector			vViewPos = mul(vProjPos, g_ProjMatrixInv);
 	vector			vWorldPos = mul(vViewPos, g_ViewMatrixInv);
+
+	vector			vShadowPos = mul(vWorldPos, g_LightViewInverse);
+
+	//if (vShadowPos.z < vShadowDepthDesc.x)
+	//	Out.vShade *= 0.5f;
 
 	vector			vReflect = reflect(normalize(g_vLightDir), vNormal);
 	vector			vLook = vWorldPos - g_vCamPosition;
@@ -448,5 +460,4 @@ technique11 DefaultTechnique
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_ALPHA();
 	}
-
 }

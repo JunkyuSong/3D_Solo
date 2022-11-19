@@ -3,6 +3,8 @@ matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 float		g_fAlpha;
 float		g_fTime;
 
+matrix		g_LightViewInverse;
+
 float4		g_fColor;
 
 float4			g_vCamPosition;
@@ -47,6 +49,7 @@ struct VS_OUT
 	float3		vTangent : TANGENT;
 	float3		vBinormal : BINORMAL;
 	float4		vWorldPosition : TEXCOORD2;
+	float4		vLightViewPosition : TEXCOORD3;
 };
 
 
@@ -79,6 +82,7 @@ VS_OUT VS_MAIN(VS_IN In)
 
 	Out.vTexUV = In.vTexUV;
 	Out.vProjPos = Out.vPosition;
+	Out.vLightViewPosition = mul(Out.vWorldPosition, g_LightViewInverse);
 
 	return Out;
 }
@@ -92,6 +96,7 @@ struct PS_IN
 	float3		vTangent : TANGENT;
 	float3		vBinormal : BINORMAL;
 	float4		vWorldPosition : TEXCOORD2;
+	float4		vLightViewPosition : TEXCOORD3;
 };
 
 struct PS_OUT
@@ -99,12 +104,14 @@ struct PS_OUT
 	float4		vDiffuse : SV_TARGET0;
 	float4		vNormal : SV_TARGET1;
 	float4		vDepth : SV_TARGET2;
+	float4		vShadowDepth : SV_TARGET4;
 };
 
 struct PS_OUT_NONLIGHT
 {
 	float4		vDiffuse : SV_TARGET0;
-	float4		vDepth : SV_TARGET1;
+	float4		vDepth : SV_TARGET2;
+
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -126,7 +133,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w , 0.0f, 0.0f);
 
-
+	Out.vShadowDepth = vector(In.vLightViewPosition.z, 0.f, 0.0f, 0.0f);
 
 	return Out;
 }

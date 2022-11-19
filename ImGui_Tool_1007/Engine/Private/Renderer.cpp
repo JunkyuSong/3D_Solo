@@ -81,7 +81,7 @@ HRESULT CRenderer::Initialize_Prototype()
 		return E_FAIL;
 
 	/* For.Target_TotalDepth */
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_TotalDepth"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, &_float4(0.0f, 0.f, 0.f, 1.f))))
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_ShadowDepth"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, &_float4(1.f, 1.f, 1.f, 1.f))))
 		return E_FAIL;
 
 	/* For.MRT_Back */
@@ -97,12 +97,15 @@ HRESULT CRenderer::Initialize_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Distortion"))))
 		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_ShadowDepth"))))
+		return E_FAIL;
 
 	/* For.MRT_LightAcc */
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Shade"))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Specular"))))
 		return E_FAIL;
+
 
 	/* For.MRT_Alpha */
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Alpha"), TEXT("Target_Alpha"))))
@@ -111,14 +114,6 @@ HRESULT CRenderer::Initialize_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Alpha"), TEXT("Target_Distortion"))))
 		return E_FAIL;
-
-
-	/* For.MRT_Final */
-	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Final"), TEXT("Target_BackBufferRTV"))))
-		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Final"), TEXT("Target_TotalDepth"))))
-		return E_FAIL;
-
 
 #ifdef _DEBUG
 	
@@ -133,7 +128,7 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Specular"), 210.f, 210.f, 140.f, 140.f)))
 		return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_BackBuffer"), 350.f, 70.f, 140.f, 140.f)))
+	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_ShadowDepth"), 210.f, 350.f, 140.f, 140.f)))
 		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Distortion"), 70.f, 490.f, 140.f, 140.f)))
@@ -197,6 +192,8 @@ HRESULT CRenderer::Draw()
 
 	if (FAILED(Render_Blend()))
 		return E_FAIL;
+
+	
 
 	if (FAILED(Render_PostProcessing()))
 		return E_FAIL;
@@ -335,6 +332,9 @@ HRESULT CRenderer::Render_Lights()
 	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Normal"), m_pShader, "g_NormalTexture")))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_ShadowDepth"), m_pShader, "g_ShadowDepthTexture")))
 		return E_FAIL;
 
 	m_pLight_Manager->Render(m_pShader, m_pVIBuffer);

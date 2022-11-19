@@ -16,6 +16,7 @@ public:
 		return &m_LightDesc;
 	}
 
+
 public:
 	HRESULT Initialize(const DIRLIGHTDESC& LightDesc);
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer, class CFrustum* _pFrustum);
@@ -26,6 +27,7 @@ private:
 
 private:
 	DIRLIGHTDESC				m_LightDesc;
+	
 
 public:
 	static CDirLight* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const DIRLIGHTDESC& LightDesc);
