@@ -641,121 +641,56 @@ HRESULT CImGui::Key_Input()
 
 	ImGui::InputFloat("PressingSpeed", &_PressingSpeed);
 
-	if (pGameInstance->KeyPressing(DIK_LCONTROL))
+	_long	_lMouseMove = 0;
+	if (_lMouseMove = pGameInstance->Get_DIMMoveState(DIMM_WHEEL))
 	{
-
-		if (pGameInstance->KeyPressing(DIK_G))
+		_float MouseMove = (_float)_lMouseMove / (abs(_lMouseMove)*10.f);
+/*		if (pGameInstance->KeyPressing(DIK_LCONTROL))
 		{
-			m_vScale.x -= _PressingSpeed;
+			if (pGameInstance->KeyPressing(DIK_Z))
+			{
+				m_vAngle.z += _PressingSpeed * (_float)MouseMove;
+			}
+			else if (pGameInstance->KeyPressing(DIK_X))
+			{
+				m_vAngle.x += _PressingSpeed * (_float)MouseMove;
+			}
+			else if (pGameInstance->KeyPressing(DIK_Y))
+			{
+				m_vAngle.y += _PressingSpeed * (_float)MouseMove;
+			}
 		}
-		else if (pGameInstance->KeyDown(DIK_G))
+		else */if (pGameInstance->KeyPressing(DIK_LSHIFT))
 		{
-			m_vScale.x -= _DownSpeed;
+			if (pGameInstance->KeyPressing(DIK_Z))
+			{
+				m_vScale.z += _PressingSpeed * (_float)MouseMove;
+			}
+			else if (pGameInstance->KeyPressing(DIK_X))
+			{
+				m_vScale.x += _PressingSpeed * (_float)MouseMove;
+			}
+			else if (pGameInstance->KeyPressing(DIK_Y))
+			{
+				m_vScale.y += _PressingSpeed * (_float)MouseMove;
+			}
 		}
-
-		if (pGameInstance->KeyPressing(DIK_H))
+		else
 		{
-			m_vScale.z -= _PressingSpeed;
-		}
-		else if (pGameInstance->KeyDown(DIK_H))
-		{
-			m_vScale.z -= _DownSpeed;
-		}
-
-		if (pGameInstance->KeyPressing(DIK_J))
-		{
-			m_vScale.x += _PressingSpeed;
-		}
-		else if (pGameInstance->KeyDown(DIK_J))
-		{
-			m_vScale.x += _DownSpeed;
-		}
-
-		if (pGameInstance->KeyPressing(DIK_Y))
-		{
-			m_vScale.z += _PressingSpeed;
-		}
-		else if (pGameInstance->KeyDown(DIK_Y))
-		{
-			m_vScale.z += _DownSpeed;
-		}
-
-		if (pGameInstance->KeyPressing(DIK_I))
-		{
-			m_vScale.y += _PressingSpeed;
-		}
-		else if (pGameInstance->KeyDown(DIK_I))
-		{
-			m_vScale.y += _DownSpeed;
-		}
-
-		if (pGameInstance->KeyPressing(DIK_K))
-		{
-			m_vScale.y -= _PressingSpeed;
-		}
-		else if (pGameInstance->KeyDown(DIK_K))
-		{
-			m_vScale.y -= _DownSpeed;
+			if (pGameInstance->KeyPressing(DIK_Z))
+			{
+				m_vPos.z += _PressingSpeed * (_float)MouseMove;
+			}
+			else if (pGameInstance->KeyPressing(DIK_X))
+			{
+				m_vPos.x += _PressingSpeed * (_float)MouseMove;
+			}
+			else if (pGameInstance->KeyPressing(DIK_Y))
+			{
+				m_vPos.y += _PressingSpeed * (_float)MouseMove;
+			}
 		}
 	}
-	else
-	{
-
-		if (pGameInstance->KeyPressing(DIK_G))
-		{
-			m_vPos.x -= _PressingSpeed;
-		}
-		else if (pGameInstance->KeyDown(DIK_G))
-		{
-			m_vPos.x -= _DownSpeed;
-		}
-
-		if (pGameInstance->KeyPressing(DIK_H))
-		{
-			m_vPos.z -= _PressingSpeed;
-		}
-		else if (pGameInstance->KeyDown(DIK_H))
-		{
-			m_vPos.z -= _DownSpeed;
-		}
-
-		if (pGameInstance->KeyPressing(DIK_J))
-		{
-			m_vPos.x += _PressingSpeed;
-		}
-		else if (pGameInstance->KeyDown(DIK_J))
-		{
-			m_vPos.x += _DownSpeed;
-		}
-
-		if (pGameInstance->KeyPressing(DIK_Y))
-		{
-			m_vPos.z += _PressingSpeed;
-		}
-		else if (pGameInstance->KeyDown(DIK_Y))
-		{
-			m_vPos.z += _DownSpeed;
-		}
-
-		if (pGameInstance->KeyPressing(DIK_I))
-		{
-			m_vPos.y += _PressingSpeed;
-		}
-		else if (pGameInstance->KeyDown(DIK_I))
-		{
-			m_vPos.y += _DownSpeed;
-		}
-
-		if (pGameInstance->KeyPressing(DIK_K))
-		{
-			m_vPos.y -= _PressingSpeed;
-		}
-		else if (pGameInstance->KeyDown(DIK_K))
-		{
-			m_vPos.y -= _DownSpeed;
-		}
-	}
-
 
 	Safe_Release<CGameInstance*>(pGameInstance);
 	return S_OK;

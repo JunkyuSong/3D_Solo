@@ -50,7 +50,7 @@
 #include "Balloon.h"
 #include "Trail_Obj.h"
 
-
+#include "SkillSlot.h"
 
 //#include "Effect_Particle.h"
 #include "Straight_Particle.h"
@@ -828,6 +828,10 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_Targeting"),
 		CUI_Targeting::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSlot"),
+		CSkillSlot::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Trail"),

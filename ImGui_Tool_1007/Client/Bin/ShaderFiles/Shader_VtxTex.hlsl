@@ -1,8 +1,7 @@
 #include "Client_Shader_Defines.hpp"
 
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-texture2D	g_DiffuseTexture;
-
+texture2D	g_DiffuseTexture, g_DiffuseTexture_2;
 float		g_HpPer, g_PreHpPer;
 
 sampler DefaultSampler = sampler_state {

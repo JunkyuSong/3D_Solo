@@ -232,6 +232,7 @@
     <ClInclude Include="..\Public\ReadyBow.h" />
     <ClInclude Include="..\public\ReleaseMgr.h" />
     <ClInclude Include="..\Public\Saber.h" />
+    <ClInclude Include="..\Public\SkillSlot.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\public\StageMgr.h" />
     <ClInclude Include="..\Public\Stage_01.h" />
@@ -324,6 +325,7 @@
     <ClCompile Include="..\Private\ReadyBow.cpp" />
     <ClCompile Include="..\private\ReleaseMgr.cpp" />
     <ClCompile Include="..\Private\Saber.cpp" />
+    <ClCompile Include="..\Private\SkillSlot.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\private\StageMgr.cpp" />
     <ClCompile Include="..\Private\Stage_01.cpp" />
