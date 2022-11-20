@@ -98,7 +98,7 @@ HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext * pContext, _uint iDepthSte
 		m_pOldDepthStencil->Release();*/
 
 	Safe_Release(m_pOldDepthStencil);
-
+	//m_pOldDepthStencil->Release();
 	return S_OK;
 }
 
@@ -109,7 +109,7 @@ HRESULT CTarget_Manager::AddBinding_RTV(ID3D11DeviceContext * pContext, const _t
 		return E_FAIL;
 
 	_uint		iNumViews = 8;
-	pContext->OMGetRenderTargets(iNumViews, m_pOldRenderTargets, &m_pOldDepthStencil);
+	pContext->OMGetRenderTargets(iNumViews, m_pOldRenderTargets, nullptr/*&m_pOldDepthStencil*/);
 
 	_uint			iNumRTVs = 0;
 	
@@ -185,7 +185,7 @@ HRESULT CTarget_Manager::BackBuffer_Start(ID3D11DeviceContext * pContext, const 
 
 	pContext->OMSetRenderTargets(1, m_pOldRenderTargets, m_pOldDepthStencil);
 
-	//Safe_Release(m_pOldDepthStencil);
+	Safe_Release(m_pOldDepthStencil);
 	//m_pOldDepthStencil->Release();
 	return S_OK;
 }
@@ -194,7 +194,7 @@ HRESULT CTarget_Manager::BackBuffer_End(ID3D11DeviceContext * pContext, ID3D11Re
 {
 	_uint		iNumViews = 8;
 
-	pContext->OMGetRenderTargets(iNumViews, m_pOldRenderTargets, &m_pOldDepthStencil);
+	pContext->OMGetRenderTargets(iNumViews, m_pOldRenderTargets,nullptr/* &m_pOldDepthStencil*/);
 
 	Safe_Release(m_pOldRenderTargets[0]);
 
