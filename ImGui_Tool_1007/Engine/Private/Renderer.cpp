@@ -10,6 +10,8 @@
 #include "RenderTarget.h"
 #include "HDR_Mgr.h"
 
+#include "Level_Manager.h"
+
 CRenderer::CRenderer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent(pDevice, pContext)
 	, m_pTarget_Manager(CTarget_Manager::Get_Instance())
@@ -234,8 +236,8 @@ HRESULT CRenderer::Draw()
 #ifdef _DEBUG
 
 
-	/*if (FAILED(Render_Debug()))
-		return E_FAIL;*/
+	if (FAILED(Render_Debug()))
+		return E_FAIL;
 
 
 #endif
@@ -367,6 +369,32 @@ HRESULT CRenderer::Render_Blend()
 		return E_FAIL;
 	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4))))
 		return E_FAIL;
+	AUTOINSTANCE(CGameInstance, _pInstance);
+	AUTOINSTANCE(CLevel_Manager, _pLv);
+	DIRLIGHTDESC* _DirLightDesc = _pInstance->Get_DirLightDesc(_pLv->Get_CurLv(), 0);
+
+	if (_DirLightDesc != nullptr)
+	{
+		if (FAILED(m_pShader->Set_RawValue("g_LightView", (_DirLightDesc->LightDirInverseMatrix), sizeof(_float4x4))))
+			return E_FAIL;
+	}
+
+	AUTOINSTANCE(CPipeLine, _pPipeLine);
+
+	_float4x4			ViewMatrixInv;
+	_float4x4			ProjMatrixInv;
+	XMStoreFloat4x4(&ViewMatrixInv, XMMatrixTranspose(XMMatrixInverse(nullptr, _pPipeLine->Get_TransformMatrix(CPipeLine::D3DTS_VIEW))));
+	XMStoreFloat4x4(&ProjMatrixInv, XMMatrixTranspose(XMMatrixInverse(nullptr, _pPipeLine->Get_TransformMatrix(CPipeLine::D3DTS_PROJ))));
+
+	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrixInv", &ViewMatrixInv, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrixInv", &ProjMatrixInv, sizeof(_float4x4))))
+		return E_FAIL;
+
+
+
+	if (FAILED(m_pShader->Set_RawValue("g_LProjMatrix", &_pPipeLine->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Diffuse"), m_pShader, "g_DiffuseTexture")))
 		return E_FAIL;
@@ -375,6 +403,12 @@ HRESULT CRenderer::Render_Blend()
 		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Specular"), m_pShader, "g_SpecularTexture")))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_ShadowDepth"), m_pShader, "g_ShadowDepthTexture")))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
 		return E_FAIL;
 
 	m_pShader->Begin(3);

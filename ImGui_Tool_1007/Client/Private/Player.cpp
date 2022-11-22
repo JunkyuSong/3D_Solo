@@ -236,7 +236,7 @@ HRESULT CPlayer::Render()
 	_uint		iNumMeshes;//메쉬 갯수를 알고 메쉬 갯수만큼 렌더를 할 것임. 여기서!
 
 	SetUp_ShaderResources();
-
+	
 	iNumMeshes = m_pModelCom->Get_NumMesh();//메쉬 갯수를 알고 메쉬 갯수만큼 렌더를 할 것임. 여기서!
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
@@ -251,8 +251,20 @@ HRESULT CPlayer::Render()
 
 		m_pShaderCom->Set_RawValue("g_vCamPosition", &_vCamPosition, sizeof(_float4));
 
+		DIRLIGHTDESC* _DirLightDesc = _pInstance->Get_DirLightDesc(g_eCurLevel, 0);
+
+		if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", (_DirLightDesc->LightDirInverseMatrix), sizeof(_float4x4))))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, 8, i)))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &_pInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+			return E_FAIL;
 		if (FAILED(m_pModelCom->Render(m_pShaderCom, m_ePass, i)))
 			return E_FAIL;
+
+
 		/*if (FAILED(m_pModelCom->Render(m_pShaderCom, 5, i)))
 			return E_FAIL;*/
 	}
@@ -2825,38 +2837,11 @@ HRESULT CPlayer::SetUp_ShaderResources()
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 	if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TP(), sizeof(_float4x4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
-		return E_FAIL;
+	
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
-	DIRLIGHTDESC* _DirLightDesc = pGameInstance->Get_DirLightDesc(g_eCurLevel, 0);
-	
-	if (FAILED(m_pShaderCom->Set_RawValue("g_LightViewInverse", (_DirLightDesc->LightDirInverseMatrix), sizeof(_float4x4))))
-		return E_FAIL;
 
-	/*//if (FAILED(m_pShaderCom->Set_RawValue("g_vCamPosition", &pGameInstance->Get_CamPosition(), sizeof(_float4))))
-	//	return E_FAIL;
-
-
-	//const LIGHTDESC* pLightDesc = pGameInstance->Get_LightDesc(0);
-	//if (nullptr == pLightDesc)
-	//	return E_FAIL;
-
-	//if (LIGHTDESC::TYPE_DIRECTIONAL == pLightDesc->eType)
-	//{
-	//	if (FAILED(m_pShaderCom->Set_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof(_float4))))
-	//		return E_FAIL;
-	//}
-
-	//if (FAILED(m_pShaderCom->Set_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof(_float4))))
-	//	return E_FAIL;
-
-	//if (FAILED(m_pShaderCom->Set_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof(_float4))))
-	//	return E_FAIL;
-
-	///*if (FAILED(m_pShaderCom->Set_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
-	//	return E_FAIL;*/
 
 	RELEASE_INSTANCE(CGameInstance);
 

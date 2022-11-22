@@ -32,6 +32,8 @@ public:
 	const _bool&			Get_bLoading() { return m_bLoading; }
 	const _uint&			Get_LoadingLv() { return m_iLoadingLevel; }
 
+	_uint					Get_CurLv() { return m_iCurrentLevel; }
+
 	//»ý¼º, ¼Ò¸ê
 public:
 	virtual void			Free() override;

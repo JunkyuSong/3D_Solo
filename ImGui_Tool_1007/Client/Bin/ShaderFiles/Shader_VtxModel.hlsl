@@ -89,6 +89,11 @@ struct PS_OUT
 	float4		vDepth : SV_TARGET2;
 };
 
+struct PS_SHADOW_OUT
+{
+	float4		vShadowDepth : SV_TARGET4;
+};
+
 struct PS_OUT_NONLIGHT
 {
 	float4		vDiffuse : SV_TARGET0;
@@ -119,6 +124,21 @@ PS_OUT PS_MAIN(PS_IN In)
 	//  0 ~ 1
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
+
+
+	return Out;
+}
+
+PS_SHADOW_OUT PS_SHADOW(PS_IN In)
+{
+	PS_SHADOW_OUT		Out = (PS_SHADOW_OUT)0;
+
+	vector vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	if (0 == vDiffuse.a)
+		discard;
+
+	Out.vShadowDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.0f, 0.0f);
 
 
 	return Out;
@@ -472,6 +492,16 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_SKILLWEAPON();
+	}
+
+	pass Shadow
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Skybox, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_SHADOW();
 	}
 
 }

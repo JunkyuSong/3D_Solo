@@ -1,7 +1,8 @@
 
-matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix, g_LProjMatrix;
 
 matrix		g_LightViewInverse;
+matrix		g_LightView;
 
 vector		g_vCamPosition;
 vector		g_vPlayerPoition;
@@ -27,12 +28,13 @@ texture2D	g_ShadeTexture;
 texture2D	g_DepthTexture;
 texture2D	g_SpecularTexture;
 texture2D	g_DistortionTexture;
-texture2D	g_DistortionTexture_Bump; 
+texture2D	g_DistortionTexture_Bump;
+texture2D	g_ShadowDepthTexture;
 
 texture2D	g_AlphaDepthTexture;
 texture2D	g_AlphaDiffuseTexture;
 
-texture2D	g_ShadowDepthTexture;
+
 
 float		g_fTick;
 
@@ -105,7 +107,7 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 	vector			vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexUV);
 	vector			vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexUV);
 
-	vector			vShadowDepthDesc = g_ShadowDepthTexture.Sample(DefaultSampler, In.vTexUV);
+	
 
 	float			fViewZ = vDepthDesc.y;
 
@@ -125,11 +127,9 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 
 	vector			vViewPos = mul(vProjPos, g_ProjMatrixInv);
 	vector			vWorldPos = mul(vViewPos, g_ViewMatrixInv);
+	
 
-	vector			vShadowPos = mul(vWorldPos, g_LightViewInverse);
 
-	//if (vShadowPos.z < vShadowDepthDesc.x)
-	//	Out.vShade *= 0.5f;
 
 	vector			vReflect = reflect(normalize(g_vLightDir), vNormal);
 	vector			vLook = vWorldPos - g_vCamPosition;
@@ -195,6 +195,35 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
 	vector		vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexUV);
 	vector		vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexUV);
 
+	{
+		vector			vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexUV);
+		float			fViewZ = vDepthDesc.y;
+		vector			vProjPos;
+		vProjPos.x = In.vTexUV.x * 2.f - 1.f;
+		vProjPos.y = In.vTexUV.y * -2.f + 1.f;
+		vProjPos.z = vDepthDesc.x;
+		vProjPos.w = 1.f;
+
+		vProjPos = vProjPos * fViewZ;
+
+		vector			vViewPos = mul(vProjPos, g_ProjMatrixInv);
+		vector			vWorldPos = mul(vViewPos, g_ViewMatrixInv);
+
+		vector shadowPos = mul(vWorldPos, g_LightView);
+		shadowPos = mul(shadowPos, g_LProjMatrix);
+
+		shadowPos.xyz /= shadowPos.z;
+
+		float2 CustomUV;
+		CustomUV.x = (shadowPos.x + 1.f) * 0.5f;
+		CustomUV.y = (shadowPos.y - 1.f) * -0.5f;
+
+		vector			vShadowDepthDesc = g_ShadowDepthTexture.Sample(DefaultSampler, CustomUV);
+
+		if (vProjPos.z > vShadowDepthDesc.y)
+			vShade *= 2.f;
+	}
+	
 	Out.vColor = vDiffuse * vShade + vSpecular;
 
 	if (Out.vColor.a == 0.f)
