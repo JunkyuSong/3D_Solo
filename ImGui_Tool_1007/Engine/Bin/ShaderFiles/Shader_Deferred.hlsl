@@ -217,11 +217,13 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
 		float2 CustomUV;
 		CustomUV.x = (shadowPos.x + 1.f) * 0.5f;
 		CustomUV.y = (shadowPos.y - 1.f) * -0.5f;
+		//if ((saturate(CustomUV.x) == CustomUV.x) && (saturate(CustomUV.y) == CustomUV.y))
+		{
+			vector			vShadowDepthDesc = g_ShadowDepthTexture.Sample(DefaultSampler, CustomUV);
 
-		vector			vShadowDepthDesc = g_ShadowDepthTexture.Sample(DefaultSampler, CustomUV);
-
-		if (vProjPos.z > vShadowDepthDesc.y)
-			vShade *= 2.f;
+			if (vProjPos.z > vShadowDepthDesc.y)
+				vShade *= 2.f;
+		}		
 	}
 	
 	Out.vColor = vDiffuse * vShade + vSpecular;

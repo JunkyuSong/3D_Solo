@@ -64,9 +64,9 @@ HRESULT CStage_Lobby::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
 			return E_FAIL;
 
-		DIRLIGHTDESC* _DirLightDesc = pGameInstance->Get_DirLightDesc(g_eCurLevel, 0);
+	/*	DIRLIGHTDESC* _DirLightDesc = pGameInstance->Get_DirLightDesc(g_eCurLevel, 0);
 
-		/*if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", (_DirLightDesc->LightDirInverseMatrix), sizeof(_float4x4))))
+		if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", (_DirLightDesc->LightDirInverseMatrix), sizeof(_float4x4))))
 			return E_FAIL;
 
 		if (FAILED(m_pShaderCom->Begin(11)))
