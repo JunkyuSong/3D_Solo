@@ -16,8 +16,9 @@ class CEffect_Mgr :
 public:
 	enum EFFECT_TYPE {
 		EFFECT_CLAW,
-		EFFECT_BLOOD,
+		EFFECT_FIRE,
 		EFFECT_PARTICLE,
+		EFFECT_CROSSTRAIL,
 		EFFECT_END
 	};
 
@@ -28,7 +29,7 @@ private:
 public:
 	void Tick(_float fTimeDelta);
 	
-	HRESULT Add_Effect(EFFECT_TYPE _eType, void* pArg);
+	CEffect* Add_Effect(EFFECT_TYPE _eType, void* pArg);
 	HRESULT Add_ParticleEffect(CEffect_Particle::PARTICLETYPE _eParticleType, void* pArg);
 
 	void Clear_Level(LEVEL _eLv);

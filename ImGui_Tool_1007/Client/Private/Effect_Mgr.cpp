@@ -26,7 +26,7 @@ void CEffect_Mgr::Tick(_float fTimeDelta)
 	}
 }
 
-HRESULT CEffect_Mgr::Add_Effect(EFFECT_TYPE _eType, void * pArg)
+CEffect* CEffect_Mgr::Add_Effect(EFFECT_TYPE _eType, void * pArg)
 {
 	AUTOINSTANCE(CGameInstance, _pGameInstance);
 	CEffect* _pEffect = nullptr;
@@ -46,13 +46,31 @@ HRESULT CEffect_Mgr::Add_Effect(EFFECT_TYPE _eType, void * pArg)
 			{
 				MSG_BOX(TEXT("fail to clone effect(particle)"));
 				Safe_Release(_pEffect);
-				return E_FAIL;
+				return nullptr;
 			}
 
 		}
 		m_pEffects[EFFECT_CLAW].push_back(_pEffect);
 		break;
-	case Client::CEffect_Mgr::EFFECT_BLOOD:
+	case Client::CEffect_Mgr::EFFECT_FIRE:
+		if (m_pDeadEffects[EFFECT_FIRE].size() > 0)
+		{
+			_pEffect = m_pDeadEffects[EFFECT_FIRE].back();
+			m_pDeadEffects[EFFECT_FIRE].pop_back();
+			_pEffect->Initialize(pArg);
+		}
+		else
+		{
+			_pEffect = static_cast<CEffect*>(_pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Fire_Effect"), pArg));
+			if (_pEffect == nullptr)
+			{
+				MSG_BOX(TEXT("fail to clone effect(EFFECT_FIRE)"));
+				Safe_Release(_pEffect);
+				return nullptr;
+			}
+
+		}
+		m_pEffects[EFFECT_FIRE].push_back(_pEffect);
 		break;
 	case Client::CEffect_Mgr::EFFECT_PARTICLE:
 		if (m_pDeadEffects[EFFECT_PARTICLE].size() > 0)
@@ -68,15 +86,35 @@ HRESULT CEffect_Mgr::Add_Effect(EFFECT_TYPE _eType, void * pArg)
 			{
 				MSG_BOX(TEXT("fail to clone effect(particle)"));
 				Safe_Release(_pEffect);
-				return E_FAIL;
+				return nullptr;
 			}
 			
 		}
 		m_pEffects[EFFECT_PARTICLE].push_back(_pEffect);
 		break;
+	case Client::CEffect_Mgr::EFFECT_CROSSTRAIL:
+		if (m_pDeadEffects[EFFECT_PARTICLE].size() > 0)
+		{
+			_pEffect = m_pDeadEffects[EFFECT_CROSSTRAIL].back();
+			m_pDeadEffects[EFFECT_CROSSTRAIL].pop_back();
+			_pEffect->Initialize(pArg);
+		}
+		else
+		{
+			_pEffect = static_cast<CEffect*>(_pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_CrossTrail"), pArg));
+			if (_pEffect == nullptr)
+			{
+				MSG_BOX(TEXT("fail to clone effect(CrossTrail)"));
+				Safe_Release(_pEffect);
+				return nullptr;
+			}
+
+		}
+		m_pEffects[EFFECT_CROSSTRAIL].push_back(_pEffect);
+		break;
 	}
 
-	return S_OK;
+	return _pEffect;
 }
 
 HRESULT CEffect_Mgr::Add_ParticleEffect(CEffect_Particle::PARTICLETYPE _eParticleType, void * pArg)

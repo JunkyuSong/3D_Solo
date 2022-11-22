@@ -30,6 +30,8 @@ private:
 	_float		m_fCurGravity = 0.f;
 	_float		m_fDistane = 0.f;
 
+	_float		m_fTime = 0.f;
+
 
 private:
 	HRESULT			Ready_Components();

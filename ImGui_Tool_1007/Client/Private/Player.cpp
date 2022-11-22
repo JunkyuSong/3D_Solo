@@ -24,6 +24,7 @@
 
 #include "UI_Targeting.h"
 #include "UI_Mgr.h"
+#include "SkillSlot.h"
 
 #include "Extra01.h"
 #include "Extra02.h"
@@ -36,6 +37,7 @@
 
 #include "Effect_Particle.h"
 #include "Effect_Mgr.h"
+#include "CrossTrail.h"
 
 CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -145,6 +147,16 @@ HRESULT CPlayer::Initialize(void * pArg)
 		break;
 	}
 	m_eTypeObj = CGameObject::TYPE_PLAYER;
+
+	POINTLIGHTDESC LIGHT;
+	LIGHT.fRange = 1.5f;
+	LIGHT.vDiffuse = CLIENT_RGB(119.f, 245.f, 200.f);
+	LIGHT.vSpecular = _float4(0.6f, 0.8f, 0.6f, 1.f);
+	LIGHT.vAmbient = _float4(0.1f, 0.3f, 0.1f, 1.f);
+	LIGHT.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+	m_iClawLight = pGameInstance->Add_Light(m_pDevice, m_pContext, g_eCurLevel, CLight_Manager::DYNAMICPOINTLIHGT, LIGHT, -0.3f, 0.1f);
+
+
 	return S_OK;
 }
 
@@ -530,11 +542,12 @@ void CPlayer::KeyInput_Idle(_float fTimeDelta)
 		_tOption.bPlayerDir = true;
 		_tOption.matPlayerAxix = _vWorld;
 
-		if (FAILED(CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_PARTICLE, &_tOption)))
+		if (nullptr == CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_PARTICLE, &_tOption))
 		{
-			MSG_BOX(TEXT("effect"));
+			MSG_BOX(TEXT("fail effect"));
 			return;
 		}
+
 	}
 	
 	//if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
@@ -546,6 +559,16 @@ void CPlayer::KeyInput_Idle(_float fTimeDelta)
 	if (pGameInstance->KeyDown(DIK_F))
 	{
 		m_eCurState = ParryL;
+	}
+
+	if (pGameInstance->KeyDown(DIK_C))
+	{
+		if (m_pTarget)
+		{
+			m_pTransformCom->LookAt_ForLandObject(static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION));
+			m_eCurState = Corvus_Raven_ClawLong_ChargeFull;
+			m_eWeapon = WEAPON_NONE;		
+		}
 	}
 
 	if (pGameInstance->KeyDown(DIK_SPACE))
@@ -569,27 +592,63 @@ void CPlayer::KeyInput_Idle(_float fTimeDelta)
 	}
 	if (pGameInstance->KeyDown(DIK_1))
 	{
-		m_eCurState = DualKnife;
-		m_eWeapon = WEAPON::WEAPON_SKILL;
-		m_eCurSkill = SKILL_DUAL;
-		m_bCollision[COLLIDERTYPE_BODY] = false;
+		if (static_cast<CSkillSlot*>(CUI_Mgr::Get_Instance()->Get_UI(TEXT("PLAYER_SLOT")))->Check_CoolDown(CSkillSlot::SKILL_1))
+		{
+			m_eCurState = DualKnife;
+			m_eWeapon = WEAPON::WEAPON_SKILL;
+			m_eCurSkill = SKILL_DUAL;
+			m_bCollision[COLLIDERTYPE_BODY] = false;
+		}
+		
 	}
 	if (pGameInstance->KeyDown(DIK_2))
 	{
-		m_eCurState = Corvus_PW_Axe;
-		m_bCollision[COLLIDERTYPE_BODY] = false;
+		if (static_cast<CSkillSlot*>(CUI_Mgr::Get_Instance()->Get_UI(TEXT("PLAYER_SLOT")))->Check_CoolDown(CSkillSlot::SKILL_2))
+		{
+			m_eCurState = Corvus_PW_Axe;
+			m_bCollision[COLLIDERTYPE_BODY] = false;
+		}
+		
 	}
 	if (pGameInstance->KeyDown(DIK_3))
 	{
-		m_eCurState = PW_Bow_Start;
-		m_eWeapon = WEAPON::WEAPON_SKILL;
-		m_eCurSkill = SKILL_BOW;
-		m_bCollision[COLLIDERTYPE_BODY] = false;
-		static_cast<CBow*>(m_pSkillParts[SKILL_BOW][0])->Set_Stop(false);
-		m_pModelCom->DirectAnim(PW_Bow_Start);
-		static_cast<CAnimModel*>(m_pSkillParts[SKILL_BOW][0]->Get_ComponentPtr(TEXT("Com_Model")))->Set_AnimationIndex(CBow::BOW_START);
-		static_cast<CAnimModel*>(m_pSkillParts[SKILL_BOW][0]->Get_ComponentPtr(TEXT("Com_Model")))->DirectAnim(CBow::BOW_START);
+		if (static_cast<CSkillSlot*>(CUI_Mgr::Get_Instance()->Get_UI(TEXT("PLAYER_SLOT")))->Check_CoolDown(CSkillSlot::SKILL_3))
+		{
+			m_eCurState = PW_Bow_Start;
+			m_eWeapon = WEAPON::WEAPON_SKILL;
+			m_eCurSkill = SKILL_BOW;
+			m_bCollision[COLLIDERTYPE_BODY] = false;
+			static_cast<CBow*>(m_pSkillParts[SKILL_BOW][0])->Set_Stop(false);
+			m_pModelCom->DirectAnim(PW_Bow_Start);
+			static_cast<CAnimModel*>(m_pSkillParts[SKILL_BOW][0]->Get_ComponentPtr(TEXT("Com_Model")))->Set_AnimationIndex(CBow::BOW_START);
+			static_cast<CAnimModel*>(m_pSkillParts[SKILL_BOW][0]->Get_ComponentPtr(TEXT("Com_Model")))->DirectAnim(CBow::BOW_START);
+		}
+		
 	}
+	if (pGameInstance->KeyDown(DIK_4))
+	{
+		if (static_cast<CSkillSlot*>(CUI_Mgr::Get_Instance()->Get_UI(TEXT("PLAYER_SLOT")))->Check_CoolDown(CSkillSlot::SKILL_4))
+		{
+			m_eWeapon = WEAPON::WEAPON_SKILL;
+			m_eCurSkill = SKILL_SCYTHE;
+
+			m_eCurState = Corvus_PW_Scythe;
+			m_bCollision[COLLIDERTYPE_BODY] = false;	
+		}
+	}
+	if (pGameInstance->KeyDown(DIK_5))
+	{
+		if (static_cast<CSkillSlot*>(CUI_Mgr::Get_Instance()->Get_UI(TEXT("PLAYER_SLOT")))->Check_CoolDown(CSkillSlot::SKILL_5))
+		{
+			m_eWeapon = WEAPON::WEAPON_SKILL;
+			m_eCurSkill = SKILL_LENCE;
+
+			m_eCurState = Corvus_PW_Halberds;
+			m_bCollision[COLLIDERTYPE_BODY] = false;
+		}
+	}
+
+
 	if (pGameInstance->MouseDown(DIMK_WHEEL))
 	{
 		Targeting();
@@ -1418,8 +1477,34 @@ void CPlayer::CheckEndAnim()
 		//_pInstance->Light_Off(LEVEL_STAGE_LAST, CLight_Manager::STATICPOINTLIHGT, m_iLightIndex);
 		m_eCurState = STATE_IDLE;
 		break;
+	case Client::CPlayer::Corvus_Raven_ClawLong_ChargeFull:
+		m_eCurState = Corvus_Raven_ClawLong_PlunderAttack2TTT;
+		
+		break;
+	case Client::CPlayer::Corvus_Raven_ClawLong_PlunderAttack2TTT:
+		m_eWeapon = WEAPON_BASE;
+		m_eCurState = STATE_IDLE;
+		for (_uint i = 0; i < NAIL_END; ++i)
+		{
+			Safe_Release(m_pClawTrail[i]);
+		}
+		break;
+	case Client::CPlayer::Corvus_PW_Scythe:
+		m_eCurState = STATE_IDLE;
+		m_eWeapon = WEAPON_BASE;
+		if (m_pSkillParts[SKILL_SCYTHE][0]->Trail_GetOn())
+			m_pSkillParts[SKILL_SCYTHE][0]->TrailOff();
+		break;
+	case Client::CPlayer::Corvus_PW_Halberds:
+		m_eCurState = STATE_IDLE;
+		m_eWeapon = WEAPON_BASE;
+		if (m_pSkillParts[SKILL_LENCE][0]->Trail_GetOn())
+			m_pSkillParts[SKILL_LENCE][0]->TrailOff();
+
+		break;
 	}
-	
+
+
 	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 	m_PreAnimPos = m_AnimPos;
 	m_bEffect = false;
@@ -1670,7 +1755,116 @@ void CPlayer::CheckLimit()
 		break;
 	case Client::CPlayer::STATE_END:
 		break;
-	default:
+	case Client::CPlayer::Corvus_Raven_ClawLong_ChargeFull:
+		if (m_eReserveState == Corvus_Raven_ClawLong_PlunderAttack2TTT)
+		{
+			m_eReserveState = STATE_END;
+			m_eCurState = Corvus_Raven_ClawLong_PlunderAttack2TTT;
+		}
+		break;
+		
+	case Client::CPlayer::Corvus_Raven_ClawLong_PlunderAttack2TTT:
+		if (m_fPlayTime > 70.f)
+		{
+			AUTOINSTANCE(CGameInstance, _pInstance);
+			m_bCollision[COLLIDERTYPE_BODY] = true;
+			m_bCollision[COLLIDERTYPE_CLAW] = false;
+			POINTLIGHTDESC* LIGHT;
+			_pInstance->Light_On(g_eCurLevel, CLight_Manager::DYNAMICPOINTLIHGT, m_iClawLight);
+			LIGHT = _pInstance->Get_PointLightDesc(g_eCurLevel, CLight_Manager::DYNAMICPOINTLIHGT, m_iClawLight);
+
+			XMStoreFloat4(&(LIGHT->vPosition), XMVectorSetW(XMLoadFloat3(&m_vCurClaw), 1.f));
+			LIGHT->fRange = 2.f;
+		}
+		else if (m_fPlayTime > 50.f)
+		{
+			AUTOINSTANCE(CGameInstance, _pInstance);
+			Update_Nail();
+			m_Particles[PARTICLE_STEAL].Center = m_vCurClaw;
+			m_Particles[PARTICLE_STEAL].vColor = CLIENT_RGB(189.f, 245.f, 90.f);
+			m_Particles[PARTICLE_STEAL].iNumParticles = 10;
+			if (nullptr == CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_PARTICLE, &m_Particles[PARTICLE_STEAL]))
+			{
+				MSG_BOX(TEXT("fail effect"));
+			}
+			m_Particles[PARTICLE_STEAL].vColor = CLIENT_RGB(119.f, 225.f, 100.f);
+			m_Particles[PARTICLE_STEAL].iNumParticles = 5;
+			if (nullptr == CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_PARTICLE, &m_Particles[PARTICLE_STEAL]))
+			{
+				MSG_BOX(TEXT("fail effect"));
+			}
+			POINTLIGHTDESC* LIGHT;
+			_pInstance->Light_On(g_eCurLevel, CLight_Manager::DYNAMICPOINTLIHGT, m_iClawLight);
+			LIGHT = _pInstance->Get_PointLightDesc(g_eCurLevel, CLight_Manager::DYNAMICPOINTLIHGT, m_iClawLight);
+
+			XMStoreFloat4(&(LIGHT->vPosition), XMVectorSetW(XMLoadFloat3(&m_vCurClaw), 1.f));
+			LIGHT->fRange = 2.f;
+		}
+		else if (m_fPlayTime > 5.f)
+		{
+			AUTOINSTANCE(CGameInstance, _pInstance);
+			if (!m_bEffect)
+			{
+				m_pClawTrail[NAIL_ONE] = static_cast<CCrossTrail*>(CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_CROSSTRAIL, &(CLIENT_RGB(255.f, 255.f, 0.f))));
+				Safe_AddRef(m_pClawTrail[NAIL_ONE]);
+				m_pClawTrail[NAIL_TWO] = static_cast<CCrossTrail*>(CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_CROSSTRAIL, &(CLIENT_RGB(119.f, 255.f, 130.f))));
+				Safe_AddRef(m_pClawTrail[NAIL_TWO]);
+				m_pClawTrail[NAIL_THREE] = static_cast<CCrossTrail*>(CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_CROSSTRAIL, &(CLIENT_RGB(66.f, 236.f, 62.f))));
+				Safe_AddRef(m_pClawTrail[NAIL_THREE]);
+				m_pClawTrail[NAIL_FOUR] = static_cast<CCrossTrail*>(CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_CROSSTRAIL, &(CLIENT_RGB(119.f, 255.f, 10.f))));
+				Safe_AddRef(m_pClawTrail[NAIL_FOUR]);
+
+				
+				m_bEffect = true;
+			}
+			m_bCollision[COLLIDERTYPE_BODY] = false;
+			m_bCollision[COLLIDERTYPE_CLAW] = true;
+			Update_Nail();
+			POINTLIGHTDESC* LIGHT;
+			_pInstance->Light_On(g_eCurLevel, CLight_Manager::DYNAMICPOINTLIHGT, m_iClawLight);
+			LIGHT = _pInstance->Get_PointLightDesc(g_eCurLevel, CLight_Manager::DYNAMICPOINTLIHGT, m_iClawLight);
+			
+			XMStoreFloat4(&(LIGHT->vPosition), XMVectorSetW(XMLoadFloat3( &m_vCurClaw),1.f));
+			LIGHT->fRange = 2.f;
+		}
+		break;
+	case Corvus_PW_Halberds:
+		if (m_vecLimitTime[Corvus_PW_Halberds][4] < m_fPlayTime)
+		{
+			if (m_pSkillParts[SKILL_LENCE][0]->Trail_GetOn())
+				m_pSkillParts[SKILL_LENCE][0]->TrailOff();
+		}
+		else if (m_vecLimitTime[Corvus_PW_Halberds][3] < m_fPlayTime)
+		{
+			if (!m_pSkillParts[SKILL_LENCE][0]->Trail_GetOn())
+				m_pSkillParts[SKILL_LENCE][0]->TrailOn();
+		}
+		else if (m_vecLimitTime[Corvus_PW_Halberds][2] < m_fPlayTime)
+		{
+			if (m_pSkillParts[SKILL_LENCE][0]->Trail_GetOn())
+				m_pSkillParts[SKILL_LENCE][0]->TrailOff();
+		}
+		else if (m_vecLimitTime[Corvus_PW_Halberds][1] < m_fPlayTime)
+		{
+
+		}
+		else if (m_vecLimitTime[Corvus_PW_Halberds][0] < m_fPlayTime)
+		{
+			if (!m_pSkillParts[SKILL_LENCE][0]->Trail_GetOn())
+				m_pSkillParts[SKILL_LENCE][0]->TrailOn();
+		}
+		break;
+	case Corvus_PW_Scythe:
+		if (m_vecLimitTime[Corvus_PW_Scythe][1] < m_fPlayTime)
+		{
+			if (m_pSkillParts[SKILL_SCYTHE][0]->Trail_GetOn())
+				m_pSkillParts[SKILL_SCYTHE][0]->TrailOff();
+		}
+		else if (m_vecLimitTime[Corvus_PW_Scythe][0] < m_fPlayTime)
+		{
+			if (!m_pSkillParts[SKILL_SCYTHE][0]->Trail_GetOn())
+				m_pSkillParts[SKILL_SCYTHE][0]->TrailOn();
+		}
 		break;
 	}
 
@@ -1974,6 +2168,26 @@ void CPlayer::AfterAnim(_float fTimeDelta)
 		XMStoreFloat4(&(LightDesc->vPosition), _vPos);
 	}
 		break;
+	case Client::CPlayer::Corvus_Raven_ClawLong_ChargeFull:
+	{
+		//거리가 어느정도 되었을때 이걸로 바뀐다.
+		// 끝까지 안닿으면 뭐 쩔수없궁 히히
+		_vector _vTargetPos = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+		_vector _vPlayerPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		if (XMVector3Length( _vTargetPos - _vPlayerPos).m128_f32[0] < 1.f)
+		{
+			m_eReserveState = Corvus_Raven_ClawLong_PlunderAttack2TTT;
+			m_bCollision[COLLIDERTYPE_CLAW] = true;
+			m_bCollision[COLLIDERTYPE_BODY] = false;
+		}
+	}
+		
+		break;
+	case Client::CPlayer::Corvus_Raven_ClawLong_PlunderAttack2TTT:	
+		//Update_Nail();
+		break;
+
+		
 	}
 	Get_AnimMat();
 }
@@ -2184,8 +2398,16 @@ void CPlayer::Update_Collider()
 
 _bool CPlayer::Collision(_float fTimeDelta)
 {
-	CGameObject* _pTarget = //static_cast<CCollider*>(m_pBaseParts[BASE_DAGGER]->Get_ComponentPtr(TEXT("Com_OBB")))->Get_Target();
-		m_pColliderCom[COLLIDERTYPE_PARRY]->Get_Target();
+	CGameObject* _pTarget = m_pColliderCom[COLLIDERTYPE_CLAW]->Get_Target();
+	if (_pTarget && m_eCurState == Corvus_Raven_ClawLong_PlunderAttack2TTT)
+	{
+		if (_pTarget == m_pTarget)
+		{
+
+		}
+	}
+
+	_pTarget = m_pColliderCom[COLLIDERTYPE_PARRY]->Get_Target();
 	if (_pTarget)
 	{
 		//MSG_BOX(TEXT("Parry"));
@@ -2247,20 +2469,42 @@ _bool CPlayer::Collision(_float fTimeDelta)
 			XMStoreFloat3(&(m_Particles[PARTICLE_CLAW].vStart_Dir), _vPlayerPos - _vPos/*XMLoadFloat3(&m_vCurClaw)*/);
 			m_Particles[PARTICLE_CLAW].Center = m_vCurClaw;
 			m_Particles[PARTICLE_CLAW].vColor =CLIENT_RGB(119.f, 245.f, 110.f);
-			if (FAILED(CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_PARTICLE, &m_Particles[PARTICLE_CLAW])))
+
+			if (nullptr == CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_PARTICLE, &m_Particles[PARTICLE_CLAW]))
 			{
-				MSG_BOX(TEXT("effect"));
+				MSG_BOX(TEXT("fail effect"));
 			}
 			m_Particles[PARTICLE_CLAW].vColor = CLIENT_RGB(255.f, 127.f, 0.f);
-			if (FAILED(CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_PARTICLE, &m_Particles[PARTICLE_CLAW])))
+			if (nullptr == CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_PARTICLE, &m_Particles[PARTICLE_CLAW]))
 			{
-				MSG_BOX(TEXT("effect"));
+				MSG_BOX(TEXT("fail effect"));
 			}
 		}
 		
 
 	}
 	return false;
+}
+
+void CPlayer::Update_Nail()
+{
+	_float3 _vPos;
+	_matrix _NailMatrix;
+	for (_uint i = 0; i < NAIL_END; ++i)
+	{
+		if (m_pNails[i] == nullptr)
+			continue;
+		_NailMatrix = m_pNails[i]->Get_CombinedTransformation()
+			* XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())
+			* m_pTransformCom->Get_WorldMatrix();
+		XMStoreFloat3(&_vPos, _NailMatrix.r[3]);
+		m_pClawTrail[i]->Add_Point(_vPos);
+	}
+
+	// 파티클? 사방으로 다 퍼지게끔? 일단 손에 점광원 하나 넣고, 그 순간에 피 쫘악 한번 해주고
+	// 
+	//m_Particles[PARTICLE_STEAL].Center = _vPos;
+
 }
 
 HRESULT CPlayer::Ready_ParticleDesc()
@@ -2294,6 +2538,27 @@ HRESULT CPlayer::Ready_ParticleDesc()
 	_tOption.matPlayerAxix = _vWorld;
 
 	m_Particles[PARTICLE_CLAW] = _tOption;
+
+	_tOption.eType = CEffect_Particle::PARTICLETYPE::TYPE_STRIGHT;
+	_tOption.fAccSpeed = 0.99f;
+	_tOption.fSpeed = { 1.f, 3.f };
+	_tOption.fGravity = 0.f;
+	_tOption.fLifeTime = 0.f;
+	_tOption.fRange = _float3(0.3f, 0.3f, 0.3f);
+	_tOption.iNumParticles = 15;
+	_tOption.Size = _float2(0.2f, 0.2f);
+	_tOption.Spread = CEffect_Particle::SPREAD::SPREAD_EDGE;
+	_tOption.szMaskTag = TEXT("Prototype_Component_Texture_Mask_ClawEffect");
+	_tOption.szTextureTag = TEXT("Prototype_Component_Texture_Diffuse_Blood");
+	_tOption.vColor = CLIENT_RGB(119.f, 245.f, 110.f);
+	_tOption.eDiffuseType = CEffect_Particle::DIFFUSE_COLOR;
+	_tOption.eDirType = CEffect_Particle::DIR_TYPE::DIR_NORMAL;
+	_tOption.eStartType = CEffect_Particle::START_RANDOM;
+	_tOption.fMaxDistance = { 2.5f, 3.f };
+	_tOption.bPlayerDir = false;
+	_tOption.eDissapear = CEffect_Particle::DISSAPEAR_ALPHA;
+
+	m_Particles[PARTICLE_STEAL] = _tOption;
 	
 	return S_OK;
 }
@@ -2501,6 +2766,17 @@ HRESULT CPlayer::Ready_AnimLimit()
 	//임시
 	m_vecLimitTime[Strong_Jump2].push_back(40.f);
 
+	//창
+	m_vecLimitTime[Corvus_PW_Halberds].push_back(10.f); // 트레일 on
+	m_vecLimitTime[Corvus_PW_Halberds].push_back(90.f); // 충돌체 on
+	m_vecLimitTime[Corvus_PW_Halberds].push_back(120.f); // 트레일 off, 충돌체 off
+	m_vecLimitTime[Corvus_PW_Halberds].push_back(190.f); // 트레일 on
+	m_vecLimitTime[Corvus_PW_Halberds].push_back(220.f); // 트레일 off
+
+	//사이드
+	m_vecLimitTime[Corvus_PW_Scythe].push_back(60.f); // 트레일 on, 충돌체 on
+	m_vecLimitTime[Corvus_PW_Scythe].push_back(90.f);// 트레일 off, 충돌체 off
+
 	return S_OK;
 }
 
@@ -2613,6 +2889,20 @@ HRESULT CPlayer::Ready_Hands()
 		return E_FAIL;
 	m_pBones[WEAPON_L] = pWeaponSocket;
 
+ 	m_pNails[NAIL_ONE] = m_pModelCom->Get_HierarchyNode("Claw_Bone_04_End");
+	Safe_AddRef(m_pNails[NAIL_ONE]);
+
+	m_pNails[NAIL_TWO] = m_pModelCom->Get_HierarchyNode("Claw_Bone_08_End");
+	Safe_AddRef(m_pNails[NAIL_TWO]);
+
+	m_pNails[NAIL_THREE] = m_pModelCom->Get_HierarchyNode("Claw_Bone_12_End");
+	Safe_AddRef(m_pNails[NAIL_THREE]);
+
+	m_pNails[NAIL_FOUR] = m_pModelCom->Get_HierarchyNode("Claw_Bone_16_End");
+	Safe_AddRef(m_pNails[NAIL_FOUR]);
+
+
+
 	return S_OK;
 }
 
@@ -2661,6 +2951,20 @@ HRESULT CPlayer::Ready_PlayerParts_Skill()
 	m_pSkillParts[SKILL_BOW].push_back(pGameObject);
 	m_pSkillHands[SKILL_BOW].push_back(HAND_LEFT);
 
+	pGameObject = static_cast<CWeapon*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Weapon_Scythe")));
+
+	if (nullptr == pGameObject)
+		return E_FAIL;
+	m_pSkillParts[SKILL_SCYTHE].push_back(pGameObject);
+	m_pSkillHands[SKILL_SCYTHE].push_back(HAND_RIGHT);
+
+	pGameObject = static_cast<CWeapon*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Weapon_Lence")));
+
+	if (nullptr == pGameObject)
+		return E_FAIL;
+	m_pSkillParts[SKILL_LENCE].push_back(pGameObject);
+	m_pSkillHands[SKILL_LENCE].push_back(HAND_RIGHT);
+	
 	return S_OK;
 }
 
@@ -2863,6 +3167,12 @@ void CPlayer::Free()
 	{
 		if (_pCollider)
 			Safe_Release(_pCollider);
+	}
+
+	for (_uint i = 0 ; i < NAIL_END ; ++i)
+	{
+		Safe_Release(m_pNails[i]);
+		Safe_Release(m_pClawTrail[i]);
 	}
 
 	Safe_Release(m_pModelCom);

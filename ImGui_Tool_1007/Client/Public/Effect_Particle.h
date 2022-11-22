@@ -17,6 +17,7 @@ public:
 	enum STARTTYPE { START_CENTER, START_RANDOM, START_END };
 	enum DIR_TYPE { DIR_NORMAL, DIR_ANGLE, DIR_END };
 	enum DIFFUSE_TYPE { DIFFUSE_TEXTURE, DIFFUSE_COLOR, DIFFUSE_END };
+	enum DISSAPEAR_TYPE { DISSAPEAR_NONALPHA, DISSAPEAR_ALPHA, DISSAPEAR_END };
 	struct OPTION
 	{
 		DIFFUSE_TYPE					eDiffuseType = DIFFUSE_TEXTURE;
@@ -45,6 +46,7 @@ public:
 		_float4x4						matPlayerAxix;
 		_float3							fSpead_Angle = { 30.f, 30.f, 30.f };
 		_float2							fMaxDistance = { 5.f, 5.f };
+		DISSAPEAR_TYPE					eDissapear = DISSAPEAR_NONALPHA;
 	};
 
 protected:

@@ -60,8 +60,9 @@ private:
 	CTransform*				m_pTransformCom_Skill[SKILL_END] = { nullptr };
 	CTransform*				m_pTransformCom_Claw = nullptr;
 	CTexture*				m_pTextureCom_Skill[SKILL_END] = { nullptr };
+	CTexture*				m_pAlphaTexture = nullptr;
 
-	_float					m_fMaxCoolDown = 5.f;
+	_float					m_fMaxCoolDown = 15.f;
 	_float					m_fSkillCoolDown[SKILL_CLAW] = { 0.f };
 
 private:
@@ -74,6 +75,7 @@ private:
 	HRESULT Ready_Texture();
 
 	HRESULT Render_Slot();
+	//HRESULT Render_Skill();
 
 public:
 	static CSkillSlot* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

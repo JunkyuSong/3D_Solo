@@ -319,8 +319,17 @@
     <Filter Include="02. GameObjects\07. Effect\01. TextureEffect">
       <UniqueIdentifier>{47fc045e-df3e-4160-8dd7-85bd652543b7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\07. Effect\01. TextureEffect\02. Blood">
-      <UniqueIdentifier>{1d35b122-56e4-4bdf-842f-b1a6831c7967}</UniqueIdentifier>
+    <Filter Include="02. GameObjects\07. Effect\00. MeshEffect\03. CrossTrail">
+      <UniqueIdentifier>{543ad9b9-8cc5-482e-ab25-c51a66474b9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\04. Weapon\00. Player\02. SkillWeapon\03. Scythe">
+      <UniqueIdentifier>{5204580d-2241-445d-8d8f-d74cecd3b8b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\04. Weapon\00. Player\02. SkillWeapon\04. Lence">
+      <UniqueIdentifier>{4aae9551-e962-4ca4-9de1-3f41d0b46339}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. Effect\01. TextureEffect\00. Fire">
+      <UniqueIdentifier>{004c67c3-0845-44c9-8862-b561ba6adb04}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -609,6 +618,18 @@
     <ClInclude Include="..\Public\SkillSlot.h">
       <Filter>02. GameObjects\03. UI\SkillSlot</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\CrossTrail.h">
+      <Filter>02. GameObjects\07. Effect\00. MeshEffect\03. CrossTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Lence.h">
+      <Filter>02. GameObjects\04. Weapon\00. Player\02. SkillWeapon\04. Lence</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Scythe.h">
+      <Filter>02. GameObjects\04. Weapon\00. Player\02. SkillWeapon\03. Scythe</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Fire.h">
+      <Filter>02. GameObjects\07. Effect\01. TextureEffect\00. Fire</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -877,6 +898,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\SkillSlot.cpp">
       <Filter>02. GameObjects\03. UI\SkillSlot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CrossTrail.cpp">
+      <Filter>02. GameObjects\07. Effect\00. MeshEffect\03. CrossTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Scythe.cpp">
+      <Filter>02. GameObjects\04. Weapon\00. Player\02. SkillWeapon\03. Scythe</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Lence.cpp">
+      <Filter>02. GameObjects\04. Weapon\00. Player\02. SkillWeapon\04. Lence</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Fire.cpp">
+      <Filter>02. GameObjects\07. Effect\01. TextureEffect\00. Fire</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

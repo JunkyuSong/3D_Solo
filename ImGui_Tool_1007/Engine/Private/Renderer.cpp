@@ -234,8 +234,8 @@ HRESULT CRenderer::Draw()
 #ifdef _DEBUG
 
 
-	if (FAILED(Render_Debug()))
-		return E_FAIL;
+	/*if (FAILED(Render_Debug()))
+		return E_FAIL;*/
 
 
 #endif
@@ -518,7 +518,7 @@ HRESULT CRenderer::Render_PostProcessing()
 
 	//위에서 겟 한걸로 셋 해주고.->엔드 해도 되지 않을까
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
-	return E_FAIL;
+		return E_FAIL;
 /*
 	_uint iDepthStencil = 0;
 

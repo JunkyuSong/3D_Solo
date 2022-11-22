@@ -21,7 +21,6 @@ HRESULT CStraight_Particle::Initialize_Prototype(_tchar * szTextureTag)
 HRESULT CStraight_Particle::Initialize(void * pArg)
 {
 
-
 	return S_OK;
 }
 
@@ -33,25 +32,46 @@ const _bool & CStraight_Particle::Update(_float _fTimeDelta)
 		Recycle();
 	}
 
+	if (m_bDead)
+	{
+		if (m_tOption.eDissapear == DISSAPEAR_ALPHA)
+		{
+			m_fTime += _fTimeDelta;
+			if (m_fTime > 1.f)
+			{
+				m_fTime = 0.f;
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	_float	_vDis = fabs(XMVector3Length((XMVectorSetW(XMLoadFloat3(&m_vOriginPos), 1.f) - _vPos)).m128_f32[0]);
 	if (m_fDistane < _vDis)
 	{
 		m_bDead = true;
 
-		return false;
+		//return false;
 	}
 
 
 
 	if (MoveFrame(_fTimeDelta))
 	{
-		if (m_pTextureCom->Get_Type() == CTexture::TYPE_SINGLE)
+		if (m_pTextureCom->Get_Type() == CTexture::TYPE_MULTI)
 		{
 			m_bDead = true;
-			return false;
+			//return false;
 		}
 	}
+
+	
+
+
 	m_fCurSpeed *= m_tOption.fAccSpeed;
 	_vPos += XMLoadFloat3(&m_vDirect) * _fTimeDelta * m_fCurSpeed;
 
@@ -105,6 +125,9 @@ HRESULT CStraight_Particle::Render()
 		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Set_RawValue("g_Size", &(m_tOption.Size), sizeof(_float2))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Set_RawValue("g_fTime", &m_fTime, sizeof(_float))))
 		return E_FAIL;
 
 	
@@ -171,6 +194,7 @@ void CStraight_Particle::Recycle()
 {
 	Re_Option();
 	m_bRecycle = false;
+	
 }
 
 void CStraight_Particle::Re_Option()

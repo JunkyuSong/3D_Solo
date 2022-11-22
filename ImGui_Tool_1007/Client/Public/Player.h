@@ -75,6 +75,10 @@ public:
 		Strong_Jump2,
 		Corvus_Jump,
 		Corvus_SD1_Fall_Attack,
+		Corvus_Raven_ClawLong_ChargeFull,
+		Corvus_Raven_ClawLong_PlunderAttack2TTT,
+		Corvus_PW_Halberds,
+		Corvus_PW_Scythe,
 		STATE_END
 	};
 
@@ -82,7 +86,7 @@ private:
 	enum DIRECT { DIR_F, DIR_B, DIR_R, DIR_L, DIR_FR, DIR_BR, DIR_FL, DIR_BL, DIR_END };
 	enum COLLIDERTYPE { COLLIDERTYPE_CLAW, COLLIDERTYPE_BODY, COLLIDERTYPE_PARRY, COLLIDERTYPE_PUSH, COLLILDERTYPE_END };
 	enum ATTACKLIMIT { ATTACKLIMIT_MOVE, ATTACKLIMIT_CHANGE, ATTACKLIMIT_TRAILON, ATTACKLIMIT_TRAILEND, ATTACKLIMIT_COLLIDERON, ATTACKLIMIT_COLLIDEREND, ATTACKLIMIT_END };
-	enum PARTICLEEFFECT {PARTICLE_CLAW, PARTICLE_END};
+	enum PARTICLEEFFECT { PARTICLE_STEAL, PARTICLE_CLAW, PARTICLE_END };
 public:
 	struct OBJ_DESC
 	{
@@ -147,7 +151,7 @@ private:
 private:
 	enum WEAPON { WEAPON_NONE, WEAPON_BASE, WEAPON_SKILL };
 	enum BASE { BASE_SABER, BASE_DAGGER, BASE_END };
-	enum SKILL { SKILL_AXE, SKILL_DUAL, SKILL_BOW, SKILL_END };
+	enum SKILL { SKILL_AXE, SKILL_DUAL, SKILL_BOW, SKILL_SCYTHE, SKILL_LENCE, SKILL_END };
 	enum HAND { HAND_RIGHT, HAND_LEFT, HAND_END };
 
 	enum BONE { WEAPON_R, WEAPON_L, BONE_END };
@@ -224,6 +228,16 @@ private:
 
 	_float3					m_vCurClaw;
 	_float3					m_vPreClaw;
+
+	_uint					m_iClawLight = 0;
+
+
+private:
+	void Update_Nail();
+	enum NAIL { NAIL_ONE, NAIL_TWO, NAIL_THREE, NAIL_FOUR, NAIL_END };
+
+	class CHierarchyNode*				m_pNails[NAIL_END] = { nullptr };
+	class CCrossTrail*					m_pClawTrail[NAIL_END] = { nullptr };
 
 private:
 	HRESULT	Ready_ParticleDesc();

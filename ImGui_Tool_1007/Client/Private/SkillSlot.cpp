@@ -28,6 +28,11 @@ HRESULT CSkillSlot::Initialize(void * pArg)
 	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixTranspose(XMMatrixOrthographicLH((_float)g_iWinSizeX, (_float)g_iWinSizeY, 0.f, 1.f)));
 
+	for (_uint i = 0; i < SKILL_CLAW; ++i)
+	{
+		m_fSkillCoolDown[i] = 20.f;
+	}
+
 	return S_OK;
 }
 
@@ -165,6 +170,23 @@ HRESULT CSkillSlot::Ready_Texture()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MainUI_Slot_Claw"), TEXT("Com_Textrue_Claw"), (CComponent**)&m_pTextureCom_SkillSlot[SKILLSLOT_CLAW])))
 		return E_FAIL;
 
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Icon_Skill_Axe"), TEXT("Com_Textrue_Skill1"), (CComponent**)&m_pTextureCom_Skill[SKILL_2])))
+		return E_FAIL;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Icon_Skill_Twin"), TEXT("Com_Textrue_Skill2"), (CComponent**)&m_pTextureCom_Skill[SKILL_1])))
+		return E_FAIL;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Icon_Skill_Bow"), TEXT("Com_Textrue_Skill3"), (CComponent**)&m_pTextureCom_Skill[SKILL_3])))
+		return E_FAIL;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Icon_Skill_Scythe"), TEXT("Com_Textrue_Skill4"), (CComponent**)&m_pTextureCom_Skill[SKILL_4])))
+		return E_FAIL;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Icon_Skill_Halberd"), TEXT("Com_Textrue_Skill5"), (CComponent**)&m_pTextureCom_Skill[SKILL_5])))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Alpha"), TEXT("Com_Alpha"), (CComponent**)&m_pAlphaTexture)))
+		return E_FAIL;
+
+
+	
+
 	return S_OK;
 }
 
@@ -180,16 +202,34 @@ HRESULT CSkillSlot::Render_Slot()
 	if (FAILED(m_pVIBufferCom->Render()))
 		return E_FAIL;
 
-	for (_uint i = 0; i < SKILL_CLAW; ++i)
+	for (_uint i = 0; i < SKILL_CLAW - 1; ++i)
 	{
+
+		_float fPer = m_fSkillCoolDown[i] / m_fMaxCoolDown * 360.f;
+		m_pTransformCom_SkillSlot[i]->Set_Scale(XMVectorSet(70.f, 70.f, 1.f, 0.f));
 		m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom_SkillSlot[i]->Get_WorldFloat4x4_TP(), sizeof(_float4x4));
+		m_pShaderCom->Set_RawValue("g_fPercent", &fPer, sizeof(_float));
 
 		if (FAILED(m_pTextureCom_SkillSlot[SKILLSLOT_GREEN]->Set_SRV(m_pShaderCom, "g_DiffuseTexture")))
 			return E_FAIL;
-		if (FAILED(m_pTextureCom_SkillSlot[SKILLSLOT_GRAY]->Set_SRV(m_pShaderCom, "g_DiffuseTexture_2")))
+		if (FAILED(m_pTextureCom_SkillSlot[SKILLSLOT_MINI]->Set_SRV(m_pShaderCom, "g_DiffuseTexture_2")))
 			return E_FAIL;
 
-		if (FAILED(m_pShaderCom->Begin(0)))
+		if (FAILED(m_pShaderCom->Begin(5)))
+			return E_FAIL;
+		if (FAILED(m_pVIBufferCom->Render()))
+			return E_FAIL;
+
+		m_pTransformCom_SkillSlot[i]->Set_Scale(XMVectorSet(120.f, 120.f, 1.f, 0.f));
+		m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom_SkillSlot[i]->Get_WorldFloat4x4_TP(), sizeof(_float4x4));
+
+		if (FAILED(m_pTextureCom_Skill[i]->Set_SRV(m_pShaderCom, "g_DiffuseTexture")))
+			return E_FAIL;
+		if (FAILED(m_pAlphaTexture->Set_SRV(m_pShaderCom, "g_DiffuseTexture_2")))
+			return E_FAIL;
+		
+
+		if (FAILED(m_pShaderCom->Begin(5)))
 			return E_FAIL;
 		if (FAILED(m_pVIBufferCom->Render()))
 			return E_FAIL;
@@ -255,5 +295,6 @@ void CSkillSlot::Free()
 		Safe_Release(m_pTransformCom_SkillSlot[i]);
 		Safe_Release(m_pTextureCom_Skill[i]);
 	}
-	
+	Safe_Release(m_pTransformCom_Claw);
+	Safe_Release(m_pAlphaTexture);
 }

@@ -11,6 +11,10 @@ CTexture::CTexture(const CTexture & rhs)
 	: CComponent(rhs)
 	, m_iNumTextures(rhs.m_iNumTextures)
 	, m_SRVs(rhs.m_SRVs)
+	, m_iHighNum(rhs.m_iHighNum)
+	, m_iWidthNum(rhs.m_iWidthNum)
+	, m_fSpriteSpeed(rhs.m_fSpriteSpeed)
+	, m_eType(rhs.m_eType)
 {
 	for (auto& pSRV : m_SRVs)
 		Safe_AddRef(pSRV);
@@ -20,8 +24,8 @@ CTexture::CTexture(const CTexture & rhs)
 HRESULT CTexture::Initialize_Prototype(const _tchar * pTextureFilePath, _uint iNumTextures, _float _fSpeed)
 {
 	m_iNumTextures = iNumTextures;
-	m_iWidthNum = 0;
-	m_iHighNum = 0;
+	m_iWidthNum = 1;
+	m_iHighNum = 1;
 	m_fSpriteSpeed = _fSpeed;
 	m_eType = TYPE_SINGLE;
 

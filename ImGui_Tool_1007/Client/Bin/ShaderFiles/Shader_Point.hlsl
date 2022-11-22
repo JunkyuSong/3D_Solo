@@ -4,7 +4,7 @@ matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D	g_DiffuseTexture;
 texture2D	g_NoiseTexture;
 
-float3		g_Right, g_Up;
+float3		g_Right, g_Up, g_Look;
 float		g_Width;
 float3		g_vPos_1;
 float3		g_vPos_2;
@@ -19,6 +19,8 @@ int			g_iMaxY;
 int			g_iMaxX;
 int			g_iCurY;
 int			g_iCurX;
+
+float		g_fTime;
 
 float4		g_Color;
 
@@ -91,18 +93,6 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> GeometryStream)
 {
 	GS_OUT			Out[8];
 	matrix			matVP = mul(g_ViewMatrix, g_ProjMatrix);
-
-	/*Out[0].vPosition = mul(vector(g_PointList.vPos[1] - vector(g_Right * g_Width,1.f)), matVP);
-	Out[0].vTexUV = float2(0.f, 0.f);
-
-	Out[1].vPosition = mul(vector(g_PointList.vPos[1] + vector(g_Right * g_Width,1.f)), matVP);
-	Out[1].vTexUV = float2(1.f, 0.f);
-
-	Out[2].vPosition = mul(vector(g_PointList.vPos[0] + vector(g_Right * g_Width,1.f)), matVP);
-	Out[2].vTexUV = float2(1.f, 1.f);
-
-	Out[3].vPosition = mul(vector(g_PointList.vPos[0] - vector(g_Right * g_Width, 1.f)), matVP);
-	Out[3].vTexUV = float2(0.f, 1.f);*/
 
 	Out[0].vPosition = mul(vector(g_vPos_2 - (g_Right * g_Width), 1.f), matVP);
 	Out[0].vTexUV = float2(0.f, 0.f);
@@ -232,7 +222,6 @@ void GS_PARTICLE(point GS_IN In[1], inout TriangleStream<GS_OUT> GeometryStream)
 	GeometryStream.RestartStrip();
 }
 
-
 struct PS_IN
 {
 	float4		vPosition : SV_POSITION;
@@ -251,8 +240,19 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vColor = float4( 1.f, 1.f, 0.f, 0.5f );
 	if (0 >= Out.vColor.a)
 		discard;
-	Out.vColor = pow(Out.vColor, 2.2f);
+	//Out.vColor = pow(Out.vColor, 2.2f);
 	return Out;	
+}
+
+PS_OUT PS_CROSSTRAIL(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = g_Color;
+	if (0 >= Out.vColor.a)
+		discard;
+	//Out.vColor = pow(Out.vColor, 2.2f);
+	return Out;
 }
 
 PS_OUT PS_TEXTURE(PS_IN In)
@@ -264,7 +264,7 @@ PS_OUT PS_TEXTURE(PS_IN In)
 	Out.vColor.a = g_Alpha;
 	if (0 >= Out.vColor.a)
 		discard;
-	Out.vColor = pow(Out.vColor, 2.2f);
+	//Out.vColor = pow(Out.vColor, 2.2f);
 	return Out;
 }
 
@@ -281,9 +281,14 @@ PS_OUT PS_PARTICLE(PS_IN In)
 
 	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV) * _vNoise.r;
 	//Out.vColor.a = saturate( _vNoise.r + _vNoise.g + _vNoise.b);
+	Out.vColor.a += g_fTime;
+
 	if (0 >= Out.vColor.a)
 		discard;
-	Out.vColor = pow(Out.vColor, 2.2f);
+
+
+
+	//Out.vColor = pow(Out.vColor, 2.2f);
 	return Out;
 }
 
@@ -295,9 +300,25 @@ PS_OUT PS_PARTICLE_Color(PS_IN In)
 
 	Out.vColor = g_Color * _vNoise.r;
 	Out.vColor.a = saturate( _vNoise.r + _vNoise.g + _vNoise.b);
+	
+	Out.vColor.a -= g_fTime;
 	if (0 >= Out.vColor.a)
 		discard;
-	Out.vColor = pow(Out.vColor, 2.2f);
+	//Out.vColor = pow(Out.vColor, 2.2f);
+	return Out;
+}
+
+PS_OUT PS_FIRE(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+	In.vTexUV.y = (1.f / g_iMaxY * g_iCurY) + (1.f / g_iMaxY * In.vTexUV.y);
+	In.vTexUV.x = (1.f / g_iMaxX * g_iCurX) + (1.f / g_iMaxX * In.vTexUV.x);
+	float4 _vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	Out.vColor = g_Color * _vDiffuse.r;
+
+	if (0 >= Out.vColor.a)
+		discard;
 	return Out;
 }
 
@@ -341,5 +362,25 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_PARTICLE();
 		GeometryShader = compile gs_5_0 GS_PARTICLE();
 		PixelShader = compile ps_5_0 PS_PARTICLE_Color();
+	}
+
+	pass CROSSTRAIL
+	{
+		SetRasterizerState(RS_CullNone);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = compile gs_5_0 GS_MAIN();
+		PixelShader = compile ps_5_0 PS_CROSSTRAIL();
+	}
+
+	pass FIRE
+	{
+		SetRasterizerState(RS_CullNone);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_PARTICLE();
+		GeometryShader = compile gs_5_0 GS_PARTICLE();
+		PixelShader = compile ps_5_0 PS_FIRE();
 	}
 }

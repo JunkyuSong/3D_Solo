@@ -2,7 +2,7 @@
 
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D	g_DiffuseTexture, g_DiffuseTexture_2;
-float		g_HpPer, g_PreHpPer;
+float		g_HpPer, g_PreHpPer, g_fPercent;
 
 sampler DefaultSampler = sampler_state {
 
@@ -149,6 +149,45 @@ PS_OUT PS_NonSelect(PS_IN In)
 	return Out;
 }
 
+PS_OUT	PS_MAIN_SkillSlot(PS_IN In)
+{
+	PS_OUT      Out = (PS_OUT)0;
+
+	float4 Diffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	float4 Diffuse2 = g_DiffuseTexture_2.Sample(DefaultSampler, In.vTexUV);
+
+	float Angle;
+
+	if (In.vTexUV.x < 0.5f)
+	{
+		Angle = degrees(acos(dot(normalize(vector(vector(In.vTexUV, 0.f, 0.f) - vector(0.5f, 0.5f, 0.f, 0.f))), vector(0.f, 1.f, 0.f, 0.f))));
+		Angle += 180.f;
+	}
+	else
+	{
+		Angle = degrees(acos(dot(normalize(vector(vector(In.vTexUV, 0.f, 0.f) - vector(0.5f, 0.5f, 0.f, 0.f))), vector(0.f, -1.f, 0.f, 0.f))));
+	}
+
+	float4 vColor;
+
+	if (Angle < g_fPercent)
+	{
+		vColor = Diffuse;
+	}
+	else
+	{
+		vColor = Diffuse2;
+		//discard;
+	}
+
+	Out.vColor = vColor;
+
+	if (0 == Out.vColor.a)
+		discard;
+
+	return Out;
+}
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass
@@ -199,5 +238,15 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_MONSTERHP();
+	}
+
+	pass SkillSlot
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_SkillSlot();
 	}
 }

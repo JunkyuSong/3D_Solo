@@ -25,6 +25,7 @@ public:
 		TRAILPOS	_HighAndLow;
 		_float4		_Color;
 		TRAILOPTION _eOption = TRAILOPTION_DEFAULT;
+		_tchar*		_szTexture = TEXT("../Bin/Resources/Textures/Trail/Trail_Default.png");
 	};
 
 	/*struct REALDATA {
@@ -49,6 +50,8 @@ public:
 
 	const _bool&	Get_On() { return m_bTrailOn; }
 
+	TRAILPOS		Get_HighAndLow() { return m_CurWorldHighAndLow; }
+
 	void			Set_Option(TRAILOPTION _ePass) { m_ePass = _ePass; }
 
 	void			Set_Color(_float4 _Color) { m_Color = _Color; }
@@ -69,6 +72,7 @@ private:
 	_float4					m_Color;
 
 	TRAILPOS				m_HighAndLow;
+	TRAILPOS				m_CurWorldHighAndLow;
 
 	TRAILOPTION				m_ePass = TRAILOPTION_END;
 

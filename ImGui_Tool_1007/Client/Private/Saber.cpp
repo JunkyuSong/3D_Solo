@@ -223,9 +223,9 @@ void CSaber::Hit()
 	_tOption.fMaxDistance = { 0.4f, 1.2f };
 	XMStoreFloat4x4(&_tOption.matPlayerAxix, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 
-	if (FAILED(CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_PARTICLE, &_tOption)))
+	if (nullptr == CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_PARTICLE, &_tOption))
 	{
-		MSG_BOX(TEXT("effect"));
+		MSG_BOX(TEXT("effect_blood"));
 		return;
 	}
 }

@@ -123,8 +123,8 @@ HRESULT CTrail::Initialize(void * pArg)
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 	m_pShaderCom = static_cast<CShader*>(pGameInstance->Clone_Component(LEVEL_GAMEPLAY,TEXT("Prototype_Component_Shader_Trail")));
 	//m_pTextureCom = static_cast<CTexture*>(pGameInstance->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Distortion")));
-	m_pTextureCom = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/Trail_Default.png"));
-	m_pNoiseTextureCom = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Flame_Tile_1.png"));
+	m_pTextureCom = CTexture::Create(m_pDevice, m_pContext, _tInfo._szTexture);
+	m_pNoiseTextureCom = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail_Flame.png"));
 	m_pAlphaTextureCom = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Trail/Trail_Alpha.png"));
 
 	if (m_pShaderCom == nullptr)
@@ -242,6 +242,10 @@ void CTrail::Tick(const _float& _fTimeDelta, _matrix _matWeapon)
 			}
 			_fvector High = XMVector3TransformCoord(XMLoadFloat3(&(m_HighAndLow.vHigh)), _matWeapon);
 			_fvector Low = XMVector3TransformCoord(XMLoadFloat3(&(m_HighAndLow.vLow)), _matWeapon);
+
+			XMStoreFloat3(&m_CurWorldHighAndLow.vHigh, High);
+			XMStoreFloat3(&m_CurWorldHighAndLow.vLow, Low);
+
 			//_float3 High =  - _float3(0.f, 0.01f, 0.f);
 			//_float3 Low = m_HighAndLow.vLow - _float3(0.f, 0.01f, 0.f);
 			XMStoreFloat3(&(m_RealData[m_iVtxCount].vPosition), High);

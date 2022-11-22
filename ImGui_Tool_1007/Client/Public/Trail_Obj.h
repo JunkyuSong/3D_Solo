@@ -29,6 +29,8 @@ public:
 
 	const _bool&	Get_On();
 
+	TRAILPOS		Get_HighAndLow();
+
 
 	void			Set_Color(_float4 _Color);
 
@@ -38,6 +40,8 @@ private:
 private:
 	CTrail*			m_pVIBuffer = nullptr;
 	CRenderer*		m_pRenderer = nullptr;
+
+
 
 public:
 	static	CTrail_Obj*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

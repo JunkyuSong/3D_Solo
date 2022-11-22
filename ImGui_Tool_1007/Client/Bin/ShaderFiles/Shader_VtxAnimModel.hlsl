@@ -82,7 +82,7 @@ VS_OUT VS_MAIN(VS_IN In)
 
 	Out.vTexUV = In.vTexUV;
 	Out.vProjPos = Out.vPosition;
-	Out.vLightViewPosition = mul(Out.vWorldPosition, g_LightViewInverse);
+	
 
 	return Out;
 }
@@ -134,6 +134,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w , 0.0f, 0.0f);
 
 	Out.vShadowDepth = vector(In.vLightViewPosition.z, 0.f, 0.0f, 0.0f);
+
 
 	return Out;
 }
@@ -392,4 +393,14 @@ technique11 DefaultTechnique
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_COLOR_DISSOLVE();
 	}
+
+	//pass SHADOW
+	//{
+	//	SetRasterizerState(RS_Default);
+	//	SetDepthStencilState(DSS_Default, 0);
+	//	SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+	//	VertexShader = compile vs_5_0 VS_MAIN();
+	//	GeometryShader = NULL;
+	//	PixelShader = compile ps_5_0 PS_SHADOW();
+	//}
 }

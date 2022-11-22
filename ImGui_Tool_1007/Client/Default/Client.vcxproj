@@ -193,6 +193,7 @@
     <ClInclude Include="..\public\Claw.h" />
     <ClInclude Include="..\public\Client_Camere.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
+    <ClInclude Include="..\Public\CrossTrail.h" />
     <ClInclude Include="..\Public\Dagger.h" />
     <ClInclude Include="..\public\DeadParticle_Mgr.h" />
     <ClInclude Include="..\public\Dummy.h" />
@@ -204,10 +205,12 @@
     <ClInclude Include="..\Public\Extra01_Last.h" />
     <ClInclude Include="..\Public\Extra02.h" />
     <ClInclude Include="..\Public\Extra02_Last.h" />
+    <ClInclude Include="..\Public\Fire.h" />
     <ClInclude Include="..\Public\ImGuiMgr.h" />
     <ClInclude Include="..\Public\InstancingObj.h" />
     <ClInclude Include="..\Public\Knife.h" />
     <ClInclude Include="..\Public\Lamp.h" />
+    <ClInclude Include="..\Public\Lence.h" />
     <ClInclude Include="..\Public\Level_Client.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
@@ -232,6 +235,7 @@
     <ClInclude Include="..\Public\ReadyBow.h" />
     <ClInclude Include="..\public\ReleaseMgr.h" />
     <ClInclude Include="..\Public\Saber.h" />
+    <ClInclude Include="..\Public\Scythe.h" />
     <ClInclude Include="..\Public\SkillSlot.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\public\StageMgr.h" />
@@ -286,6 +290,7 @@
     <ClCompile Include="..\Private\Card.cpp" />
     <ClCompile Include="..\private\Claw.cpp" />
     <ClCompile Include="..\private\Client_Camere.cpp" />
+    <ClCompile Include="..\Private\CrossTrail.cpp" />
     <ClCompile Include="..\Private\Dagger.cpp" />
     <ClCompile Include="..\private\DeadParticle_Mgr.cpp" />
     <ClCompile Include="..\private\Dummy.cpp" />
@@ -297,10 +302,12 @@
     <ClCompile Include="..\Private\Extra01_Last.cpp" />
     <ClCompile Include="..\Private\Extra02.cpp" />
     <ClCompile Include="..\Private\Extra02_Last.cpp" />
+    <ClCompile Include="..\Private\Fire.cpp" />
     <ClCompile Include="..\Private\ImGuiMgr.cpp" />
     <ClCompile Include="..\Private\InstancingObj.cpp" />
     <ClCompile Include="..\Private\Knife.cpp" />
     <ClCompile Include="..\Private\Lamp.cpp" />
+    <ClCompile Include="..\Private\Lence.cpp" />
     <ClCompile Include="..\Private\Level_Client.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
@@ -325,6 +332,7 @@
     <ClCompile Include="..\Private\ReadyBow.cpp" />
     <ClCompile Include="..\private\ReleaseMgr.cpp" />
     <ClCompile Include="..\Private\Saber.cpp" />
+    <ClCompile Include="..\Private\Scythe.cpp" />
     <ClCompile Include="..\Private\SkillSlot.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\private\StageMgr.cpp" />

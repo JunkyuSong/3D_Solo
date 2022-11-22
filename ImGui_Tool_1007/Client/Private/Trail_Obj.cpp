@@ -102,6 +102,11 @@ const _bool & CTrail_Obj::Get_On()
 	return m_pVIBuffer->Get_On();
 }
 
+TRAILPOS CTrail_Obj::Get_HighAndLow()
+{
+	return m_pVIBuffer->Get_HighAndLow();
+}
+
 void CTrail_Obj::Set_Color(_float4 _Color)
 {
 	m_pVIBuffer->Set_Color(_Color);
