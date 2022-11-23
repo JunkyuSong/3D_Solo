@@ -26,6 +26,9 @@ public:
 	virtual HRESULT Render();
 
 
+private:
+	_float4 m_vPreFirePos;
+	_float3 m_vPreFireDir;
 
 
 

@@ -239,7 +239,7 @@ HRESULT CLoader::Loading_ForLogoLevel()
 		return E_FAIL;
 
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Fire"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Flame_8x8_5.png"), 8, 8, 0.1f))))//Grass_%d.dds
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Flame_8x8_5.png"), 8, 8, 0.03f))))//Grass_%d.dds
 		return E_FAIL;
 
 	//실제 UI 텍스쳐

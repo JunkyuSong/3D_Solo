@@ -34,6 +34,7 @@ HRESULT CFire::Initialize(void * pArg)
 	m_vColor = _tFire.vColor;
 	m_vDirect = _tFire.vDirect;
 	m_vSize = _tFire.vSize;
+	m_iCurChance = _tFire.iChance;
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&_tFire.vPos));
 
 	AUTOINSTANCE(CGameInstance, _pGaemInstance);
@@ -45,8 +46,6 @@ HRESULT CFire::Initialize(void * pArg)
 
 const _bool & CFire::Update(_float _fTimeDelta)
 {	
-	
-
 	if (m_bDead)
 	{
 		m_iSpriteNum = 0;
@@ -61,14 +60,16 @@ const _bool & CFire::Update(_float _fTimeDelta)
 
 	if (MoveFrame(_fTimeDelta))
 	{
-		m_bDead = true;
+		--m_iCurChance;
+		if (m_iCurChance == 0)
+			m_bDead = true;
 	}
 
 	
 
 
-	m_fCurSpeed *= m_fAccSpeed;
-	_vPos += XMLoadFloat3(&m_vDirect) * _fTimeDelta * m_fCurSpeed;
+	//m_fCurSpeed *= m_fAccSpeed;
+	//_vPos += XMLoadFloat3(&m_vDirect) * _fTimeDelta * m_fCurSpeed;
 
 	
 

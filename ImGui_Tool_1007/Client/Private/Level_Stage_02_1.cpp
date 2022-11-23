@@ -227,6 +227,10 @@ HRESULT CLevel_Stage_02_1::Ready_Layer_UI(const _tchar * pLayerTag)
 	CUI_Mgr::Get_Instance()->Add_UI(TEXT("Targeting"), _pGameObj);
 
 
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI_SkillSlot"), LEVEL_STAGE_LOBBY, pLayerTag, nullptr, &_pGameObj)))
+		return E_FAIL;
+	CUI_Mgr::Get_Instance()->Add_UI(TEXT("PLAYER_SLOT"), _pGameObj);
+
 	return S_OK;
 }
 

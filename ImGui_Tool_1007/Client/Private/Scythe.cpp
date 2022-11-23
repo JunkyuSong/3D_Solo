@@ -59,16 +59,34 @@ void CScythe::Tick(_float fTimeDelta, CGameObject * _pUser)
 
 	//high지점에 불 하나 놓고
 	// high - low 방향으로 나간다
-	if (m_pTrailCom->Get_On())
-	{
-		TRAILPOS HL = m_pTrailCom->Get_HighAndLow();
-		CFire::FIRE_DESC _tInfo;
-		XMStoreFloat4(&_tInfo.vPos, XMVectorSetW(XMLoadFloat3(&HL.vHigh), 1.f));
-		_tInfo.vColor = CLIENT_RGB(0.f, 255.f, 0.f);
-		_tInfo.vSize = { 0.5f, 0.5f };
-		XMStoreFloat3(&_tInfo.vDirect, XMVector3Normalize(XMLoadFloat3(&HL.vHigh) - XMLoadFloat3(&HL.vLow)));
-		CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_FIRE, &_tInfo);
-	}
+	//if (m_pTrailCom->Get_On())
+	//{
+	//	
+	//	TRAILPOS HL = m_pTrailCom->Get_HighAndLow();
+	//	CFire::FIRE_DESC _tInfo;
+	//	XMStoreFloat4(&_tInfo.vPos, XMVectorSetW(XMLoadFloat3(&HL.vHigh), 1.f));
+	//	_tInfo.vColor = CLIENT_RGB(100.f, 255.f, 100.f);
+	//	_tInfo.vSize = { 1.f, 1.f };
+	//	_tInfo.iChance = 1;
+	//	XMStoreFloat3(&_tInfo.vDirect, XMVector3Normalize(XMLoadFloat3(&HL.vHigh) - XMLoadFloat3(&HL.vLow)));
+	//	AUTOINSTANCE(CGameInstance, _pInstance);
+	//	_float _fTerm = _pInstance->Rand_Float(0.01f, 0.5f);
+	//	if (fabs(XMVector3Length(XMLoadFloat4(&m_vPreFirePos) - XMLoadFloat4(&_tInfo.vPos)).m128_f32[0]) > _fTerm)
+	//		CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_FIRE, &_tInfo);
+	//	_float4 _vPos = _tInfo.vPos;
+	//	_float3 _vDir = _tInfo.vDirect;
+	//	//if (fabs(XMVector3Length(XMLoadFloat4(&m_vPreFirePos) - XMLoadFloat4(&_tInfo.vPos)).m128_f32[0]) < 2.5f)
+	//	/*{
+	//		for (_float _fRatio = 0.f; _fRatio < 1.f ; _fRatio += 0.25f)
+	//		{
+	//			XMStoreFloat4(&_tInfo.vPos, XMVectorSetW(XMVectorLerp(XMLoadFloat4(&m_vPreFirePos), XMLoadFloat4(&_vPos), _fRatio), 1.f));
+	//			XMStoreFloat3(&_tInfo.vDirect,XMVector3Normalize(XMVectorLerp(XMLoadFloat3(&m_vPreFireDir), XMLoadFloat3(&_vDir), _fRatio)));
+	//			CEffect_Mgr::Get_Instance()->Add_Effect(CEffect_Mgr::EFFECT_FIRE, &_tInfo);
+	//		}
+	//	}*/
+	//	m_vPreFirePos = _tInfo.vPos;
+	//	m_vPreFireDir = _tInfo.vDirect;
+	//}
 	
 }
 

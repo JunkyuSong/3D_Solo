@@ -223,7 +223,7 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
 
 			if (vProjPos.z > vShadowDepthDesc.y)
 				vShade *= 2.f;
-		}		
+		}
 	}
 	
 	Out.vColor = vDiffuse * vShade + vSpecular;

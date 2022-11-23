@@ -18,6 +18,7 @@ public:
 		_float4 vColor;
 		_float4 vPos;
 		_float2	vSize;
+		_uint	iChance = 1;
 	};
 private:
 	CFire(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -47,6 +48,7 @@ private:
 	_float2							m_vSize;
 	CVIBuffer_Point*				m_pVIBufferCom = nullptr;
 	_float4							m_vColor;
+	_uint							m_iCurChance = 0;
 
 private:
 	HRESULT			Ready_Components();
